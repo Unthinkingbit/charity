@@ -1,0 +1,48 @@
+Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=15256'>Zamgo</a>
+Bitcoin Address: 199tVFYQyA98C5rdcnNj3zRpRCYMLmyRdn
+Description: Founder of Bitcoin Webskin, a PHP web interface to bitcoind.
+Project Homepage: <a href='http://webskin.bitcoincommons.org/'>Bitcoin Webskin at Bitcoin Commons</a> <a href='https://github.com/zamgo/bitcoin-webskin'>Bitcoin Webskin at Github</a> <a href='http://forum.bitcoin.org/?topic=12390.0'>Bitcoin Webskin Thread</a>
+Project License: MIT
+Project Type: Software
+
+Contributor: hackerkiba aht gmail.com
+Bitcoin Address: 1NWc7N4FAs55hJ1xdTf3KWHZD89yn2PQKV
+Description: Founder of Bitcoin Weekly, a magazine dedicated to all things bitcoin.
+Project Homepage: <a href='http://bitcoinweekly.com/'>Bitcoin Weekly</a>
+Project License: <a href='http://unlicense.org/UNLICENSE'>Unlicense</a>
+Project Type: Magazine
+
+Contributor: <a href='http://www.bitcoin.org/smf/index.php?action=profile;u=1796'>DiabloD3</a>
+Bitcoin Address: 1DbeWKCxnVCt3sRaSAmZLoboqr8pVyFzP1
+Description: Founder of DiabloMiner, a Java GPU miner.
+Project Homepage: <a href='http://forum.bitcoin.org/?topic=1721.0'>DiabloMiner Thread</a> <a href='https://github.com/Diablo-D3/DiabloMiner'>DiabloMiner</a>
+Project License: GPL
+Project Type: Software
+
+Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=2498'>Kiv</a>
+Bitcoin Address: 1MDDh2h4cAZDafgc94mr9q95dhRYcJbNQo
+Description: Founder of GUI Miner, a Windows GUI for mining Bitcoins using the GPU or CPU.
+Project Homepage: <a href='http://forum.bitcoin.org/?topic=3878.0'>GUI Miner Thread</a>
+Project License: GPL
+Project Type: Software
+
+Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=12001'>MacCompiler</a>
+Bitcoin Address: 14V7RiwD3joqDF2Jv6zst3ZnQsR686u9iH
+Description: Founder of Mac Miner, a group of Mac frontends for DiabloMiner and RPCminer.
+Project Homepage: <a href='http://forum.bitcoin.org/?topic=8994.0'>Mac Miner Thread</a>
+Project License: GPL
+Project Type: Software
+
+Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=7785'>Jedi95</a>
+Bitcoin Address: 129ZQG33GmqYRVSCw2hw7zmDUCvvMsuGbC
+Description: Founder of Phoenix, an efficient, fast, modular miner with BFI_INT support.
+Project Homepage: <a href='http://forum.bitcoin.org/?topic=6458.0'>Phoenix Thread</a>
+Project License: Copyright (C) 2011 by jedi95 and CFSworks (similar to BSD)
+Project Type: Software
+
+Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=33'>M0mchil</a>
+Bitcoin Address: 126VZtqifE91nrBsXRkjZRMkTTvSTEMHPC
+Description: Founder of Poclbm (PyOpenCL bitcoin miner), a python OpenCL bitcoin miner.
+Project Homepage: <a href='https://github.com/m0mchil/poclbm'>Poclbm Sources</a> <a href='http://forum.bitcoin.org/index.php?topic=1334.0'>Poclbm Thread</a>
+Project License: Public domain
+Project Type: Software
