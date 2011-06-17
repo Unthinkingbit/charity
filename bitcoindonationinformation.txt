@@ -5,7 +5,7 @@ Project Homepage: <a href='http://webskin.bitcoincommons.org/'>Bitcoin Webskin a
 Project License: MIT
 Project Type: Software
 
-Contributor: hackerkiba ahhht gmail.com
+Contributor: hackerkiba aht gmail.com
 Bitcoin Address: 1NWc7N4FAs55hJ1xdTf3KWHZD89yn2PQKV
 Description: Founder of Bitcoin Weekly, a magazine dedicated to all things bitcoin.
 Project Homepage: <a href='http://bitcoinweekly.com/'>Bitcoin Weekly</a>
