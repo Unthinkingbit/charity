@@ -41,6 +41,13 @@ Project Homepage: <a href='https://github.com/m0mchil/poclbm'>Poclbm Sources</a>
 Project License: Public domain
 Project Type: Software
 
+Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=1168'>Puddinpop</a>
+Bitcoin Address: 1HZNsUqQxKVLmfPfCAzLwrnVDzx8CxwxnM
+Description: Founder of RPC Miners, a group of RPC miners and screensavers.
+Project Homepage: <a href='http://forum.bitcoin.org/?topic=2444.0'>RPC Miners Thread</a>
+Project License: GPL
+Project Type: Software
+
 Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=15256'>Zamgo</a>
 Bitcoin Address: 199tVFYQyA98C5rdcnNj3zRpRCYMLmyRdn
 Description: Founder of Bitcoin Webskin, a PHP web interface to bitcoind.
