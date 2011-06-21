@@ -1,7 +1,33 @@
 """
-E Pluribus Unum. "Out of many, One."
-test 3, test internet, writeOutput, look for next after 0.7
-#	print(  getLocationText('http://members.axion.net/~enrique/book.html'))
+Almoner is a program to determine how many bitcoins to donate to each recipient.
+
+This is meant to be used by bitcoin pools or miners to automatically donate to a list of recipients.  With this program, people could simply decide how much to donate, they don't have to also look up bitcoin addresses for each recipient.
+
+==Commands==
+===Help===
+The -h option or the -help option will print the help, which is this document.  The example follows:
+python almoner.py -h
+
+===Input===
+The -input option sets the input file name.  The example follows:
+python almoner.py -input bitcoindonationinformation.txt
+
+An example of a donation information input file is at:
+https://github.com/Unthinkingbit/charity/blob/master/bitcoindonationinformation.txt
+
+===Output===
+The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name.  The example follows:
+python almoner.py -input bitcoindonationinformation.txt -output stdout
+
+An example of an almoner output file is at:
+https://github.com/Unthinkingbit/charity/blob/master/almoner.txt
+
+==Install==
+For almoner to run, you need Python 2.x, almoner will probably not run with python 3.x.  To check if it is on your machine, in a terminal type:
+python
+
+If python 2.x is not on your machine, download the latest python 2.x, which is available from:
+http://www.python.org/download/
 """
 
 import cStringIO
@@ -89,9 +115,9 @@ def getOutput(arguments):
 	fileName = getParameter(arguments, 'input')
 	outputTo = getParameter(arguments, 'output')
 	contributors = getContributors(fileName)
-	setShares(contributors, 1.0 / float(len(contributors)))
-	almonerText = getAlmonerText(contributors)
-	return almonerText
+	setUtilityValues(contributors)
+	setShares(contributors)
+	return getAlmonerText(contributors)
 
 def getParameter(arguments, name):
 	'Get the parameter of the given name from the arguments.'
@@ -120,22 +146,40 @@ def getTextLines(text):
 
 def sendOutputTo(outputTo, text):
 	'Send output to a file or a standard output.'
-	if outputTo == 'sys.stderr':
+	if outputTo.endswith('stderr'):
 		sys.stderr.write(text)
 		sys.stderr.write('\n')
 		sys.stderr.flush()
 		return
-	if outputTo == 'sys.stdout':
+	if outputTo.endswith('stdout'):
 		sys.stdout.write(text)
 		sys.stdout.write('\n')
 		sys.stdout.flush()
 		return
 	writeFileText(outputTo, text)
 
-def setShares(contributors, share):
-	'Set the share of each contributor to be the reciprocal of the number of contributors.'
+def setShares(contributors):
+	'Set each shares to the utility value divided by the total of the utility values.'
+	totalUtilityValue = 0.0
 	for contributor in contributors:
-		contributor.share = share
+		totalUtilityValue += contributor.utilityValue
+	for contributor in contributors:
+		contributor.share += contributor.utilityValue / totalUtilityValue
+
+def setUtilityValues(contributors):
+	'Set the utility values of the contributors.'
+	numberOfUtilityValues = 0
+	totalUtilityValue = 0.0
+	for contributor in contributors:
+		if contributor.utilityValue != None:
+			numberOfUtilityValues += 1
+			totalUtilityValue += contributor.utilityValue
+	average = 1.0
+	if numberOfUtilityValues > 0:
+		average = totalUtilityValue / float(numberOfUtilityValues)
+	for contributor in contributors:
+		if contributor.utilityValue == None:
+			contributor.utilityValue = average
 
 def writeFileText(fileName, fileText, writeMode='w+'):
 	'Write a text to a file.'
@@ -148,6 +192,9 @@ def writeFileText(fileName, fileText, writeMode='w+'):
 
 def writeOutput(arguments):
 	'Write output.'
+	if len(arguments) < 2 or '-h' in arguments or '-help' in arguments:
+		print(  __doc__)
+		return
 	text = getOutput(arguments)
 	outputTo = getParameter(arguments, 'output')
 	if outputTo != '':
