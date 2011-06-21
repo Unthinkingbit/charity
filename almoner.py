@@ -3,6 +3,7 @@ Almoner is a program to determine how many bitcoins to donate to each recipient.
 
 This is meant to be used by bitcoin pools or miners to automatically donate to a list of recipients.  With this program, people could simply decide how much to donate, they don't have to also look up bitcoin addresses for each recipient.
 
+
 ==Commands==
 ===Help===
 The -h option or the -help option will print the help, which is this document.  The example follows:
@@ -21,6 +22,7 @@ python almoner.py -input bitcoindonationinformation.txt -output stdout
 
 An example of an almoner output file is at:
 https://github.com/Unthinkingbit/charity/blob/master/almoner.txt
+
 
 ==Install==
 For almoner to run, you need Python 2.x, almoner will probably not run with python 3.x.  To check if it is on your machine, in a terminal type:
