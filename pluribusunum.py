@@ -143,12 +143,12 @@ def getTextLines(text):
 
 def sendOutputTo(outputTo, text):
 	'Send output to a file or a standard output.'
-	if outputTo == 'sys.stderr':
+	if outputTo.endswith('stderr'):
 		sys.stderr.write(text)
 		sys.stderr.write('\n')
 		sys.stderr.flush()
 		return
-	if outputTo == 'sys.stdout':
+	if outputTo.endswith('stdout'):
 		sys.stdout.write(text)
 		sys.stdout.write('\n')
 		sys.stdout.flush()

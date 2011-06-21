@@ -49,7 +49,7 @@ def getAlmonerText(contributors):
 	'Get the almoner text which consists of lines each of which have a coin address followed by a space then the share.'
 	almonerText = ''
 	for contributor in contributors:
-		almonerText += '%s %s\n' % (contributor.bitcoinAddress, contributor.share)
+		almonerText += 'Coin,%s,%s\n' % (contributor.bitcoinAddress, contributor.share)
 	return almonerText
 
 def getColonDividedWords(text):

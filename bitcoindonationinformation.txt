@@ -20,6 +20,13 @@ Project Homepage: <a href='http://forum.bitcoin.org/?topic=6458.0'>Phoenix Threa
 Project License: Copyright (C) 2011 by jedi95 and CFSworks (similar to BSD)
 Project Type: Software
 
+Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=4957'>Khal</a>
+Bitcoin Address: 1KHAL8bUjnkMRMg9yd2dNrYnJgZGH8Nj6T
+Description: Founder of the Dot-BIT Project wiki, a wiki about a decentralized, open DNS system based on the bitcoin technology.
+Project Homepage: <a href='http://dot-bit.org/Main_Page'>Dot-BIT Project</a> <a href='http://forum.bitcoin.org/index.php?topic=10826.0'>Dot-BIT Project Thread</a>
+Project License: not defined yet
+Project Type: Wiki
+
 Contributor: hackerkiba aht gmail.com (Kiba)
 Bitcoin Address: 1NWc7N4FAs55hJ1xdTf3KWHZD89yn2PQKV
 Description: Founder of Bitcoin Weekly, a magazine dedicated to all things bitcoin.
@@ -41,6 +48,13 @@ Project Homepage: <a href='http://forum.bitcoin.org/?topic=8994.0'>Mac Miner Thr
 Project License: GPL
 Project Type: Software
 
+Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=4528'>Matt Corallo</a>
+Bitcoin Address: 1JBMattRztKDF2KRS3vhjJXA7h47NEsn2c
+Description: Developer of private key encryption, UPnP and general bitcoin developer.
+Project Homepage: <a href='https://github.com/bitcoin/bitcoin/pull/232'>Wallet Private Key Encryption</a> <a href='http://forum.bitcoin.org/index.php?topic=8728.0'>Wallet Private Key Encryption Thread</a>
+Project License: Bitcoin (similar to BSD)
+Project Type: Software
+
 Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=33'>M0mchil</a>
 Bitcoin Address: 126VZtqifE91nrBsXRkjZRMkTTvSTEMHPC
 Description: Founder of Poclbm (PyOpenCL bitcoin miner), a python OpenCL bitcoin miner.
@@ -53,6 +67,13 @@ Bitcoin Address: 1HZNsUqQxKVLmfPfCAzLwrnVDzx8CxwxnM
 Description: Founder of RPC Miners, a group of RPC miners and screensavers.
 Project Homepage: <a href='http://forum.bitcoin.org/?topic=2444.0'>RPC Miners Thread</a>
 Project License: GPL
+Project Type: Software
+
+Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=9552'>Vinced</a>
+Bitcoin Address: 1K44aRWSLkmC5KLvzp8awetNob6H99L9ND
+Description: Founder of Namecoin, a distributed naming system based on Bitcoin.
+Project Homepage: <a href='https://github.com/vinced/namecoin'>Namecoin</a> <a href='http://forum.bitcoin.org/?topic=6017.0'>Namecoin Thread</a>
+Project License: Bitcoin (similar to BSD)
 Project Type: Software
 
 Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=15256'>Zamgo</a>
