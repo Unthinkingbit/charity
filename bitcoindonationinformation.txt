@@ -1,2 +1,2 @@
 Bitcoin donation information has moved to:
-bitcoindonationinformation.html
+https://raw.github.com/Unthinkingbit/charity/master/bitcoindonationinformation.html
