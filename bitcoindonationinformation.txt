@@ -23,7 +23,7 @@ Project Type: Software
 Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=4957'>Khal</a> <a href='http://bitcoin-contact.org/identity/khal'>(Bitcoin Identity)</a>
 Bitcoin Address: 1KHAL8bUjnkMRMg9yd2dNrYnJgZGH8Nj6T
 Description: Founder of the Dot-BIT Project wiki, a wiki about a decentralized, open DNS system based on the bitcoin technology.
-Project Homepage: <a href='http://bitcoin-contact.org/identity/khal'>Bitcoin identity of Khalahan</a> - <a href='http://dot-bit.org/Main_Page'>Dot-BIT Project</a> <a href='http://forum.bitcoin.org/index.php?topic=10826.0'>Dot-BIT Project Thread</a>
+Project Homepage: <a href='http://dot-bit.org/Main_Page'>Dot-BIT Project</a> - <a href='http://forum.bitcoin.org/index.php?topic=10826.0'>Dot-BIT Project Thread</a>
 Project License: not defined yet
 Project Type: Wiki
 
