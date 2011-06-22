@@ -41,7 +41,6 @@ import urllib
 __license__ = 'public domain'
 
 
-globalMinimumIdenticalProportion = 0.6
 globalOpenSourceStartWords = 'agpl apache bsd creative gnu gpl mit public unlicense'.split()
 
 
@@ -115,7 +114,6 @@ def getLinkText(text):
 def getOutput(arguments):
 	'Get the output according to the arguments.'
 	fileName = getParameter(arguments, 'input')
-	outputTo = getParameter(arguments, 'output')
 	contributors = getContributors(fileName)
 	setUtilityValues(contributors)
 	setShares(contributors)
@@ -197,10 +195,9 @@ def writeOutput(arguments):
 	if len(arguments) < 2 or '-h' in arguments or '-help' in arguments:
 		print(  __doc__)
 		return
-	text = getOutput(arguments)
 	outputTo = getParameter(arguments, 'output')
 	if outputTo != '':
-		sendOutputTo(outputTo, text)
+		sendOutputTo(outputTo, getOutput(arguments))
 
 def writeTitleValue(cString, title, value):
 	'Write the title and value line, if the value is not empty.'
