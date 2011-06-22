@@ -2,7 +2,7 @@
 Contributor: <a href='http://www.bitcoin.org/smf/index.php?action=profile;u=1796'>DiabloD3</a>
 Bitcoin Address: 1DbeWKCxnVCt3sRaSAmZLoboqr8pVyFzP1
 Description: Founder of DiabloMiner, a Java GPU miner.
-Project Homepage: <a href='http://forum.bitcoin.org/?topic=1721.0'>DiabloMiner Thread</a> <a href='https://github.com/Diablo-D3/DiabloMiner'>DiabloMiner</a>
+Project Homepage: <a href='http://forum.bitcoin.org/?topic=1721.0'>DiabloMiner Thread</a> - <a href='https://github.com/Diablo-D3/DiabloMiner'>DiabloMiner</a>
 Project License: GPL
 Project Type: Software
 
@@ -20,10 +20,10 @@ Project Homepage: <a href='http://forum.bitcoin.org/?topic=6458.0'>Phoenix Threa
 Project License: Copyright (C) 2011 by jedi95 and CFSworks (similar to BSD)
 Project Type: Software
 
-Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=4957'>Khal</a>
+Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=4957'>Khal</a> <a href='http://bitcoin-contact.org/identity/khal'>(Bitcoin Identity)</a>
 Bitcoin Address: 1KHAL8bUjnkMRMg9yd2dNrYnJgZGH8Nj6T
 Description: Founder of the Dot-BIT Project wiki, a wiki about a decentralized, open DNS system based on the bitcoin technology.
-Project Homepage: <a href='http://dot-bit.org/Main_Page'>Dot-BIT Project</a> <a href='http://forum.bitcoin.org/index.php?topic=10826.0'>Dot-BIT Project Thread</a>
+Project Homepage: <a href='http://bitcoin-contact.org/identity/khal'>Bitcoin identity of Khalahan</a> - <a href='http://dot-bit.org/Main_Page'>Dot-BIT Project</a> <a href='http://forum.bitcoin.org/index.php?topic=10826.0'>Dot-BIT Project Thread</a>
 Project License: not defined yet
 Project Type: Wiki
 
@@ -51,14 +51,14 @@ Project Type: Software
 Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=4528'>Matt Corallo</a>
 Bitcoin Address: 1JBMattRztKDF2KRS3vhjJXA7h47NEsn2c
 Description: Developer of private key encryption, UPnP and general bitcoin developer.
-Project Homepage: <a href='https://github.com/bitcoin/bitcoin/pull/232'>Wallet Private Key Encryption</a> <a href='http://forum.bitcoin.org/index.php?topic=8728.0'>Wallet Private Key Encryption Thread</a>
+Project Homepage: <a href='https://github.com/bitcoin/bitcoin/pull/232'>Wallet Private Key Encryption</a> - <a href='http://forum.bitcoin.org/index.php?topic=8728.0'>Wallet Private Key Encryption Thread</a>
 Project License: Bitcoin (similar to BSD)
 Project Type: Software
 
 Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=33'>M0mchil</a>
 Bitcoin Address: 126VZtqifE91nrBsXRkjZRMkTTvSTEMHPC
 Description: Founder of Poclbm (PyOpenCL bitcoin miner), a python OpenCL bitcoin miner.
-Project Homepage: <a href='https://github.com/m0mchil/poclbm'>Poclbm Sources</a> <a href='http://forum.bitcoin.org/index.php?topic=1334.0'>Poclbm Thread</a>
+Project Homepage: <a href='https://github.com/m0mchil/poclbm'>Poclbm Sources</a> - <a href='http://forum.bitcoin.org/index.php?topic=1334.0'>Poclbm Thread</a>
 Project License: Public domain
 Project Type: Software
 
@@ -72,13 +72,13 @@ Project Type: Software
 Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=9552'>Vinced</a>
 Bitcoin Address: 1K44aRWSLkmC5KLvzp8awetNob6H99L9ND
 Description: Founder of Namecoin, a distributed naming system based on Bitcoin.
-Project Homepage: <a href='https://github.com/vinced/namecoin'>Namecoin</a> <a href='http://forum.bitcoin.org/?topic=6017.0'>Namecoin Thread</a>
+Project Homepage: <a href='https://github.com/vinced/namecoin'>Namecoin</a> - <a href='http://forum.bitcoin.org/?topic=6017.0'>Namecoin Thread</a>
 Project License: Bitcoin (similar to BSD)
 Project Type: Software
 
 Contributor: <a href='http://forum.bitcoin.org/index.php?action=profile;u=15256'>Zamgo</a>
 Bitcoin Address: 199tVFYQyA98C5rdcnNj3zRpRCYMLmyRdn
 Description: Founder of Bitcoin Webskin, a PHP web interface to bitcoind.
-Project Homepage: <a href='http://webskin.bitcoincommons.org/'>Bitcoin Webskin at Bitcoin Commons</a> <a href='https://github.com/zamgo/bitcoin-webskin'>Bitcoin Webskin at Github</a> <a href='http://forum.bitcoin.org/?topic=12390.0'>Bitcoin Webskin Thread</a>
+Project Homepage: <a href='http://webskin.bitcoincommons.org/'>Bitcoin Webskin at Bitcoin Commons</a> <a href='https://github.com/zamgo/bitcoin-webskin'>Bitcoin Webskin at Github</a> - <a href='http://forum.bitcoin.org/?topic=12390.0'>Bitcoin Webskin Thread</a>
 Project License: MIT
 Project Type: Software
