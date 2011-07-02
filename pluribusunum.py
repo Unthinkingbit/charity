@@ -1,7 +1,5 @@
 """
 E Pluribus Unum. "Out of many, One."
-test 3, test internet, writeOutput, look for next after 0.7
-#	print(  getLocationText('http://members.axion.net/~enrique/book.html'))
 """
 
 import math
@@ -13,6 +11,9 @@ __license__ = 'public domain'
 
 
 globalMinimumIdenticalProportion = 0.6
+
+
+# writeOutput, look for next after 0.7
 
 
 def getColonDividedWords(text):
