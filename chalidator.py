@@ -14,7 +14,7 @@ The -input option sets the input file name.  The example follows:
 python almoner.py -input bitcoindonationinformation.txt
 
 An example of a donation information input file is at:
-https://github.com/Unthinkingbit/charity/blob/master/bitcoindonationinformation.txt
+https://github.com/Unthinkingbit/charity/blob/master/bitcoindonationinformation.html
 
 ===Output===
 The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name.  The example follows:
