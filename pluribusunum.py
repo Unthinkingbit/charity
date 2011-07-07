@@ -1,5 +1,12 @@
 """
 E Pluribus Unum. "Out of many, One."
+
+python pluribusunum.py -input donationvalue.txt -output stdout -step 5000 -value 6000
+getFileRandomNumber
+try url
+
+check that format plu.. is there
+getCommaDividedWords
 """
 
 import math
@@ -10,7 +17,7 @@ import urllib
 __license__ = 'public domain'
 
 
-globalMinimumIdenticalProportion = 0.6
+globalMinimumIdenticalProportion = 0.51
 
 
 # writeOutput, look for next after 0.7
@@ -95,19 +102,20 @@ def getPeerNames(text):
 			firstLowerSpaceless = words[0].lower().replace(' ', '')
 			if firstLowerSpaceless == 'peer':
 				peerNames.append(words[1].strip())
-			else:
+			elif firstLowerSpaceless != 'format':
 				return peerNames
 	return peerNames
 
 def getStepFileName(fileName, step, value):
 	'Get the step file name by the file name.'
 	lastDotIndex = fileName.rfind('.')
-	return '%s_%s%s' % (fileName[: lastDotIndex], step* (int(value) / step), fileName[lastDotIndex :])
+	return '%s_%s%s' % (fileName[: lastDotIndex], step * (value / step), fileName[lastDotIndex :])
 
 def getStepOutput(fileName, step, value):
 	'Get the step output according to the peers listed in a file.'
 	stepText = getStepText(fileName, step, value)
 	if stepText != '':
+		writeNextIfValueHigher(fileName, step, stepText, value)
 		return stepText
 	valueDown = value - step
 	previousText = ''
@@ -127,11 +135,14 @@ def getStepTextRecursively(fileName, previousText, step, valueDown, value):
 	'Get the step text recursively.'
 	for valueUp in xrange(valueDown, value, step):
 		previousText = getCommonOutputByText(previousText)
+		stepFileName = getStepFileName(fileName, step, valueUp + step)
 		print(  'getCommonOutputByText')
 		print(  valueDown)
 		print(  value)
+		print(  previousText)
 		print(  'valueUp')
 		print(  valueUp)
+		writeStepText(fileName, step, previousText, valueUp)
 	return previousText
 
 def getTextLines(text):
@@ -165,6 +176,19 @@ def writeFileText(fileName, fileText, writeMode='w+'):
 	except IOError:
 		print('The file ' + fileName + ' can not be written to.')
 
+def writeNextIfValueHigher(fileName, step, stepText, value):
+	'Write next step file if value is higher than the threshold.'
+	# if higher get commonOutput, write it as getStepFileName(fileName, step, value + step)
+	floatPart = float(value - step * (value / step)) / float(step)
+	print(  'floatPart')
+	print(  floatPart)
+	if floatPart < 0.7:
+		return
+	nextText = getCommonOutputByText(stepText)
+	print(  'nextText')
+	print(  nextText)
+	writeStepText(fileName, step, nextText, value)
+
 def writeOutput(arguments):
 	'Write output.'
 	print(  arguments)
@@ -182,6 +206,10 @@ def writeOutput(arguments):
 		text = getStepOutput(fileName, int(stepString), value)
 	if outputTo != '':
 		sendOutputTo(outputTo, text)
+
+def writeStepText(fileName, step, stepText, value):
+	'Write the step text to the next step file value.'
+	writeFileText(getStepFileName(fileName, step, value + step), stepText)
 
 
 def main():
