@@ -2,6 +2,8 @@
 E Pluribus Unum. "Out of many, One."
 
 python pluribusunum.py -input receiver.csv -step 2000 -value 1900
+
+directory, begin
 """
 
 import math
@@ -29,10 +31,10 @@ def getCommonOutput(fileName):
 	'Get the common output according to the peers listed in a file.'
 	return getCommonOutputByText(getFileText(fileName))
 
-def getCommonOutputByText(fileText):
+def getCommonOutputByText(fileText, suffix=''):
 	'Get the common output according to the peers listed in a text.'
 	peerNames = getPeerNames(fileText)
-	pages = getLocationTexts(peerNames)
+	pages = getLocationTexts(getSuffixedFileNames(peerNames, suffix))
 	minimumIdentical = int(math.ceil(globalMinimumIdenticalProportion * float(len(pages))))
 	pageDictionary = {}
 	for page in pages:
@@ -121,8 +123,7 @@ def getPeerNames(text):
 
 def getStepFileName(fileName, step, value):
 	'Get the step file name by the file name.'
-	lastDotIndex = fileName.rfind('.')
-	return '%s_%s%s' % (fileName[: lastDotIndex], step * (value / step), fileName[lastDotIndex :])
+	return getSuffixedFileName(fileName, str(value / step))
 
 def getStepOutput(fileName, step, value):
 	'Get the step output according to the peers listed in a file.'
@@ -147,16 +148,31 @@ def getStepText(fileName, step, value):
 def getStepTextRecursively(fileName, previousText, step, valueDown, value):
 	'Get the step text recursively.'
 	for valueUp in xrange(valueDown, value, step):
-		previousText = getCommonOutputByText(previousText)
-		stepFileName = getStepFileName(fileName, step, valueUp + step)
+		nextValue = valueUp + step
+		previousText = getCommonOutputByText(previousText, str(nextValue / step))
+		stepFileName = getStepFileName(fileName, step, nextValue)
 		print(  'getCommonOutputByText')
 		print(  valueDown)
 		print(  value)
 		print(  previousText)
 		print(  'valueUp')
 		print(  valueUp)
-		writeFileText(getStepFileName(fileName, step, valueUp + step), previousText)
+		writeFileText(getStepFileName(fileName, step, nextValue), previousText)
 	return previousText
+
+def getSuffixedFileName(fileName, suffix=''):
+	'Get the file name with the suffix.'
+	if suffix == '':
+		return fileName
+	lastDotIndex = fileName.rfind('.')
+	return '%s_%s%s' % (fileName[: lastDotIndex], suffix, fileName[lastDotIndex :])
+
+def getSuffixedFileNames(fileNames, suffix=''):
+	'Get the file names with the suffix.'
+	suffixedFileNames = []
+	for fileName in fileNames:
+		suffixedFileNames.append(getSuffixedFileName(fileName, suffix))
+	return suffixedFileNames
 
 def getTextLines(text):
 	'Get the all the lines of text of a text.'
@@ -198,9 +214,10 @@ def writeNextIfValueHigher(fileName, step, stepText, value):
 	lessThanOneMinusThreshold = 0.95 * (1.0 - globalWriteNextThreshold)
 	if floatPart < globalWriteNextThreshold + lessThanOneMinusThreshold * getFileRandomNumber(fileName):
 		return
-	nextFileName = getStepFileName(fileName, step, value + step)
+	nextValue = value + step
+	nextFileName = getStepFileName(fileName, step, nextValue)
 	if getFileText(nextFileName) == '':
-		nextText = getCommonOutputByText(stepText)
+		nextText = getCommonOutputByText(stepText, str(nextValue / step))
 		if nextText != '':
 			writeFileText(nextFileName, nextText)
 

@@ -11,35 +11,35 @@ import sys
 __license__ = 'public domain'
 
 
-def getGeneratorKeys(text):
-	'Get the generator keys.'
-	generatorKeys = []
+def getGeneratorSignatures(text):
+	'Get the generator keys or signatures.'
+	generatorSignatures = []
 	for line in pluribusunum.getTextLines(text):
 		firstLowerSpaceless = ''
 		words = pluribusunum.getCommaDividedWords(line)
 		if len(words) > 1:
 			firstLowerSpaceless = words[0].lower().replace(' ', '')
-			if firstLowerSpaceless == 'keys':
-				generatorKeys += words[1].split(',')
-	return generatorKeys
+			if firstLowerSpaceless == 'keys' or firstLowerSpaceless == 'signatures':
+				generatorSignatures += words[1].split(',')
+	return generatorSignatures
 
-def getOutput(fileName, key, step, value):
+def getOutput(fileName, signature, step, value):
 	'Get the receiver output.'
 	stepOutput = pluribusunum.getStepOutput(fileName, step, value)
-	generatorKeys = getGeneratorKeys(stepOutput)
-	for generatorKey in generatorKeys:
-		if key == generatorKey:
+	generatorSignatures = getGeneratorSignatures(stepOutput)
+	for generatorSignature in generatorSignatures:
+		if signature == generatorSignature:
 			return 'true'
 	return 'false'
 
 def writeOutput(arguments):
 	'Write output.'
 	fileName = pluribusunum.getParameter(arguments, '', 'input')
-	keyString = pluribusunum.getParameter(arguments, '', 'key')
 	outputTo = pluribusunum.getParameter(arguments, 'stdout', 'output')
+	signatureString = pluribusunum.getParameter(arguments, '', 'signature')
 	stepString = pluribusunum.getParameter(arguments, '', 'step')
 	valueString = pluribusunum.getParameter(arguments, '0', 'value')
-	text = getOutput(fileName, keyString, int(stepString), int(valueString))
+	text = getOutput(fileName, signatureString, int(stepString), int(valueString))
 	pluribusunum.sendOutputTo(outputTo, text)
 
 
