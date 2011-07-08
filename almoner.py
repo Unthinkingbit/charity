@@ -11,17 +11,17 @@ python almoner.py -h
 
 ===Input===
 The -input option sets the input file name.  The example follows:
-python almoner.py -input bitcoindonationinformation.txt
+python almoner.py -input bitcoindonationinformation.html
 
 An example of a donation information input file is at:
 https://github.com/Unthinkingbit/charity/blob/master/bitcoindonationinformation.html
 
 ===Output===
-The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name.  The example follows:
+The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout or is empty, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name.  The example follows:
 python almoner.py -input bitcoindonationinformation.txt -output stdout
 
 An example of an almoner output file is at:
-https://github.com/Unthinkingbit/charity/blob/master/almoner.txt
+https://github.com/Unthinkingbit/charity/blob/master/almoner.csv
 
 
 ==Install==
@@ -113,20 +113,20 @@ def getLinkText(text):
 
 def getOutput(arguments):
 	'Get the output according to the arguments.'
-	fileName = getParameter(arguments, 'input')
+	fileName = getParameter(arguments, '', 'input')
 	contributors = getContributors(fileName)
 	setUtilityValues(contributors)
 	setShares(contributors)
 	return getAlmonerText(contributors)
 
-def getParameter(arguments, name):
+def getParameter(arguments, defaultValue, name):
 	'Get the parameter of the given name from the arguments.'
 	name = '-' + name
 	if name not in arguments:
-		return ''
+		return defaultValue
 	nameIndexNext = arguments.index(name) + 1
 	if nameIndexNext >= len(arguments):
-		return ''
+		return defaultValue
 	return arguments[nameIndexNext]
 
 def getStartsWithWords(text, words):
@@ -146,6 +146,8 @@ def getTextLines(text):
 
 def sendOutputTo(outputTo, text):
 	'Send output to a file or a standard output.'
+	if outputTo == '':
+		return
 	if outputTo.endswith('stderr'):
 		sys.stderr.write(text)
 		sys.stderr.write('\n')
@@ -195,9 +197,8 @@ def writeOutput(arguments):
 	if len(arguments) < 2 or '-h' in arguments or '-help' in arguments:
 		print(  __doc__)
 		return
-	outputTo = getParameter(arguments, 'output')
-	if outputTo != '':
-		sendOutputTo(outputTo, getOutput(arguments))
+	outputTo = getParameter(arguments, 'stdout', 'output')
+	sendOutputTo(outputTo, getOutput(arguments))
 
 def writeTitleValue(cString, title, value):
 	'Write the title and value line, if the value is not empty.'

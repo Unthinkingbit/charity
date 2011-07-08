@@ -1,15 +1,12 @@
 """
 E Pluribus Unum. "Out of many, One."
 
-python pluribusunum.py -input donationvalue.txt -output stdout -step 5000 -value 6000
-getFileRandomNumber
-try url
-
-check that format plu.. is there
-getCommaDividedWords
+python pluribusunum.py -input receiver.csv -step 2000 -value 1900
 """
 
 import math
+import os
+import random
 import sys
 import urllib
 
@@ -18,17 +15,15 @@ __license__ = 'public domain'
 
 
 globalMinimumIdenticalProportion = 0.51
+globalWriteNextThreshold = 0.7
 
 
-# writeOutput, look for next after 0.7
-
-
-def getColonDividedWords(text):
-	'Get the words divided around the colon.'
-	colonIndex = text.find(':')
-	if colonIndex < 0:
+def getCommaDividedWords(text):
+	'Get the words divided around the comma.'
+	commaIndex = text.find(',')
+	if commaIndex < 0:
 		return [text]
-	return [text[: colonIndex], text[colonIndex + 1 :]]
+	return [text[: commaIndex], text[commaIndex + 1 :]]
 
 def getCommonOutput(fileName):
 	'Get the common output according to the peers listed in a file.'
@@ -41,14 +36,28 @@ def getCommonOutputByText(fileText):
 	minimumIdentical = int(math.ceil(globalMinimumIdenticalProportion * float(len(pages))))
 	pageDictionary = {}
 	for page in pages:
-		if page in pageDictionary:
-			pageDictionary[page] += 1
-		else:
-			pageDictionary[page] = 1
+		firstLine = ''
+		lines = getTextLines(page)
+		if len(lines) > 0:
+			firstLine = lines[0].lower()
+		if firstLine.startswith('format') and 'pluribusunum' in firstLine:
+			if page in pageDictionary:
+				pageDictionary[page] += 1
+			else:
+				pageDictionary[page] = 1
 	for page in pageDictionary:
 		if pageDictionary[page] >= minimumIdentical:
 			return page
 	return ''
+
+def getFileRandomNumber(fileName):
+	'Get the random number from a file randomnumber in the same directory as the given file.'
+	numberFilePath = os.path.join(os.path.dirname(fileName), 'randomnumber.txt')
+	numberFileText = getFileText(numberFilePath)
+	if numberFileText == '':
+		numberFileText = str(random.random())
+		writeFileText(numberFilePath, numberFileText)
+	return float(numberFileText)
 
 def getFileText(fileName, printWarning=True, readMode='r'):
 	'Get the entire text of a file.'
@@ -64,10 +73,14 @@ def getFileText(fileName, printWarning=True, readMode='r'):
 
 def getInternetText(address):
 	'Get the entire text of an internet page.'
-	page = urllib.urlopen(address)
-	text = page.read()
-	page.close()
-	return text
+	print(  'Get the entire text of an internet page.')
+	try:
+		page = urllib.urlopen(address)
+		text = page.read()
+		page.close()
+		return text
+	except IOError:
+		return ''
 
 def getLocationText(address):
 	'Get the page by the address, be it a file name or hypertext address.'
@@ -82,14 +95,14 @@ def getLocationTexts(addresses):
 		pages.append(getLocationText(address))
 	return pages
 
-def getParameter(arguments, name):
+def getParameter(arguments, defaultValue, name):
 	'Get the parameter of the given name from the arguments.'
 	name = '-' + name
 	if name not in arguments:
-		return ''
+		return defaultValue
 	nameIndexNext = arguments.index(name) + 1
 	if nameIndexNext >= len(arguments):
-		return ''
+		return defaultValue
 	return arguments[nameIndexNext]
 
 def getPeerNames(text):
@@ -97,7 +110,7 @@ def getPeerNames(text):
 	peerNames = []
 	for line in getTextLines(text):
 		firstLowerSpaceless = ''
-		words = getColonDividedWords(line)
+		words = getCommaDividedWords(line)
 		if len(words) > 1:
 			firstLowerSpaceless = words[0].lower().replace(' ', '')
 			if firstLowerSpaceless == 'peer':
@@ -142,7 +155,7 @@ def getStepTextRecursively(fileName, previousText, step, valueDown, value):
 		print(  previousText)
 		print(  'valueUp')
 		print(  valueUp)
-		writeStepText(fileName, step, previousText, valueUp)
+		writeFileText(getStepFileName(fileName, step, valueUp + step), previousText)
 	return previousText
 
 def getTextLines(text):
@@ -155,6 +168,8 @@ def getTextLines(text):
 
 def sendOutputTo(outputTo, text):
 	'Send output to a file or a standard output.'
+	if outputTo == '':
+		return
 	if outputTo.endswith('stderr'):
 		sys.stderr.write(text)
 		sys.stderr.write('\n')
@@ -178,38 +193,30 @@ def writeFileText(fileName, fileText, writeMode='w+'):
 
 def writeNextIfValueHigher(fileName, step, stepText, value):
 	'Write next step file if value is higher than the threshold.'
-	# if higher get commonOutput, write it as getStepFileName(fileName, step, value + step)
-	floatPart = float(value - step * (value / step)) / float(step)
-	print(  'floatPart')
-	print(  floatPart)
-	if floatPart < 0.7:
+	remainder = value - step * (value / step)
+	floatPart = float(remainder) / float(step)
+	lessThanOneMinusThreshold = 0.95 * (1.0 - globalWriteNextThreshold)
+	if floatPart < globalWriteNextThreshold + lessThanOneMinusThreshold * getFileRandomNumber(fileName):
 		return
-	nextText = getCommonOutputByText(stepText)
-	print(  'nextText')
-	print(  nextText)
-	writeStepText(fileName, step, nextText, value)
+	nextFileName = getStepFileName(fileName, step, value + step)
+	if getFileText(nextFileName) == '':
+		nextText = getCommonOutputByText(stepText)
+		if nextText != '':
+			writeFileText(nextFileName, nextText)
 
 def writeOutput(arguments):
 	'Write output.'
 	print(  arguments)
-	fileName = getParameter(arguments, 'input')
-	outputTo = getParameter(arguments, 'output')
-	stepString = getParameter(arguments, 'step')
+	fileName = getParameter(arguments, '', 'input')
+	outputTo = getParameter(arguments, 'stdout', 'output')
+	stepString = getParameter(arguments, '', 'step')
 	text = ''
 	if stepString == '':
 		text = getCommonOutput(fileName)
 	else:
-		value = 0
-		valueString = getParameter(arguments, 'value')
-		if valueString != '':
-			value = int(valueString)
-		text = getStepOutput(fileName, int(stepString), value)
-	if outputTo != '':
-		sendOutputTo(outputTo, text)
-
-def writeStepText(fileName, step, stepText, value):
-	'Write the step text to the next step file value.'
-	writeFileText(getStepFileName(fileName, step, value + step), stepText)
+		valueString = getParameter(arguments, '0', 'value')
+		text = getStepOutput(fileName, int(stepString), int(valueString))
+	sendOutputTo(outputTo, text)
 
 
 def main():
