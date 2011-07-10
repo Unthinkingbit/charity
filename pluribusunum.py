@@ -3,7 +3,7 @@ E Pluribus Unum. "Out of many, One."
 
 python pluribusunum.py -input receiver.csv -step 2000 -value 1900
 
-directory, begin
+directory
 """
 
 import math

@@ -16,14 +16,20 @@ __license__ = 'public domain'
 def getCoinLists(text):
 	'Get the coin lists.'
 	coinLists = []
+	isCoinSection = False
 	for line in pluribusunum.getTextLines(text):
 		firstLowerSpaceless = ''
 		words = pluribusunum.getCommaDividedWords(line)
-		if len(words) > 1:
+		if len(words) > 0:
 			firstLowerSpaceless = words[0].lower().replace(' ', '')
-			if firstLowerSpaceless == 'coin':
-				coinList = words[1].split(',')
-				coinLists.append(coinList)
+		if firstLowerSpaceless == 'coin':
+			coinLists.append(words[1].split(','))
+		if firstLowerSpaceless == '_endcoins':
+			isCoinSection = False
+		if isCoinSection:
+			coinLists.append(line.split(','))
+		if firstLowerSpaceless == '_begincoins':
+			isCoinSection = True
 	return coinLists
 
 def getOutput(fileName, step, subsidy, value):
