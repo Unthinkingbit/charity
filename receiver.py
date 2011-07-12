@@ -1,7 +1,7 @@
 """
 Receiver
 
-python receiver.py -input receiver.csv -step 2000 -subsidy 50 -value 500
+python receiver.py -directory ~/test -input receiver.csv -step 2000 -subsidy 50 -value 1995
 
 """
 
@@ -10,7 +10,7 @@ import pluribusunum
 import sys
 
 
-__license__ = 'public domain'
+__license__ = 'MIT'
 
 
 def getCoinLists(text):
@@ -32,9 +32,9 @@ def getCoinLists(text):
 			isCoinSection = True
 	return coinLists
 
-def getOutput(fileName, step, subsidy, value):
+def getOutput(directoryName, fileName, step, subsidy, value):
 	'Get the receiver output.'
-	stepOutput = pluribusunum.getStepOutput(fileName, step, value)
+	stepOutput = pluribusunum.getStepOutput(directoryName, fileName, step, value)
 	coinLists = getCoinLists(stepOutput)
 	remainder = value - step * (value / step)
 	modulo = remainder % len(coinLists)
@@ -49,12 +49,13 @@ def getOutput(fileName, step, subsidy, value):
 
 def writeOutput(arguments):
 	'Write output.'
+	directoryName = pluribusunum.getParameter(arguments, '', 'directory')
 	fileName = pluribusunum.getParameter(arguments, '', 'input')
 	outputTo = pluribusunum.getParameter(arguments, 'stdout', 'output')
 	stepString = pluribusunum.getParameter(arguments, '', 'step')
 	subsidyString = pluribusunum.getParameter(arguments, '1.0', 'subsidy')
 	valueString = pluribusunum.getParameter(arguments, '0', 'value')
-	text = getOutput(fileName, int(stepString), float(subsidyString), int(valueString))
+	text = getOutput(directoryName, fileName, int(stepString), float(subsidyString), int(valueString))
 	pluribusunum.sendOutputTo(outputTo, text)
 
 

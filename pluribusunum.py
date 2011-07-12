@@ -3,7 +3,6 @@ E Pluribus Unum. "Out of many, One."
 
 python pluribusunum.py -input receiver.csv -step 2000 -value 1900
 
-directory
 """
 
 import math
@@ -13,7 +12,7 @@ import sys
 import urllib
 
 
-__license__ = 'public domain'
+__license__ = 'MIT'
 
 
 globalMinimumIdenticalProportion = 0.51
@@ -52,9 +51,11 @@ def getCommonOutputByText(fileText, suffix=''):
 			return page
 	return ''
 
-def getFileRandomNumber(fileName):
+def getFileRandomNumber(directoryPath, fileName):
 	'Get the random number from a file randomnumber in the same directory as the given file.'
-	numberFilePath = os.path.join(os.path.dirname(fileName), 'randomnumber.txt')
+	if directoryPath == '':
+		directoryPath = os.path.dirname(fileName)
+	numberFilePath = os.path.join(directoryPath, 'randomnumber.txt')
 	numberFileText = getFileText(numberFilePath)
 	if numberFileText == '':
 		numberFileText = str(random.random())
@@ -97,6 +98,12 @@ def getLocationTexts(addresses):
 		pages.append(getLocationText(address))
 	return pages
 
+def getOutput(directoryName, fileName, stepString='', valueString=''):
+	'Get output.'
+	if stepString == '':
+		return getCommonOutput(fileName)
+	return getStepOutput(directoryName, fileName, int(stepString), int(valueString))
+
 def getParameter(arguments, defaultValue, name):
 	'Get the parameter of the given name from the arguments.'
 	name = '-' + name
@@ -125,27 +132,40 @@ def getStepFileName(fileName, step, value):
 	'Get the step file name by the file name.'
 	return getSuffixedFileName(fileName, str(value / step))
 
-def getStepOutput(fileName, step, value):
+def getStepOutput(directoryName, fileName, step, value):
 	'Get the step output according to the peers listed in a file.'
-	stepText = getStepText(fileName, step, value)
+	directoryPath = ''
+	if directoryPath != '':
+		directoryPath = os.path.join(os.path.expanduser(directoryName), fileName[: fileName.rfind('.')])
+	stepText = getStepText(directoryPath, fileName, step, value)
 	if stepText != '':
-		writeNextIfValueHigher(fileName, step, stepText, value)
+		writeNextIfValueHigher(directoryPath, fileName, step, stepText, value)
 		return stepText
 	valueDown = value - step
 	previousText = ''
 	while valueDown >= 0:
-		previousText = getStepText(fileName, step, valueDown)
+		previousText = getStepText(directoryPath, fileName, step, valueDown)
 		if previousText != '':
 			print(  'previousText getStepTextRecursively')
-			return getStepTextRecursively(fileName, previousText, step, valueDown, value)
+			return getStepTextRecursively(directoryPath, fileName, previousText, step, valueDown, value)
 		valueDown -= step
 	return ''
 
-def getStepText(fileName, step, value):
+def getStepText(directoryPath, fileName, step, value):
 	'Get the step text by the file name.'
-	return getFileText(getStepFileName(fileName, step, value))
+	stepFileName = getStepFileName(fileName, step, value)
+	if directoryPath == '':
+		return getFileText(stepFileName)
+	directorySubName = os.path.join(directoryPath, stepFileName)
+	if os.path.exists(directorySubName):
+		return getFileText(directorySubName)
+	stepText = getFileText(stepFileName)
+	if stepText == '':
+		return ''
+	writeFileText(directorySubName, stepText)
+	return stepText
 
-def getStepTextRecursively(fileName, previousText, step, valueDown, value):
+def getStepTextRecursively(directoryPath, fileName, previousText, step, valueDown, value):
 	'Get the step text recursively.'
 	for valueUp in xrange(valueDown, value, step):
 		nextValue = valueUp + step
@@ -157,7 +177,7 @@ def getStepTextRecursively(fileName, previousText, step, valueDown, value):
 		print(  previousText)
 		print(  'valueUp')
 		print(  valueUp)
-		writeFileText(getStepFileName(fileName, step, nextValue), previousText)
+		writeFileTextByDirectory(directoryPath, stepFileName, previousText)
 	return previousText
 
 def getSuffixedFileName(fileName, suffix=''):
@@ -181,6 +201,17 @@ def getTextLines(text):
 		if textLines[0] == '':
 			return []
 	return textLines
+
+def makeDirectory(directoryPath):
+	'Make a directory if it does not already exist.'
+	if os.path.isdir(directoryPath):
+		return
+	try:
+		print('The following directory was made:')
+		print(os.path.abspath(directoryPath))
+		os.makedirs(directoryPath)
+	except OSError:
+		print('Pluribusunum can not make the directory %s so give it read/write permission for that directory and the containing directory.' % directoryPath)
 
 def sendOutputTo(outputTo, text):
 	'Send output to a file or a standard output.'
@@ -207,33 +238,34 @@ def writeFileText(fileName, fileText, writeMode='w+'):
 	except IOError:
 		print('The file ' + fileName + ' can not be written to.')
 
-def writeNextIfValueHigher(fileName, step, stepText, value):
+def writeFileTextByDirectory(directoryPath, fileName, fileText, writeMode='w+'):
+	'Write a text to a file joined to the directory path.'
+	writeFileText(os.path.join(directoryPath, fileName), fileText, writeMode)
+
+def writeNextIfValueHigher(directoryPath, fileName, step, stepText, value):
 	'Write next step file if value is higher than the threshold.'
 	remainder = value - step * (value / step)
 	floatPart = float(remainder) / float(step)
 	lessThanOneMinusThreshold = 0.95 * (1.0 - globalWriteNextThreshold)
-	if floatPart < globalWriteNextThreshold + lessThanOneMinusThreshold * getFileRandomNumber(fileName):
+	fileRandomNumber = getFileRandomNumber(directoryPath, fileName)
+	if floatPart < globalWriteNextThreshold + lessThanOneMinusThreshold * fileRandomNumber:
 		return
 	nextValue = value + step
 	nextFileName = getStepFileName(fileName, step, nextValue)
 	if getFileText(nextFileName) == '':
 		nextText = getCommonOutputByText(stepText, str(nextValue / step))
 		if nextText != '':
-			writeFileText(nextFileName, nextText)
+			writeFileTextByDirectory(directoryPath, nextFileName, nextText)
 
 def writeOutput(arguments):
 	'Write output.'
 	print(  arguments)
+	directoryName = getParameter(arguments, '', 'directory')
 	fileName = getParameter(arguments, '', 'input')
 	outputTo = getParameter(arguments, 'stdout', 'output')
 	stepString = getParameter(arguments, '', 'step')
-	text = ''
-	if stepString == '':
-		text = getCommonOutput(fileName)
-	else:
-		valueString = getParameter(arguments, '0', 'value')
-		text = getStepOutput(fileName, int(stepString), int(valueString))
-	sendOutputTo(outputTo, text)
+	valueString = getParameter(arguments, '0', 'value')
+	sendOutputTo(outputTo, getOutput(directoryName, fileName, stepString, valueString))
 
 
 def main():
