@@ -134,7 +134,7 @@ def getStepFileName(fileName, step, value):
 def getStepOutput(directoryName, fileName, step, value):
 	'Get the step output according to the peers listed in a file.'
 	directoryPath = ''
-	if directoryPath != '':
+	if directoryName != '':
 		directoryPath = os.path.join(os.path.expanduser(directoryName), fileName[: fileName.rfind('.')])
 	stepText = getStepText(directoryPath, fileName, step, value)
 	if stepText != '':
@@ -170,12 +170,14 @@ def getStepTextRecursively(directoryPath, fileName, previousText, step, valueDow
 		nextValue = valueUp + step
 		previousText = getCommonOutputByText(previousText, str(nextValue / step))
 		stepFileName = getStepFileName(fileName, step, nextValue)
-		print(  'getCommonOutputByText')
+		print(  'valueDown')
 		print(  valueDown)
+		print(  'value')
 		print(  value)
-		print(  previousText)
 		print(  'valueUp')
 		print(  valueUp)
+		print(  'directoryPath')
+		print(  directoryPath)
 		writeFileTextByDirectory(directoryPath, stepFileName, previousText)
 	return previousText
 
