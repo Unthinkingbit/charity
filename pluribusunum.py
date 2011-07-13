@@ -76,7 +76,6 @@ def getFileText(fileName, printWarning=True, readMode='r'):
 
 def getInternetText(address):
 	'Get the entire text of an internet page.'
-	print(  'Get the entire text of an internet page.')
 	try:
 		page = urllib.urlopen(address)
 		text = page.read()
@@ -87,7 +86,7 @@ def getInternetText(address):
 
 def getLocationText(address):
 	'Get the page by the address, be it a file name or hypertext address.'
-	if address.startswith('http://'):
+	if address.startswith('http://') or address.startswith('https://'):
 		return getInternetText(address)
 	return getFileText(address)
 
