@@ -38,7 +38,7 @@ import sys
 import urllib
 
 
-__license__ = 'public domain'
+__license__ = 'MIT'
 
 
 globalOpenSourceStartWords = 'agpl apache bsd creative gnu gpl mit public unlicense'.split()
@@ -150,12 +150,10 @@ def sendOutputTo(outputTo, text):
 		return
 	if outputTo.endswith('stderr'):
 		sys.stderr.write(text)
-		sys.stderr.write('\n')
 		sys.stderr.flush()
 		return
 	if outputTo.endswith('stdout'):
 		sys.stdout.write(text)
-		sys.stdout.write('\n')
 		sys.stdout.flush()
 		return
 	writeFileText(outputTo, text)
