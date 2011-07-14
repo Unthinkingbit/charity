@@ -1,7 +1,11 @@
 """
 Receiver
 
-python receiver.py -directory ~/test -input receiver.csv -step 2000 -subsidy 50 -value 1995
+Example:
+python receiver.py 1
+
+Example:
+python receiver.py -directory ~/test -height 1 -input receiver.csv -share 50 -step 2000
 
 """
 
@@ -32,30 +36,35 @@ def getCoinLists(text):
 			isCoinSection = True
 	return coinLists
 
-def getOutput(directoryName, fileName, step, subsidy, value):
+def getOutput(directoryName, fileName, height, share, step):
 	'Get the receiver output.'
-	stepOutput = pluribusunum.getStepOutput(directoryName, fileName, step, value)
+	stepOutput = pluribusunum.getStepOutput(directoryName, fileName, step, height)
 	coinLists = getCoinLists(stepOutput)
-	remainder = value - step * (value / step)
+	remainder = height - step * (height / step)
 	modulo = remainder % len(coinLists)
 	coins = coinLists[modulo]
-	subsidyPerCoin = subsidy / float(len(coins))
+	sharePerCoin = share / float(len(coins))
 	output = cStringIO.StringIO()
 	for coin in coins:
 		if len(output.getvalue()) > 0:
 			output.write(',')
-		output.write('%s,%s' % (coin, subsidyPerCoin))
+		if share == 0.0:
+			output.write(str(coin))
+		else:
+			output.write('%s,%i' % (coin, sharePerCoin))
 	return output.getvalue()
 
 def writeOutput(arguments):
 	'Write output.'
 	directoryName = pluribusunum.getParameter(arguments, '', 'directory')
-	fileName = pluribusunum.getParameter(arguments, '', 'input')
+	fileName = pluribusunum.getParameter(arguments, 'receiver.csv', 'input')
+	heightString = pluribusunum.getParameter(arguments, '0', 'height')
+	if len(arguments) == 2:
+		heightString = arguments[1]
 	outputTo = pluribusunum.getParameter(arguments, 'stdout', 'output')
-	stepString = pluribusunum.getParameter(arguments, '', 'step')
-	subsidyString = pluribusunum.getParameter(arguments, '1.0', 'subsidy')
-	valueString = pluribusunum.getParameter(arguments, '0', 'value')
-	text = getOutput(directoryName, fileName, int(stepString), float(subsidyString), int(valueString))
+	shareString = pluribusunum.getParameter(arguments, '0', 'share')
+	stepString = pluribusunum.getParameter(arguments, '2000', 'step')
+	text = getOutput(directoryName, fileName, int(heightString), float(shareString), int(stepString))
 	pluribusunum.sendOutputTo(outputTo, text)
 
 
