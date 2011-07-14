@@ -8,6 +8,8 @@
 
 
 std::string getCoinAddressString(const std::string& fileName, int height);
+std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height);
+std::vector<std::string> getCoinList(const std::string& fileName, int height);
 std::vector<std::vector<std::string> > getCoinLists(const std::string& text);
 std::vector<std::string> getCommaDividedWords(const std::string& text);
 std::string getFileText(const std::string& fileName);
@@ -21,11 +23,23 @@ std::vector<std::string> getTokens(const std::string& text, const std::string& d
 // Get the coin address string for a height.
 std::string getCoinAddressString(const std::string& fileName, int height)
 {
+	return getCoinList(fileName, height)[0];
+}
+
+// Get the coin address string for a height.
+std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height)
+{
+	return getCoinList(fileName, height);
+}
+
+// Get the coin lists from a text.'
+std::vector<std::string> getCoinList(const std::string& fileName, int height)
+{
 	std::string suffixedFileName = getSuffixedFileName(fileName, std::string("_0"));
 	std::string fileText = getFileText(suffixedFileName);
 	std::vector<std::vector<std::string> > coinLists = getCoinLists(fileText);
 	int modulo = height % (int)coinLists.size();
-	return coinLists[modulo][0];
+	return coinLists[modulo];
 }
 
 // Get the coin lists from a text.'
