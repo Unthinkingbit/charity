@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+
 std::string getCoinAddressString(const std::string& fileName, int height);
 std::vector<std::vector<std::string> > getCoinLists(const std::string& text);
 std::vector<std::string> getCommaDividedWords(const std::string& text);
