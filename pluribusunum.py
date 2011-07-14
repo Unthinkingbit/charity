@@ -16,7 +16,7 @@ __license__ = 'MIT'
 
 
 globalMinimumIdenticalProportion = 0.51
-globalWriteNextThreshold = 0.7
+globalWriteNextThreshold = 0.5
 
 
 def getCommaDividedWords(text):
