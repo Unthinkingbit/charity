@@ -1,24 +1,27 @@
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include "stdio.h"
-#include <string>
-#include <time.h>
-#include "util.h"
-#include <vector>
 
 
-std::string getCoinAddressString(const std::string& fileName, int height);
-std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height);
+
+
+typedef long long  int64; // Comment this out.
+
+
+
+
+
+
+
+std::string getCoinAddressString(const std::string& fileName, int height); // DeprecatedDeprecated
+std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height); // DeprecatedDeprecated
+std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height);
 std::vector<std::string> getCoinList(const std::string& fileName, int height);
 std::vector<std::vector<std::string> > getCoinLists(const std::string& text);
 std::vector<std::string> getCommaDividedWords(const std::string& text);
 double getDouble(const std::string& doubleString);
 std::string getFileText(const std::string& fileName);
+bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share);
 std::string getLower(std::string& text);
 std::string getReplaced(std::string& text, const std::string& searchString, const std::string& replaceString);
-int64 getSharePerCoin(const std::string& fileName, int height, int64 share);
+std::string getStringByBoolean(bool boolean);
 std::string getStringByDouble(double doublePrecision);
 std::string getSuffixedFileName(const std::string& fileName, const std::string& suffix="");
 std::vector<std::string> getTextLines(const std::string& text);
@@ -26,14 +29,20 @@ std::vector<std::string> getTokens(const std::string& text, const std::string& d
 void writeFileText(const std::string& fileName, const std::string& fileText);
 
 
-// Get the coin address string for a height.
+// DeprecatedDeprecatedDeprecatedDeprecated
 std::string getCoinAddressString(const std::string& fileName, int height)
 {
 	return getCoinList(fileName, height)[0];
 }
 
-// Get the coin address string for a height.
+// DeprecatedDeprecatedDeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height)
+{
+	return getCoinList(fileName, height);
+}
+
+// Get the coin address string for a height.
+std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height)
 {
 	return getCoinList(fileName, height);
 }
@@ -135,6 +144,33 @@ std::string getFileText(const std::string& fileName)
 	return fileText;
 }
 
+// Determine if the transactions add up to a share per address for each address.
+bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share)
+{
+	std::vector<std::string> coinAddressStrings = getCoinAddressStrings(dataDirectory, fileName, height);
+	std::map<std::string, int64> receiverMap;
+	int64 sharePerAddress = share / (int64)coinAddressStrings.size();
+
+	for (int i = 0; i < coinAddressStrings.size(); i++)
+		receiverMap[coinAddressStrings[i]] = (int64)0;
+
+	for (int i = 0; i < addressStrings.size(); i++)
+	{
+		std::string addressString = addressStrings[i];
+
+		if (receiverMap.count(addressString) > 0)
+			receiverMap[addressString] += amounts[i];
+	}
+
+	for (int i = 0; i < coinAddressStrings.size(); i++)
+	{
+		if (receiverMap[coinAddressStrings[i]] < sharePerAddress)
+			return false;
+	}
+
+	return true;
+}
+
 // Write a text to a file.
 void writeFileText(const std::string& fileName, const std::string& fileText)
 {
@@ -175,13 +211,15 @@ std::string getReplaced(std::string& text, const std::string& searchString, cons
 	return text;
 }
 
-// Get the share per coin.
-int64 getSharePerCoin(const std::string& fileName, int height, int64 share)
+// Get the string from the boolean.
+std::string getStringByBoolean(bool boolean)
 {
-	return share / (int64)getCoinList(fileName, height).size();
+	if (boolean)
+		return std::string("true");
+	return std::string("false");
 }
 
-// Get the double precision float from a string.
+// Get the string from the double precision float.
 std::string getStringByDouble(double doublePrecision)
 {
 	std::ostringstream doubleStream;
