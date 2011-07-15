@@ -7,8 +7,9 @@ std::vector<std::string> getCommaDividedWords(const std::string& text);
 double getDouble(const std::string& doubleString);
 std::string getFileText(const std::string& fileName);
 bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share);
-std::string getLower(std::string& text);
-std::string getReplaced(std::string& text, const std::string& searchString, const std::string& replaceString);
+std::string getLower(const std::string& text);
+std::string getReplaced(const std::string& text, const std::string& searchString, const std::string& replaceString);
+bool getStartsWith(const std::string& firstString, const std::string& secondString);
 std::string getStringByBoolean(bool boolean);
 std::string getStringByDouble(double doublePrecision);
 std::string getSuffixedFileName(const std::string& fileName, const std::string& suffix="");
@@ -42,6 +43,7 @@ std::vector<std::string> getCoinList(const std::string& fileName, int height)
 	std::string fileText = getFileText(suffixedFileName);
 	std::vector<std::vector<std::string> > coinLists = getCoinLists(fileText);
 	int modulo = height % (int)coinLists.size();
+
 	return coinLists[modulo];
 }
 
@@ -54,15 +56,12 @@ std::vector<std::vector<std::string> > getCoinLists(const std::string& text)
 
 	for (int lineIndex = 0; lineIndex < textLines.size(); lineIndex++)
 	{
-		std::string line = textLines[lineIndex];
 		std::string firstLowerSpaceless = std::string();
+		std::string line = textLines[lineIndex];
 		std::vector<std::string> words = getCommaDividedWords(line);
 
 		if (words.size() > 0)
-		{
-			std::string firstLower = getLower(words[0]);
-			firstLowerSpaceless = getReplaced(firstLower, std::string(" "), std::string());
-		}
+			firstLowerSpaceless = getReplaced(getLower(words[0]), std::string(" "), std::string());
 
 		if (firstLowerSpaceless == std::string("coin"))
 		{
@@ -91,6 +90,7 @@ std::vector<std::string> getCommaDividedWords(const std::string& text)
 {
 	std::vector<std::string> commaDividedWords;
 	int commaIndex = text.find(',');
+
 	if (commaIndex == std::string::npos)
 	{
 		commaDividedWords.push_back(text);
@@ -109,7 +109,6 @@ double getDouble(const std::string& doubleString)
 	std::istringstream doubleStream(doubleString);
 
 	doubleStream >> doublePrecision;
-
 	return doublePrecision;
 }
 
@@ -159,44 +158,67 @@ bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<
 	return true;
 }
 
-// Write a text to a file.
-void writeFileText(const std::string& fileName, const std::string& fileText)
-{
-	std::ofstream fileStream(fileName.c_str());
-
-	if (fileStream.is_open())
-	{
-	  fileStream << fileText;
-	  fileStream.close();
-	}
-	else printf("The file %s can not be written to.\n", fileName.c_str());
-}
-
 // Get the lowercase string.
-std::string getLower(std::string& text)
+std::string getLower(const std::string& text)
 {
 	int textLength = text.length();
+	std::string lower = text.substr();
 
 	for(int characterIndex = 0; characterIndex < textLength; characterIndex++)
 	{
-		text[characterIndex] = std::tolower(text[characterIndex]);
+		lower[characterIndex] = std::tolower(text[characterIndex]);
 	}
 
-	return text;
+	return lower;
+}
+
+// Get the peer names from the text.
+std::vector<std::string> getPeerNames(const std::string& text)
+{
+	std::vector<std::string> peerNames;
+	std::vector<std::string> textLines = getTextLines(text);
+
+	for (int lineIndex = 0; lineIndex < textLines.size(); lineIndex++)
+	{
+		std::string firstLowerSpaceless = std::string();
+		std::string line = textLines[lineIndex];
+		std::vector<std::string> words = getCommaDividedWords(line);
+
+		if (words.size() > 0)
+			firstLowerSpaceless = getReplaced(getLower(words[0]), std::string(" "), std::string());
+
+		if (firstLowerSpaceless == std::string("peer"))
+			peerNames.push_back(getReplaced(words[1], std::string(" "), std::string()));
+
+		if (firstLowerSpaceless != std::string("format"))
+			return peerNames;
+	}
+
+	return peerNames;
 }
 
 // Get the string with the search string replaced with the replace string.
-std::string getReplaced(std::string& text, const std::string& searchString, const std::string& replaceString)
+std::string getReplaced(const std::string& text, const std::string& searchString, const std::string& replaceString)
 {
 	std::string::size_type position = 0;
+	std::string replaced = text.substr();
 
-	while ((position = text.find(searchString, position)) != std::string::npos)
+	while ((position = replaced.find(searchString, position)) != std::string::npos)
 	{
-		text.replace(position, searchString.size(), replaceString );
+		replaced.replace(position, searchString.size(), replaceString );
 		position++;
 	}
 
-	return text;
+	return replaced;
+}
+
+// Determine if the first string starts with the second string.
+bool getStartsWith(const std::string& firstString, const std::string& secondString)
+{
+	if (firstString.substr(0, secondString.size()) == secondString)
+		return true;
+
+	return false;
 }
 
 // Get the string from the boolean.
@@ -249,4 +271,17 @@ std::vector<std::string> getTokens(const std::string& text, const std::string& d
 	}
 
 	return tokens;
+}
+
+// Write a text to a file.
+void writeFileText(const std::string& fileName, const std::string& fileText)
+{
+	std::ofstream fileStream(fileName.c_str());
+
+	if (fileStream.is_open())
+	{
+	  fileStream << fileText;
+	  fileStream.close();
+	}
+	else printf("The file %s can not be written to.\n", fileName.c_str());
 }
