@@ -8,11 +8,14 @@ double getDouble(const std::string& doubleString);
 std::string getFileText(const std::string& fileName);
 bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share);
 std::string getLower(const std::string& text);
+std::vector<std::string> getPeerNames(const std::string& text);
 std::string getReplaced(const std::string& text, const std::string& searchString, const std::string& replaceString);
 bool getStartsWith(const std::string& firstString, const std::string& secondString);
 std::string getStringByBoolean(bool boolean);
 std::string getStringByDouble(double doublePrecision);
 std::string getSuffixedFileName(const std::string& fileName, const std::string& suffix="");
+std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames, const std::string& suffix="");
+std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames, const std::string& suffix);
 std::vector<std::string> getTextLines(const std::string& text);
 std::vector<std::string> getTokens(const std::string& text, const std::string& delimiters=" ");
 void writeFileText(const std::string& fileName, const std::string& fileText);
@@ -248,6 +251,17 @@ std::string getSuffixedFileName(const std::string& fileName, const std::string& 
 	int lastDotIndex = fileName.rfind(".");
 
 	return fileName.substr(0, lastDotIndex) + suffix + fileName.substr(lastDotIndex);
+}
+
+// Get the file names with the suffixes just before the extension.
+std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames, const std::string& suffix)
+{
+	std::vector<std::string> suffixedFileNames;
+
+	for(int fileNameIndex = 0; fileNameIndex < fileNames.size(); fileNameIndex++)
+		suffixedFileNames.push_back(getSuffixedFileName(fileNames[fileNameIndex], suffix));
+
+	return suffixedFileNames;
 }
 
 // Get all the lines of text of a text.
