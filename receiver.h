@@ -1,15 +1,3 @@
-
-
-
-
-typedef long long  int64; // Comment this out.
-
-
-
-
-
-
-
 std::string getCoinAddressString(const std::string& fileName, int height); // DeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height); // DeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height);
@@ -41,13 +29,13 @@ std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int 
 	return getCoinList(fileName, height);
 }
 
-// Get the coin address string for a height.
+// Get the coin address strings for a height.
 std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height)
 {
 	return getCoinList(fileName, height);
 }
 
-// Get the coin lists from a text.'
+// Get the coin list from a text for a height.
 std::vector<std::string> getCoinList(const std::string& fileName, int height)
 {
 	std::string suffixedFileName = getSuffixedFileName(fileName, std::string("_0"));
@@ -57,7 +45,7 @@ std::vector<std::string> getCoinList(const std::string& fileName, int height)
 	return coinLists[modulo];
 }
 
-// Get the coin lists from a text.'
+// Get the coin lists from a text.
 std::vector<std::vector<std::string> > getCoinLists(const std::string& text)
 {
 	std::vector<std::vector<std::string> > coinLists;
