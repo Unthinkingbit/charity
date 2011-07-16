@@ -1,12 +1,19 @@
+#include <QDir>
+#include <QFileInfo>
+
+
 std::string getCoinAddressString(const std::string& fileName, int height); // DeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height); // DeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height);
 std::vector<std::string> getCoinList(const std::string& fileName, int height);
 std::vector<std::vector<std::string> > getCoinLists(const std::string& text);
 std::vector<std::string> getCommaDividedWords(const std::string& text);
+std::string getDirectoryName(const std::string& fileName);
 double getDouble(const std::string& doubleString);
+double getFileRandomNumber(const std::string& dataDirectory, const std::string& fileName);
 std::string getFileText(const std::string& fileName);
 bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share);
+std::string getJoinedPath(const std::string& directoryPath, const std::string& fileName);
 std::string getLower(const std::string& text);
 std::vector<std::string> getPeerNames(const std::string& text);
 std::string getReplaced(const std::string& text, const std::string& searchString, const std::string& replaceString);
@@ -105,6 +112,12 @@ std::vector<std::string> getCommaDividedWords(const std::string& text)
 	return commaDividedWords;
 }
 
+// Get the directory name of the given file.
+std::string getDirectoryName(const std::string& fileName)
+{
+	return QFileInfo(QString(fileName.c_str())).dir().dirName().toStdString();
+}
+
 // Get a double precision float from a string.
 double getDouble(const std::string& doubleString)
 {
@@ -113,6 +126,26 @@ double getDouble(const std::string& doubleString)
 
 	doubleStream >> doublePrecision;
 	return doublePrecision;
+}
+
+// Get the random number from a file random_number in the same directory as the given file.
+double getFileRandomNumber(const std::string& dataDirectory, const std::string& fileName)
+{
+	std::string directoryPath = dataDirectory.substr();
+	if (dataDirectory == std::string())
+		directoryPath = getDirectoryName(fileName);
+	std::string numberFilePath = getJoinedPath(directoryPath, std::string("random_number.txt"));
+	std::string numberFileText = getFileText(numberFilePath);
+
+	if (numberFileText == std::string())
+	{
+		srand(time(NULL));
+		double randomDouble = ((double)(rand() % 10000) + 0.5) / 10000.0;
+		numberFileText = getStringByDouble(randomDouble);
+		writeFileText(numberFilePath, numberFileText);
+	}
+
+	return getDouble(numberFileText);
 }
 
 // Get the entire text of a file.
@@ -159,6 +192,12 @@ bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<
 	}
 
 	return true;
+}
+
+// Get the directory path joined with the file name.
+std::string getJoinedPath(const std::string& directoryPath, const std::string& fileName)
+{
+	return QDir(QString(directoryPath.c_str())).absoluteFilePath(QString(fileName.c_str())).toStdString();
 }
 
 // Get the lowercase string.
