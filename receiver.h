@@ -1,3 +1,21 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//
+// Note: receiver.h uses QT networking classes.
+// So, in order for receiver.h to compile, it is necessary to add the following line to the .pro file:
+//
+// QT += network
+//
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+#include <QDir>
+#include <QFile>
+#include <QString>
+
+
 std::string getCoinAddressString(const std::string& fileName, int height); // DeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height); // DeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height);
