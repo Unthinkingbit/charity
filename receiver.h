@@ -1,7 +1,3 @@
-#include <QDir>
-#include <QFileInfo>
-
-
 std::string getCoinAddressString(const std::string& fileName, int height); // DeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height); // DeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height);
@@ -18,8 +14,10 @@ std::string getLower(const std::string& text);
 std::vector<std::string> getPeerNames(const std::string& text);
 std::string getReplaced(const std::string& text, const std::string& searchString, const std::string& replaceString);
 bool getStartsWith(const std::string& firstString, const std::string& secondString);
+std::string getStepFileName(const std::string& fileName, int step, int value);
 std::string getStringByBoolean(bool boolean);
 std::string getStringByDouble(double doublePrecision);
+std::string getStringByInt(int integer);
 std::string getSuffixedFileName(const std::string& fileName, const std::string& suffix="");
 std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames, const std::string& suffix="");
 std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames, const std::string& suffix);
@@ -263,6 +261,12 @@ bool getStartsWith(const std::string& firstString, const std::string& secondStri
 	return false;
 }
 
+// Get the step file name by the file name.
+std::string getStepFileName(const std::string& fileName, int step, int value)
+{
+	return getSuffixedFileName(fileName, getStringByInt(value / step));
+}
+
 // Get the string from the boolean.
 std::string getStringByBoolean(bool boolean)
 {
@@ -281,6 +285,16 @@ std::string getStringByDouble(double doublePrecision)
 	return doubleStream.str();
 }
 
+// Get the string from the integer.
+std::string getStringByInt(int integer)
+{
+	std::ostringstream integerStream;
+
+	integerStream << integer;
+
+	return integerStream.str();
+}
+
 // Get the file name with the suffix just before the extension.
 std::string getSuffixedFileName(const std::string& fileName, const std::string& suffix)
 {
@@ -289,6 +303,8 @@ std::string getSuffixedFileName(const std::string& fileName, const std::string& 
 
 	int lastDotIndex = fileName.rfind(".");
 
+	if (lastDotIndex == std::string::npos)
+		return fileName + suffix;
 	return fileName.substr(0, lastDotIndex) + suffix + fileName.substr(lastDotIndex);
 }
 

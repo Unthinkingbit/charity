@@ -15,7 +15,7 @@ import urllib
 __license__ = 'MIT'
 
 
-globalMinimumIdenticalProportion = 0.51
+globalMinimumIdenticalProportion = 0.500001
 globalWriteNextThreshold = 0.75
 
 
