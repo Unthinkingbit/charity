@@ -1,18 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//
 // Note: receiver.h uses QT networking classes.
 // So, in order for receiver.h to compile, it is necessary to add the following line to the .pro file:
 //
 // QT += network
 //
+// Right after INCLUDEPATH is a good place for it, although it can go anywhere.
+// The 'QT' is uppercase and 'network' is lower case.
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
 #include <QDir>
-#include <QFile>
+#include <QFileInfo>
 #include <QString>
 
 
@@ -24,6 +24,7 @@ std::vector<std::vector<std::string> > getCoinLists(const std::string& text);
 std::vector<std::string> getCommaDividedWords(const std::string& text);
 std::string getDirectoryName(const std::string& fileName);
 double getDouble(const std::string& doubleString);
+bool getExists(const std::string& fileName);
 double getFileRandomNumber(const std::string& dataDirectory, const std::string& fileName);
 std::string getFileText(const std::string& fileName);
 bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share);
@@ -33,6 +34,7 @@ std::vector<std::string> getPeerNames(const std::string& text);
 std::string getReplaced(const std::string& text, const std::string& searchString, const std::string& replaceString);
 bool getStartsWith(const std::string& firstString, const std::string& secondString);
 std::string getStepFileName(const std::string& fileName, int step, int value);
+std::string getStepText(const std::string& dataDirectory, const std::string& fileName, int step, int value);
 std::string getStringByBoolean(bool boolean);
 std::string getStringByDouble(double doublePrecision);
 std::string getStringByInt(int integer);
@@ -142,6 +144,12 @@ double getDouble(const std::string& doubleString)
 
 	doubleStream >> doublePrecision;
 	return doublePrecision;
+}
+
+// Determine if the file exists.
+bool getExists(const std::string& fileName)
+{
+	return QFileInfo(QString(fileName.c_str())).exists();
 }
 
 // Get the random number from a file random_number in the same directory as the given file.
@@ -285,6 +293,22 @@ std::string getStepFileName(const std::string& fileName, int step, int value)
 	return getSuffixedFileName(fileName, getStringByInt(value / step));
 }
 
+// Get the random number from a file random_number in the same directory as the given file.
+std::string getStepText(const std::string& dataDirectory, const std::string& fileName, int step, int value)
+{
+	std::string stepFileName = getStepFileName(fileName, step, value);
+	if (dataDirectory == std::string())
+		return getFileText(stepFileName);
+	std::string directorySubName = getJoinedPath(dataDirectory, stepFileName);
+	if (getExists(directorySubName))
+		return getFileText(directorySubName);
+	std::string stepText = getFileText(stepFileName);
+	if (stepText == std::string())
+		return std::string();
+	writeFileText(directorySubName, stepText);
+	return stepText;
+}
+
 // Get the string from the boolean.
 std::string getStringByBoolean(bool boolean)
 {
@@ -323,7 +347,7 @@ std::string getSuffixedFileName(const std::string& fileName, const std::string& 
 
 	if (lastDotIndex == std::string::npos)
 		return fileName + suffix;
-	return fileName.substr(0, lastDotIndex) + suffix + fileName.substr(lastDotIndex);
+	return fileName.substr(0, lastDotIndex) + std::string("_") + suffix + fileName.substr(lastDotIndex);
 }
 
 // Get the file names with the suffixes just before the extension.
