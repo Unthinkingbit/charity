@@ -12,8 +12,11 @@
 
 
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
+#include <QHttp>
 #include <QString>
+#include <QUrl>
 
 
 std::string getCoinAddressString(const std::string& fileName, int height); // DeprecatedDeprecated
@@ -43,7 +46,9 @@ std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames
 std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames, const std::string& suffix);
 std::vector<std::string> getTextLines(const std::string& text);
 std::vector<std::string> getTokens(const std::string& text, const std::string& delimiters=" ");
+void makeDirectory(const std::string& directoryPath);
 void writeFileText(const std::string& fileName, const std::string& fileText);
+void writeFileTextByDirectory(const std::string& directoryPath, const std::string& fileName, const std::string& fileText);
 
 
 // DeprecatedDeprecatedDeprecatedDeprecated
@@ -178,15 +183,14 @@ std::string getFileText(const std::string& fileName)
 	std::ifstream fileStream(fileName.c_str());
 
 	if (!fileStream.is_open())
-	{
 		return std::string();
-	}
 
 	std::string fileText;
 	fileStream.seekg(0, std::ios::end);
 	fileText.reserve(fileStream.tellg());
 	fileStream.seekg(0, std::ios::beg);
 	fileText.assign((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
+	fileStream.close();
 
 	return fileText;
 }
@@ -384,6 +388,17 @@ std::vector<std::string> getTokens(const std::string& text, const std::string& d
 	return tokens;
 }
 
+// Make a directory if it does not already exist.
+void makeDirectory(const std::string& directoryPath)
+{
+	if (getExists(directoryPath))
+		return;
+	if (QDir(QString()).mkpath(QString(directoryPath.c_str())))
+		printf("The following directory was made: %s", directoryPath.c_str());
+	else
+		printf("Receiver.h can not make the directory %s so give it read/write permission for that directory.", directoryPath.c_str());
+}
+
 // Write a text to a file.
 void writeFileText(const std::string& fileName, const std::string& fileText)
 {
@@ -395,4 +410,10 @@ void writeFileText(const std::string& fileName, const std::string& fileText)
 	  fileStream.close();
 	}
 	else printf("The file %s can not be written to.\n", fileName.c_str());
+}
+
+// Write a text to a file joined to the directory path.
+void writeFileTextByDirectory(const std::string& directoryPath, const std::string& fileName, const std::string& fileText)
+{
+	writeFileText(getJoinedPath(directoryPath, fileName), fileText);
 }
