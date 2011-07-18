@@ -25,7 +25,7 @@ std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory,
 std::vector<std::string> getCoinList(const std::string& fileName, int height);
 std::vector<std::vector<std::string> > getCoinLists(const std::string& text);
 std::vector<std::string> getCommaDividedWords(const std::string& text);
-std::string getDirectoryName(const std::string& fileName);
+std::string getDirectoryPath(const std::string& fileName);
 double getDouble(const std::string& doubleString);
 bool getExists(const std::string& fileName);
 double getFileRandomNumber(const std::string& dataDirectory, const std::string& fileName);
@@ -136,7 +136,7 @@ std::vector<std::string> getCommaDividedWords(const std::string& text)
 }
 
 // Get the directory name of the given file.
-std::string getDirectoryName(const std::string& fileName)
+std::string getDirectoryPath(const std::string& fileName)
 {
 	return QFileInfo(QString(fileName.c_str())).dir().dirName().toStdString();
 }
@@ -162,7 +162,7 @@ double getFileRandomNumber(const std::string& dataDirectory, const std::string& 
 {
 	std::string directoryPath = dataDirectory.substr();
 	if (dataDirectory == std::string())
-		directoryPath = getDirectoryName(fileName);
+		directoryPath = getDirectoryPath(fileName);
 	std::string numberFilePath = getJoinedPath(directoryPath, std::string("random_number.txt"));
 	std::string numberFileText = getFileText(numberFilePath);
 
