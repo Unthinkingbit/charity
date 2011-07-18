@@ -25,6 +25,7 @@ std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory,
 std::vector<std::string> getCoinList(const std::string& fileName, int height);
 std::vector<std::vector<std::string> > getCoinLists(const std::string& text);
 std::vector<std::string> getCommaDividedWords(const std::string& text);
+std::vector<std::string> getDirectoryNames(const std::string& directoryName);
 std::string getDirectoryPath(const std::string& fileName);
 double getDouble(const std::string& doubleString);
 bool getExists(const std::string& fileName);
@@ -133,6 +134,26 @@ std::vector<std::string> getCommaDividedWords(const std::string& text)
 	commaDividedWords.push_back(text.substr(0, commaIndex));
 	commaDividedWords.push_back(text.substr(commaIndex + 1));
 	return commaDividedWords;
+}
+
+std::vector<std::string> getDirectoryNames(const std::string& directoryName)
+{
+	std::vector<std::string> directoryNames;
+	struct dirent *entry;
+	DIR *directory = opendir(directoryName.c_str());
+
+	if (directory == NULL)
+	{
+		printf("Warning, can not open directory: %s", directoryName);
+		return directoryNames;
+	}
+
+	while((entry = readdir(directory)))
+		directoryNames.push_back(std::string(entry->d_name));
+
+	closedir(directory);
+
+	return directoryNames;
 }
 
 // Get the directory name of the given file.
