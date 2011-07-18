@@ -19,9 +19,8 @@
 #include <QUrl>
 
 
-std::string getCoinAddressString(const std::string& fileName, int height); // DeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height); // DeprecatedDeprecated
-std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height);
+std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height, int step);
 std::vector<std::string> getCoinList(const std::string& fileName, int height);
 std::vector<std::vector<std::string> > getCoinLists(const std::string& text);
 std::vector<std::string> getCommaDividedWords(const std::string& text);
@@ -31,7 +30,7 @@ double getDouble(const std::string& doubleString);
 bool getExists(const std::string& fileName);
 double getFileRandomNumber(const std::string& dataDirectory, const std::string& fileName);
 std::string getFileText(const std::string& fileName);
-bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share);
+bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share, int step);
 std::string getJoinedPath(const std::string& directoryPath, const std::string& fileName);
 std::string getLower(const std::string& text);
 std::vector<std::string> getPeerNames(const std::string& text);
@@ -42,21 +41,14 @@ std::string getStepText(const std::string& dataDirectory, const std::string& fil
 std::string getStringByBoolean(bool boolean);
 std::string getStringByDouble(double doublePrecision);
 std::string getStringByInt(int integer);
-std::string getSuffixedFileName(const std::string& fileName, const std::string& suffix="");
-std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames, const std::string& suffix="");
-std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames, const std::string& suffix);
+std::string getSuffixedFileName(const std::string& fileName, const std::string& suffix=std::string());
+std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames, const std::string& suffix=std::string());
 std::vector<std::string> getTextLines(const std::string& text);
-std::vector<std::string> getTokens(const std::string& text, const std::string& delimiters=" ");
+std::vector<std::string> getTokens(const std::string& text=std::string(), const std::string& delimiters=std::string(" "));
 void makeDirectory(const std::string& directoryPath);
 void writeFileText(const std::string& fileName, const std::string& fileText);
 void writeFileTextByDirectory(const std::string& directoryPath, const std::string& fileName, const std::string& fileText);
 
-
-// DeprecatedDeprecatedDeprecatedDeprecated
-std::string getCoinAddressString(const std::string& fileName, int height)
-{
-	return getCoinList(fileName, height)[0];
-}
 
 // DeprecatedDeprecatedDeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height)
@@ -65,7 +57,7 @@ std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int 
 }
 
 // Get the coin address strings for a height.
-std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height)
+std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height, int step)
 {
 	return getCoinList(fileName, height);
 }
@@ -73,9 +65,16 @@ std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory,
 // Get the coin list from a text for a height.
 std::vector<std::string> getCoinList(const std::string& fileName, int height)
 {
-	std::string suffixedFileName = getSuffixedFileName(fileName, std::string("_0"));
+	std::string suffixedFileName = getSuffixedFileName(fileName, std::string("0"));
 	std::string fileText = getFileText(suffixedFileName);
 	std::vector<std::vector<std::string> > coinLists = getCoinLists(fileText);
+
+	if ((int)coinLists.size() == 0)
+	{
+		printf("Warning, no coin lists were found for the file: %s", suffixedFileName.c_str());
+		return getTokens();
+	}
+
 	int modulo = height % (int)coinLists.size();
 
 	return coinLists[modulo];
@@ -144,7 +143,7 @@ std::vector<std::string> getDirectoryNames(const std::string& directoryName)
 
 	if (directory == NULL)
 	{
-		printf("Warning, can not open directory: %s", directoryName);
+		printf("Warning, can not open directory: %s", directoryName.c_str());
 		return directoryNames;
 	}
 
@@ -217,9 +216,9 @@ std::string getFileText(const std::string& fileName)
 }
 
 // Determine if the transactions add up to a share per address for each address.
-bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share)
+bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share, int step)
 {
-	std::vector<std::string> coinAddressStrings = getCoinAddressStrings(dataDirectory, fileName, height);
+	std::vector<std::string> coinAddressStrings = getCoinAddressStrings(dataDirectory, fileName, height, step);
 	std::map<std::string, int64> receiverMap;
 	int64 sharePerAddress = share / (int64)coinAddressStrings.size();
 
