@@ -5,8 +5,7 @@
 //
 // QT += network
 //
-// Right after INCLUDEPATH is a good place for it, although it can go anywhere.
-// The 'QT' is uppercase and 'network' is lower case.
+// Right after INCLUDEPATH is a good place for it.  The 'QT' is all uppercase and 'network' is lower case.
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +19,7 @@
 
 
 std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height); // DeprecatedDeprecated
-std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height, int step);
+std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height, int step=4000);
 std::vector<std::string> getCoinList(const std::string& fileName, int height);
 std::vector<std::vector<std::string> > getCoinLists(const std::string& text);
 std::vector<std::string> getCommaDividedWords(const std::string& text);
@@ -30,7 +29,8 @@ double getDouble(const std::string& doubleString);
 bool getExists(const std::string& fileName);
 double getFileRandomNumber(const std::string& dataDirectory, const std::string& fileName);
 std::string getFileText(const std::string& fileName);
-bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share, int step);
+int getInt(const std::string& integerString);
+bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share, int step=4000);
 std::string getJoinedPath(const std::string& directoryPath, const std::string& fileName);
 std::string getLower(const std::string& text);
 std::vector<std::string> getPeerNames(const std::string& text);
@@ -211,8 +211,17 @@ std::string getFileText(const std::string& fileName)
 	fileStream.seekg(0, std::ios::beg);
 	fileText.assign((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
 	fileStream.close();
-
 	return fileText;
+}
+
+// Get an integer from a string.
+int getInt(const std::string& integerString)
+{
+	int integer;
+	std::istringstream intStream(integerString);
+
+	intStream >> integer;
+	return integer;
 }
 
 // Determine if the transactions add up to a share per address for each address.
