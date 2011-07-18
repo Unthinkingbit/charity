@@ -17,6 +17,8 @@
 #include <QString>
 #include <QUrl>
 
+using namespace std;
+
 
 std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height); // DeprecatedDeprecated
 std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height, int step=4000);
