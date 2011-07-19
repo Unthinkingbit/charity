@@ -11,14 +11,13 @@
 
 
 #include <boost/asio.hpp>
+#include <boost/filesystem.hpp>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
-#include <QHttp>
 #include <QString>
-#include <QUrl>
 
-using boost::asio::ip::tcp;
+using namespace boost;
 using namespace std;
 
 
@@ -30,7 +29,7 @@ std::vector<std::string> getCommaDividedWords(const std::string& text);
 std::vector<std::string> getDirectoryNames(const std::string& directoryName);
 std::string getDirectoryPath(const std::string& fileName);
 double getDouble(const std::string& doubleString);
-bool getExists(const std::string& fileName);
+bool getExists(const string& fileName);
 double getFileRandomNumber(const std::string& dataDirectory, const std::string& fileName);
 std::string getFileText(const std::string& fileName);
 int getInt(const std::string& integerString);
@@ -160,9 +159,9 @@ std::vector<std::string> getDirectoryNames(const std::string& directoryName)
 }
 
 // Get the directory name of the given file.
-std::string getDirectoryPath(const std::string& fileName)
+std::string getDirectoryPath(const string& fileName)
 {
-	return QFileInfo(QString(fileName.c_str())).dir().dirName().toStdString();
+	return (filesystem::path(fileName)).parent_path().string();
 }
 
 // Get a double precision float from a string.
@@ -176,9 +175,9 @@ double getDouble(const std::string& doubleString)
 }
 
 // Determine if the file exists.
-bool getExists(const std::string& fileName)
+bool getExists(const string& fileName)
 {
-	return QFileInfo(QString(fileName.c_str())).exists();
+	return filesystem::exists(fileName);
 }
 
 // Get the random number from a file random_number in the same directory as the given file.
