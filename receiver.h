@@ -20,6 +20,8 @@ int getInt(const string& integerString);
 string getInternetText(const string& address);
 bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts, const string& dataDirectory, const string& fileName, int height, int64 share, int step=4000);
 string getJoinedPath(const string& directoryPath, const string& fileName);
+string getLocationText(const string& address);
+vector<string> getLocationTexts(vector<string> addresses);
 string getLower(const string& text);
 vector<string> getPeerNames(const string& text);
 string getReplaced(const string& text, const string& searchString, const string& replaceString);
@@ -212,6 +214,7 @@ int getInt(const string& integerString)
 	return integer;
 }
 
+// Get the entire text of an internet page.
 string getInternetText(const string& address)
 {
 	try
@@ -346,6 +349,25 @@ string getJoinedPath(const string& directoryPath, const string& fileName)
 {
 	filesystem::path completePath = filesystem::system_complete(filesystem::path(directoryPath));
 	return (completePath / (filesystem::path(fileName))).string();
+}
+
+// Get the page by the address, be it a file name or hypertext address.
+string getLocationText(const string& address)
+{
+	if (getStartsWith(address, string("http://")) || getStartsWith(address, string("https://")))
+		return getInternetText(address);
+	return getFileText(address);
+}
+
+// Get the pages by the addresses, be they file names or hypertext addresses.
+vector<string> getLocationTexts(vector<string> addresses)
+{
+	vector<string> locationTexts;
+
+	for(int addressIndex = 0; addressIndex < addresses.size(); addressIndex++)
+		locationTexts.push_back(getLocationText(addresses[addressIndex]));
+
+	return locationTexts;
 }
 
 // Get the lowercase string.

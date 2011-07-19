@@ -91,7 +91,7 @@ def getLocationText(address):
 	return getFileText(address)
 
 def getLocationTexts(addresses):
-	'Get the page by the addresses, be they file names or hypertext addresses.'
+	'Get the pages by the addresses, be they file names or hypertext addresses.'
 	pages = []
 	for address in addresses:
 		pages.append(getLocationText(address))
