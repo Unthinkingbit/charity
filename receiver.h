@@ -1,76 +1,61 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Note: receiver.h uses QT networking classes.
-// So, in order for receiver.h to compile, it is necessary to add the following line to the .pro file:
-//
-// QT += network
-//
-// Right after INCLUDEPATH is a good place for it.  The 'QT' is all uppercase and 'network' is lower case.
-//
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 #include <boost/asio.hpp>
 #include <boost/filesystem.hpp>
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
-#include <QString>
 
 using namespace boost;
 using namespace std;
 
 
-std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height); // DeprecatedDeprecated
-std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height, int step=4000);
-std::vector<std::string> getCoinList(const std::string& fileName, int height);
-std::vector<std::vector<std::string> > getCoinLists(const std::string& text);
-std::vector<std::string> getCommaDividedWords(const std::string& text);
-std::vector<std::string> getDirectoryNames(const std::string& directoryName);
-std::string getDirectoryPath(const std::string& fileName);
-double getDouble(const std::string& doubleString);
+vector<string> getCoinAddressStrings(const string& fileName, int height); // DeprecatedDeprecated
+vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step=4000);
+vector<string> getCoinList(const string& fileName, int height);
+vector<vector<string> > getCoinLists(const string& text);
+vector<string> getCommaDividedWords(const string& text);
+vector<string> getDirectoryNames(const string& directoryName);
+string getDirectoryPath(const string& fileName);
+double getDouble(const string& doubleString);
 bool getExists(const string& fileName);
-double getFileRandomNumber(const std::string& dataDirectory, const std::string& fileName);
-std::string getFileText(const std::string& fileName);
-int getInt(const std::string& integerString);
-bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share, int step=4000);
-std::string getJoinedPath(const std::string& directoryPath, const std::string& fileName);
-std::string getLower(const std::string& text);
-std::vector<std::string> getPeerNames(const std::string& text);
-std::string getReplaced(const std::string& text, const std::string& searchString, const std::string& replaceString);
-bool getStartsWith(const std::string& firstString, const std::string& secondString);
-std::string getStepFileName(const std::string& fileName, int step, int value);
-std::string getStepText(const std::string& dataDirectory, const std::string& fileName, int step, int value);
-std::string getStringByBoolean(bool boolean);
-std::string getStringByDouble(double doublePrecision);
-std::string getStringByInt(int integer);
-std::string getSuffixedFileName(const std::string& fileName, const std::string& suffix=std::string());
-std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames, const std::string& suffix=std::string());
-std::vector<std::string> getTextLines(const std::string& text);
-std::vector<std::string> getTokens(const std::string& text=std::string(), const std::string& delimiters=std::string(" "));
-void makeDirectory(const std::string& directoryPath);
-void writeFileText(const std::string& fileName, const std::string& fileText);
-void writeFileTextByDirectory(const std::string& directoryPath, const std::string& fileName, const std::string& fileText);
+double getFileRandomNumber(const string& dataDirectory, const string& fileName);
+string getFileText(const string& fileName);
+int getInt(const string& integerString);
+string getInternetText(const string& address);
+bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts, const string& dataDirectory, const string& fileName, int height, int64 share, int step=4000);
+string getJoinedPath(const string& directoryPath, const string& fileName);
+string getLower(const string& text);
+vector<string> getPeerNames(const string& text);
+string getReplaced(const string& text, const string& searchString, const string& replaceString);
+bool getStartsWith(const string& firstString, const string& secondString);
+string getStepFileName(const string& fileName, int step, int value);
+string getStepText(const string& dataDirectory, const string& fileName, int step, int value);
+string getStringByBoolean(bool boolean);
+string getStringByDouble(double doublePrecision);
+string getStringByInt(int integer);
+string getSuffixedFileName(const string& fileName, const string& suffix=string());
+vector<string> getSuffixedFileNames(vector<string> fileNames, const string& suffix=string());
+vector<string> getTextLines(const string& text);
+vector<string> getTokens(const string& text=string(), const string& delimiters=string(" "));
+void makeDirectory(const string& directoryPath);
+void writeFileText(const string& fileName, const string& fileText);
+void writeFileTextByDirectory(const string& directoryPath, const string& fileName, const string& fileText);
 
 
 // DeprecatedDeprecatedDeprecatedDeprecated
-std::vector<std::string> getCoinAddressStrings(const std::string& fileName, int height)
+vector<string> getCoinAddressStrings(const string& fileName, int height)
 {
 	return getCoinList(fileName, height);
 }
 
 // Get the coin address strings for a height.
-std::vector<std::string> getCoinAddressStrings(const std::string& dataDirectory, const std::string& fileName, int height, int step)
+vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step)
 {
 	return getCoinList(fileName, height);
 }
 
 // Get the coin list from a text for a height.
-std::vector<std::string> getCoinList(const std::string& fileName, int height)
+vector<string> getCoinList(const string& fileName, int height)
 {
-	std::string suffixedFileName = getSuffixedFileName(fileName, std::string("0"));
-	std::string fileText = getFileText(suffixedFileName);
-	std::vector<std::vector<std::string> > coinLists = getCoinLists(fileText);
+	string suffixedFileName = getSuffixedFileName(fileName, string("0"));
+	string fileText = getFileText(suffixedFileName);
+	vector<vector<string> > coinLists = getCoinLists(fileText);
 
 	if ((int)coinLists.size() == 0)
 	{
@@ -84,37 +69,37 @@ std::vector<std::string> getCoinList(const std::string& fileName, int height)
 }
 
 // Get the coin lists from a text.
-std::vector<std::vector<std::string> > getCoinLists(const std::string& text)
+vector<vector<string> > getCoinLists(const string& text)
 {
-	std::vector<std::vector<std::string> > coinLists;
-	std::vector<std::string> textLines = getTextLines(text);
+	vector<vector<string> > coinLists;
+	vector<string> textLines = getTextLines(text);
 	bool isCoinSection = false;
 
 	for (int lineIndex = 0; lineIndex < textLines.size(); lineIndex++)
 	{
-		std::string firstLowerSpaceless = std::string();
-		std::string line = textLines[lineIndex];
-		std::vector<std::string> words = getCommaDividedWords(line);
+		string firstLowerSpaceless = string();
+		string line = textLines[lineIndex];
+		vector<string> words = getCommaDividedWords(line);
 
 		if (words.size() > 0)
-			firstLowerSpaceless = getReplaced(getLower(words[0]), std::string(" "), std::string());
+			firstLowerSpaceless = getReplaced(getLower(words[0]), string(" "), string());
 
-		if (firstLowerSpaceless == std::string("coin"))
+		if (firstLowerSpaceless == string("coin"))
 		{
-			std::vector<std::string> coinList = getTokens(words[1], ",");
+			vector<string> coinList = getTokens(words[1], ",");
 			coinLists.push_back(coinList);
 		}
 
-		if (firstLowerSpaceless == std::string("_endcoins"))
+		if (firstLowerSpaceless == string("_endcoins"))
 			isCoinSection = false;
 
 		if (isCoinSection)
 		{
-			std::vector<std::string> coinList = getTokens(line, ",");
+			vector<string> coinList = getTokens(line, ",");
 			coinLists.push_back(coinList);
 		}
 
-		if (firstLowerSpaceless == std::string("_begincoins"))
+		if (firstLowerSpaceless == string("_begincoins"))
 			isCoinSection = true;
 	}
 
@@ -122,12 +107,12 @@ std::vector<std::vector<std::string> > getCoinLists(const std::string& text)
 }
 
 // Get the words divided around the comma.
-std::vector<std::string> getCommaDividedWords(const std::string& text)
+vector<string> getCommaDividedWords(const string& text)
 {
-	std::vector<std::string> commaDividedWords;
+	vector<string> commaDividedWords;
 	int commaIndex = text.find(',');
 
-	if (commaIndex == std::string::npos)
+	if (commaIndex == string::npos)
 	{
 		commaDividedWords.push_back(text);
 		return commaDividedWords;
@@ -138,9 +123,9 @@ std::vector<std::string> getCommaDividedWords(const std::string& text)
 	return commaDividedWords;
 }
 
-std::vector<std::string> getDirectoryNames(const std::string& directoryName)
+vector<string> getDirectoryNames(const string& directoryName)
 {
-	std::vector<std::string> directoryNames;
+	vector<string> directoryNames;
 	struct dirent *entry;
 	DIR *directory = opendir(directoryName.c_str());
 
@@ -151,7 +136,7 @@ std::vector<std::string> getDirectoryNames(const std::string& directoryName)
 	}
 
 	while((entry = readdir(directory)))
-		directoryNames.push_back(std::string(entry->d_name));
+		directoryNames.push_back(string(entry->d_name));
 
 	closedir(directory);
 
@@ -159,16 +144,16 @@ std::vector<std::string> getDirectoryNames(const std::string& directoryName)
 }
 
 // Get the directory name of the given file.
-std::string getDirectoryPath(const string& fileName)
+string getDirectoryPath(const string& fileName)
 {
 	return (filesystem::path(fileName)).parent_path().string();
 }
 
 // Get a double precision float from a string.
-double getDouble(const std::string& doubleString)
+double getDouble(const string& doubleString)
 {
 	double doublePrecision;
-	std::istringstream doubleStream(doubleString);
+	istringstream doubleStream(doubleString);
 
 	doubleStream >> doublePrecision;
 	return doublePrecision;
@@ -181,15 +166,15 @@ bool getExists(const string& fileName)
 }
 
 // Get the random number from a file random_number in the same directory as the given file.
-double getFileRandomNumber(const std::string& dataDirectory, const std::string& fileName)
+double getFileRandomNumber(const string& dataDirectory, const string& fileName)
 {
-	std::string directoryPath = dataDirectory.substr();
-	if (dataDirectory == std::string())
+	string directoryPath = dataDirectory.substr();
+	if (dataDirectory == string())
 		directoryPath = getDirectoryPath(fileName);
-	std::string numberFilePath = getJoinedPath(directoryPath, std::string("random_number.txt"));
-	std::string numberFileText = getFileText(numberFilePath);
+	string numberFilePath = getJoinedPath(directoryPath, string("random_number.txt"));
+	string numberFileText = getFileText(numberFilePath);
 
-	if (numberFileText == std::string())
+	if (numberFileText == string())
 	{
 		srand(time(NULL));
 		double randomDouble = ((double)(rand() % 10000) + 0.5) / 10000.0;
@@ -201,37 +186,139 @@ double getFileRandomNumber(const std::string& dataDirectory, const std::string& 
 }
 
 // Get the entire text of a file.
-std::string getFileText(const std::string& fileName)
+string getFileText(const string& fileName)
 {
-	std::ifstream fileStream(fileName.c_str());
+	ifstream fileStream(fileName.c_str());
 
 	if (!fileStream.is_open())
-		return std::string();
+		return string();
 
-	std::string fileText;
-	fileStream.seekg(0, std::ios::end);
+	string fileText;
+	fileStream.seekg(0, ios::end);
 	fileText.reserve(fileStream.tellg());
-	fileStream.seekg(0, std::ios::beg);
-	fileText.assign((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
+	fileStream.seekg(0, ios::beg);
+	fileText.assign((istreambuf_iterator<char>(fileStream)), istreambuf_iterator<char>());
 	fileStream.close();
 	return fileText;
 }
 
 // Get an integer from a string.
-int getInt(const std::string& integerString)
+int getInt(const string& integerString)
 {
 	int integer;
-	std::istringstream intStream(integerString);
+	istringstream intStream(integerString);
 
 	intStream >> integer;
 	return integer;
 }
 
-// Determine if the transactions add up to a share per address for each address.
-bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<int64> amounts, const std::string& dataDirectory, const std::string& fileName, int height, int64 share, int step)
+string getInternetText(const string& address)
 {
-	std::vector<std::string> coinAddressStrings = getCoinAddressStrings(dataDirectory, fileName, height, step);
-	std::map<std::string, int64> receiverMap;
+	try
+	{
+		string host = address.substr();
+		string httpPrefix = string("http://");
+		string path = string();
+
+		if (host.substr(0, httpPrefix.size()) == httpPrefix)
+			host = host.substr(httpPrefix.size());
+
+		int slashIndex = host.find('/');
+
+		if (slashIndex != string::npos)
+		{
+			path = host.substr(slashIndex);
+			host = host.substr(0, slashIndex);
+		}
+
+		asio::io_service io_service;
+
+		// Get a list of endpoints corresponding to the server name.
+		asio::ip::tcp::resolver resolver(io_service);
+		asio::ip::tcp::resolver::query query(host.c_str(), "http");
+		asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+
+		// Try each endpoint until we successfully establish a connection.
+		asio::ip::tcp::socket socket(io_service);
+		socket.connect(*endpoint_iterator++);
+
+		// Form the request. We specify the "Connection: close" header so that the
+		// server will close the socket after transmitting the response. This will
+		// allow us to treat all data up until the EOF as the content.
+		asio::streambuf request;
+		ostream request_stream(&request);
+		request_stream << "GET " << path << " HTTP/1.0\r\n";
+		request_stream << "Host: " << host << "\r\n";
+		request_stream << "Accept: */*\r\n";
+		request_stream << "Connection: close\r\n\r\n";
+
+		// Send the request.
+		asio::write(socket, request);
+
+		// Read the response status line. The response streambuf will automatically
+		// grow to accommodate the entire line. The growth may be limited by passing
+		// a maximum size to the streambuf constructor.
+		asio::streambuf response;
+		asio::read_until(socket, response, "\r\n");
+
+		// Check that response is OK.
+		istream response_stream(&response);
+		string http_version;
+		response_stream >> http_version;
+		unsigned int status_code;
+		response_stream >> status_code;
+		string status_message;
+		getline(response_stream, status_message);
+		if (!response_stream || http_version.substr(0, 5) != "HTTP/")
+		{
+			cout << "Invalid response\n";
+			return string();
+		}
+		if (status_code != 200)
+		{
+			cout << "Response returned with status code " << status_code << "\n";
+			return string();
+		}
+
+		// Read the response headers, which are terminated by a blank line.
+		asio::read_until(socket, response, "\r\n\r\n");
+
+		// Process the response headers.
+		string header;
+		while (getline(response_stream, header) && header != "\r")
+			;
+//			cout << header << "\n";
+//		cout << "\n";
+
+		stringstream stringStream(stringstream::in | stringstream::out);
+
+		// Write whatever content we already have to output.
+		if (response.size() > 0)
+			stringStream << &response;
+
+		// Read until EOF, writing data to output as we go.
+		system::error_code error;
+		while (asio::read(socket, response, asio::transfer_at_least(1), error))
+			stringStream << &response;
+
+		if (error != asio::error::eof)
+			return string();
+
+		return stringStream.str();
+	}
+	catch (std::exception& e)
+	{
+		cout << "Exception: " << e.what() << "\n";
+	}
+
+	return string();
+}
+
+// Determine if the transactions add up to a share per address for each address.
+bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts, const string& dataDirectory, const string& fileName, int height, int64 share, int step)
+{
+	vector<string> coinAddressStrings = getCoinAddressStrings(dataDirectory, fileName, height, step);
+	map<string, int64> receiverMap;
 	int64 sharePerAddress = share / (int64)coinAddressStrings.size();
 
 	for (int i = 0; i < coinAddressStrings.size(); i++)
@@ -239,7 +326,7 @@ bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<
 
 	for (int i = 0; i < addressStrings.size(); i++)
 	{
-		std::string addressString = addressStrings[i];
+		string addressString = addressStrings[i];
 
 		if (receiverMap.count(addressString) > 0)
 			receiverMap[addressString] += amounts[i];
@@ -255,57 +342,65 @@ bool getIsSufficientAmount(std::vector<std::string> addressStrings, std::vector<
 }
 
 // Get the directory path joined with the file name.
-std::string getJoinedPath(const std::string& directoryPath, const std::string& fileName)
+string getJoinedPath(const string& directoryPath, const string& fileName)
 {
-	return QDir(QString(directoryPath.c_str())).absoluteFilePath(QString(fileName.c_str())).toStdString();
+	filesystem::path completePath = filesystem::system_complete(filesystem::path(directoryPath));
+	return (completePath / (filesystem::path(fileName))).string();
 }
 
 // Get the lowercase string.
-std::string getLower(const std::string& text)
+string getLower(const string& text)
 {
 	int textLength = text.length();
-	std::string lower = text.substr();
+	string lower = text.substr();
 
 	for(int characterIndex = 0; characterIndex < textLength; characterIndex++)
 	{
-		lower[characterIndex] = std::tolower(text[characterIndex]);
+		lower[characterIndex] = tolower(text[characterIndex]);
 	}
 
 	return lower;
 }
 
 // Get the peer names from the text.
-std::vector<std::string> getPeerNames(const std::string& text)
+vector<string> getPeerNames(const string& text)
 {
-	std::vector<std::string> peerNames;
-	std::vector<std::string> textLines = getTextLines(text);
+	bool isPeerSection = false;
+	vector<string> peerNames;
+	vector<string> textLines = getTextLines(text);
 
 	for (int lineIndex = 0; lineIndex < textLines.size(); lineIndex++)
 	{
-		std::string firstLowerSpaceless = std::string();
-		std::string line = textLines[lineIndex];
-		std::vector<std::string> words = getCommaDividedWords(line);
+		string firstLowerSpaceless = string();
+		string line = textLines[lineIndex];
+		vector<string> words = getCommaDividedWords(line);
 
 		if (words.size() > 0)
-			firstLowerSpaceless = getReplaced(getLower(words[0]), std::string(" "), std::string());
+			firstLowerSpaceless = getReplaced(getLower(words[0]), string(" "), string());
 
-		if (firstLowerSpaceless == std::string("peer"))
-			peerNames.push_back(getReplaced(words[1], std::string(" "), std::string()));
+		if (firstLowerSpaceless == string("peer"))
+			peerNames.push_back(getReplaced(words[1], string(" "), string()));
 
-		if (firstLowerSpaceless != std::string("format"))
-			return peerNames;
+		if (firstLowerSpaceless == string("_endpeers"))
+			isPeerSection = false;
+
+		if (isPeerSection)
+			peerNames.push_back(getReplaced(words[0], string(" "), string()));
+
+		if (firstLowerSpaceless == string("_beginpeers"))
+			isPeerSection = true;
 	}
 
 	return peerNames;
 }
 
 // Get the string with the search string replaced with the replace string.
-std::string getReplaced(const std::string& text, const std::string& searchString, const std::string& replaceString)
+string getReplaced(const string& text, const string& searchString, const string& replaceString)
 {
-	std::string::size_type position = 0;
-	std::string replaced = text.substr();
+	string::size_type position = 0;
+	string replaced = text.substr();
 
-	while ((position = replaced.find(searchString, position)) != std::string::npos)
+	while ((position = replaced.find(searchString, position)) != string::npos)
 	{
 		replaced.replace(position, searchString.size(), replaceString );
 		position++;
@@ -315,7 +410,7 @@ std::string getReplaced(const std::string& text, const std::string& searchString
 }
 
 // Determine if the first string starts with the second string.
-bool getStartsWith(const std::string& firstString, const std::string& secondString)
+bool getStartsWith(const string& firstString, const string& secondString)
 {
 	if (firstString.substr(0, secondString.size()) == secondString)
 		return true;
@@ -324,39 +419,39 @@ bool getStartsWith(const std::string& firstString, const std::string& secondStri
 }
 
 // Get the step file name by the file name.
-std::string getStepFileName(const std::string& fileName, int step, int value)
+string getStepFileName(const string& fileName, int step, int value)
 {
 	return getSuffixedFileName(fileName, getStringByInt(value / step));
 }
 
 // Get the random number from a file random_number in the same directory as the given file.
-std::string getStepText(const std::string& dataDirectory, const std::string& fileName, int step, int value)
+string getStepText(const string& dataDirectory, const string& fileName, int step, int value)
 {
-	std::string stepFileName = getStepFileName(fileName, step, value);
-	if (dataDirectory == std::string())
+	string stepFileName = getStepFileName(fileName, step, value);
+	if (dataDirectory == string())
 		return getFileText(stepFileName);
-	std::string directorySubName = getJoinedPath(dataDirectory, stepFileName);
+	string directorySubName = getJoinedPath(dataDirectory, stepFileName);
 	if (getExists(directorySubName))
 		return getFileText(directorySubName);
-	std::string stepText = getFileText(stepFileName);
-	if (stepText == std::string())
-		return std::string();
+	string stepText = getFileText(stepFileName);
+	if (stepText == string())
+		return string();
 	writeFileText(directorySubName, stepText);
 	return stepText;
 }
 
 // Get the string from the boolean.
-std::string getStringByBoolean(bool boolean)
+string getStringByBoolean(bool boolean)
 {
 	if (boolean)
-		return std::string("true");
-	return std::string("false");
+		return string("true");
+	return string("false");
 }
 
 // Get the string from the double precision float.
-std::string getStringByDouble(double doublePrecision)
+string getStringByDouble(double doublePrecision)
 {
-	std::ostringstream doubleStream;
+	ostringstream doubleStream;
 
 	doubleStream << doublePrecision;
 
@@ -364,9 +459,9 @@ std::string getStringByDouble(double doublePrecision)
 }
 
 // Get the string from the integer.
-std::string getStringByInt(int integer)
+string getStringByInt(int integer)
 {
-	std::ostringstream integerStream;
+	ostringstream integerStream;
 
 	integerStream << integer;
 
@@ -374,22 +469,22 @@ std::string getStringByInt(int integer)
 }
 
 // Get the file name with the suffix just before the extension.
-std::string getSuffixedFileName(const std::string& fileName, const std::string& suffix)
+string getSuffixedFileName(const string& fileName, const string& suffix)
 {
-	if (suffix == std::string())
+	if (suffix == string())
 		return fileName;
 
 	int lastDotIndex = fileName.rfind(".");
 
-	if (lastDotIndex == std::string::npos)
+	if (lastDotIndex == string::npos)
 		return fileName + suffix;
-	return fileName.substr(0, lastDotIndex) + std::string("_") + suffix + fileName.substr(lastDotIndex);
+	return fileName.substr(0, lastDotIndex) + string("_") + suffix + fileName.substr(lastDotIndex);
 }
 
 // Get the file names with the suffixes just before the extension.
-std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames, const std::string& suffix)
+vector<string> getSuffixedFileNames(vector<string> fileNames, const string& suffix)
 {
-	std::vector<std::string> suffixedFileNames;
+	vector<string> suffixedFileNames;
 
 	for(int fileNameIndex = 0; fileNameIndex < fileNames.size(); fileNameIndex++)
 		suffixedFileNames.push_back(getSuffixedFileName(fileNames[fileNameIndex], suffix));
@@ -398,19 +493,19 @@ std::vector<std::string> getSuffixedFileNames(std::vector<std::string> fileNames
 }
 
 // Get all the lines of text of a text.
-std::vector<std::string> getTextLines(const std::string& text)
+vector<string> getTextLines(const string& text)
 {
-	return getTokens(text, std::string("\n"));
+	return getTokens(text, string("\n"));
 }
 
 // Get the tokens of the text split by the delimeters.
-std::vector<std::string> getTokens(const std::string& text, const std::string& delimiters)
+vector<string> getTokens(const string& text, const string& delimiters)
 {
-	std::vector<std::string> tokens;
-	std::string::size_type lastPosition = text.find_first_not_of(delimiters, 0);
-	std::string::size_type position = text.find_first_of(delimiters, lastPosition);
+	vector<string> tokens;
+	string::size_type lastPosition = text.find_first_not_of(delimiters, 0);
+	string::size_type position = text.find_first_of(delimiters, lastPosition);
 
-	while (std::string::npos != position || std::string::npos != lastPosition)
+	while (string::npos != position || string::npos != lastPosition)
 	{
 		tokens.push_back(text.substr(lastPosition, position - lastPosition));
 		lastPosition = text.find_first_not_of(delimiters, position);
@@ -421,20 +516,20 @@ std::vector<std::string> getTokens(const std::string& text, const std::string& d
 }
 
 // Make a directory if it does not already exist.
-void makeDirectory(const std::string& directoryPath)
+void makeDirectory(const string& directoryPath)
 {
 	if (getExists(directoryPath))
 		return;
-	if (QDir(QString()).mkpath(QString(directoryPath.c_str())))
+	if (filesystem::create_directories(filesystem::path(directoryPath)))
 		printf("The following directory was made: %s", directoryPath.c_str());
 	else
 		printf("Receiver.h can not make the directory %s so give it read/write permission for that directory.", directoryPath.c_str());
 }
 
 // Write a text to a file.
-void writeFileText(const std::string& fileName, const std::string& fileText)
+void writeFileText(const string& fileName, const string& fileText)
 {
-	std::ofstream fileStream(fileName.c_str());
+	ofstream fileStream(fileName.c_str());
 
 	if (fileStream.is_open())
 	{
@@ -445,7 +540,7 @@ void writeFileText(const std::string& fileName, const std::string& fileText)
 }
 
 // Write a text to a file joined to the directory path.
-void writeFileTextByDirectory(const std::string& directoryPath, const std::string& fileName, const std::string& fileText)
+void writeFileTextByDirectory(const string& directoryPath, const string& fileName, const string& fileText)
 {
 	writeFileText(getJoinedPath(directoryPath, fileName), fileText);
 }
