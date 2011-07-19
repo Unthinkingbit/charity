@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+#include <boost/asio.hpp>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -17,6 +18,7 @@
 #include <QString>
 #include <QUrl>
 
+using boost::asio::ip::tcp;
 using namespace std;
 
 
