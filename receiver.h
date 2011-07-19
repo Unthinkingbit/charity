@@ -5,6 +5,10 @@ using namespace boost;
 using namespace std;
 
 
+static const double globalMinimumIdenticalProportion = 0.500001;
+static const double globalWriteNextThreshold = 0.75;
+
+
 vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step=4000);
 vector<string> getCoinList(const string& directoryPath, const string& fileName, int height, int step);
 vector<vector<string> > getCoinLists(const string& text);
@@ -18,7 +22,6 @@ double getFileRandomNumber(const string& dataDirectory, const string& fileName);
 string getFileText(const string& fileName);
 int getInt(const string& integerString);
 string getInternetText(const string& address);
-//bool getIsStringIn(vector<string> strings, const string& elementInput);
 bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts, const string& dataDirectory, const string& fileName, int height, int64 share, int step=4000);
 string getJoinedPath(const string& directoryPath, const string& fileName);
 string getLocationText(const string& address);
@@ -42,9 +45,6 @@ void makeDirectory(const string& directoryPath);
 void writeFileText(const string& fileName, const string& fileText);
 void writeFileTextByDirectory(const string& directoryPath, const string& fileName, const string& fileText);
 void writeNextIfValueHigher(const string& directoryPath, const string& fileName, int step, const string& stepText, int value);
-
-static const double globalMinimumIdenticalProportion = 0.500001;
-static const double globalWriteNextThreshold = 0.75;
 
 
 // Get the coin address strings for a height.
@@ -350,16 +350,6 @@ string getInternetText(const string& address)
 	return string();
 }
 
-// Determine if the string is in the vector.
-//bool getIsStringIn(vector<string> strings, const string& elementInput)
-//{
-//	for (int elementIndex = 0; elementIndex < strings.size(); elementIndex++)
-//		if (strings[elementIndex] == elementInput)
-//			return true;
-//
-//	return false;
-//}
-
 // Determine if the transactions add up to a share per address for each address.
 bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts, const string& dataDirectory, const string& fileName, int height, int64 share, int step)
 {
@@ -507,7 +497,6 @@ string getStepOutput(const string& directoryPathInput, const string& fileName, i
 
 	int valueDown = value - step;
 	string previousText = string();
-
 	while (valueDown >= 0)
 	{
 		previousText = getStepText(directoryPath, fileName, step, valueDown);
@@ -521,11 +510,10 @@ string getStepOutput(const string& directoryPathInput, const string& fileName, i
 	return string();
 }
 
-// Get the random number from a file random_number in the same directory as the given file.
+// Get the step text by the file name.
 string getStepText(const string& dataDirectory, const string& fileName, int step, int value)
 {
 	string stepFileName = getStepFileName(fileName, step, value);
-
 	if (dataDirectory == string())
 		return getFileText(stepFileName);
 
@@ -623,7 +611,7 @@ vector<string> getSuffixedFileNames(vector<string> fileNames, const string& suff
 // Get all the lines of text of a text.
 vector<string> getTextLines(const string& text)
 {
-	return getTokens(text, string("\n"));
+	return getTokens(getReplaced(getReplaced(text, string("\r"), string("\n")), string("\n\n"), string("\n")), string("\n"));
 }
 
 // Get the tokens of the text split by the delimeters.
@@ -683,7 +671,6 @@ void writeNextIfValueHigher(const string& directoryPath, const string& fileName,
 
 	if (floatPart < globalWriteNextThreshold + lessThanOneMinusThreshold * fileRandomNumber)
 		return;
-
 	int nextValue = value + step;
 	string nextFileName = getStepFileName(fileName, step, nextValue);
 
