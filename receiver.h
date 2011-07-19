@@ -30,6 +30,7 @@ string getReplaced(const string& text, const string& searchString, const string&
 bool getStartsWith(const string& firstString, const string& secondString);
 string getStepFileName(const string& fileName, int step, int value);
 string getStepText(const string& dataDirectory, const string& fileName, int step, int value);
+string getStepTextRecursively(const string& directoryPath, const string& fileName, const string& previousTextInput, int step, int valueDown, int value);
 string getStringByBoolean(bool boolean);
 string getStringByDouble(double doublePrecision);
 string getStringByInt(int integer);
@@ -497,16 +498,39 @@ string getStepFileName(const string& fileName, int step, int value)
 string getStepText(const string& dataDirectory, const string& fileName, int step, int value)
 {
 	string stepFileName = getStepFileName(fileName, step, value);
+
 	if (dataDirectory == string())
 		return getFileText(stepFileName);
+
 	string directorySubName = getJoinedPath(dataDirectory, stepFileName);
+
 	if (getExists(directorySubName))
 		return getFileText(directorySubName);
+
 	string stepText = getFileText(stepFileName);
+
 	if (stepText == string())
 		return string();
+
 	writeFileText(directorySubName, stepText);
 	return stepText;
+}
+
+// Get the step text recursively.
+string getStepTextRecursively(const string& directoryPath, const string& fileName, const string& previousTextInput, int step, int valueDown, int value)
+{
+	string previousText = previousTextInput.substr();
+	string stepFileName;
+
+	for(int valueUp = valueDown; valueUp < value; valueUp += step)
+	{
+		int nextValue = valueUp + step;
+		previousText = getCommonOutputByText(previousText, getStringByInt(nextValue / step));
+		stepFileName = getStepFileName(fileName, step, nextValue);
+		writeFileTextByDirectory(directoryPath, stepFileName, previousText);
+	}
+
+	return previousText;
 }
 
 // Get the string from the boolean.
