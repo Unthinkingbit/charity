@@ -5,9 +5,8 @@ using namespace boost;
 using namespace std;
 
 
-vector<string> getCoinAddressStrings(const string& fileName, int height); // DeprecatedDeprecated
 vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step=4000);
-vector<string> getCoinList(const string& fileName, int height);
+vector<string> getCoinList(const string& directoryPath, const string& fileName, int height, int step);
 vector<vector<string> > getCoinLists(const string& text);
 vector<string> getCommaDividedWords(const string& text);
 string getCommonOutputByText(const string& fileName, const string& suffix=string(""));
@@ -41,29 +40,43 @@ vector<string> getTokens(const string& text=string(), const string& delimiters=s
 void makeDirectory(const string& directoryPath);
 void writeFileText(const string& fileName, const string& fileText);
 void writeFileTextByDirectory(const string& directoryPath, const string& fileName, const string& fileText);
-
+void writeNextIfValueHigher(const string& directoryPath, const string& fileName, int step, const string& stepText, int value);
 
 static const double globalMinimumIdenticalProportion = 0.500001;
+static const double globalWriteNextThreshold = 0.75;
 
-
-// DeprecatedDeprecatedDeprecatedDeprecated
-vector<string> getCoinAddressStrings(const string& fileName, int height)
-{
-	return getCoinList(fileName, height);
-}
 
 // Get the coin address strings for a height.
 vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step)
 {
-	return getCoinList(fileName, height);
+	return getCoinList(dataDirectory, fileName, height, step);
 }
 
 // Get the coin list from a text for a height.
-vector<string> getCoinList(const string& fileName, int height)
+vector<string> getCoinListOld(const string& directoryPath, const string& fileName, int height, int step)
 {
 	string suffixedFileName = getSuffixedFileName(fileName, string("0"));
-	string fileText = getFileText(suffixedFileName);
-	vector<vector<string> > coinLists = getCoinLists(fileText);
+	string stepOutput = getFileText(suffixedFileName);
+	vector<vector<string> > coinLists = getCoinLists(stepOutput);
+
+	if ((int)coinLists.size() == 0)
+	{
+		printf("Warning, no coin lists were found for the file: %s", suffixedFileName.c_str());
+		return getTokens();
+	}
+
+	int modulo = height % (int)coinLists.size();
+
+	return coinLists[modulo];
+}
+
+// Get the coin list from a text for a height.
+vector<string> getCoinList(const string& directoryPath, const string& fileName, int height, int step)
+{
+//	string stepOutput = getStepOutput(directoryPath, fileName, step, height);
+	string suffixedFileName = getSuffixedFileName(fileName, string("0"));
+	string stepOutput = getFileText(suffixedFileName);
+	vector<vector<string> > coinLists = getCoinLists(stepOutput);
 
 	if ((int)coinLists.size() == 0)
 	{
@@ -644,4 +657,27 @@ void writeFileText(const string& fileName, const string& fileText)
 void writeFileTextByDirectory(const string& directoryPath, const string& fileName, const string& fileText)
 {
 	writeFileText(getJoinedPath(directoryPath, fileName), fileText);
+}
+
+// Write next step file if value is higher than the threshold.
+void writeNextIfValueHigher(const string& directoryPath, const string& fileName, int step, const string& stepText, int value)
+{
+	int remainder = value - step * (value / step);
+	double floatPart = double(remainder) / double(step);
+	double lessThanOneMinusThreshold = 0.95 * (1.0 - globalWriteNextThreshold);
+	double fileRandomNumber = getFileRandomNumber(directoryPath, fileName);
+
+	if (floatPart < globalWriteNextThreshold + lessThanOneMinusThreshold * fileRandomNumber)
+		return;
+
+	int nextValue = value + step;
+	string nextFileName = getStepFileName(fileName, step, nextValue);
+
+	if (getFileText(nextFileName) == string())
+	{
+		string nextText = getCommonOutputByText(stepText, getStringByInt(nextValue / step));
+
+		if (nextText != string())
+			writeFileTextByDirectory(directoryPath, nextFileName, nextText);
+	}
 }
