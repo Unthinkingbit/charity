@@ -10,6 +10,7 @@ vector<string> getCoinAddressStrings(const string& dataDirectory, const string& 
 vector<string> getCoinList(const string& fileName, int height);
 vector<vector<string> > getCoinLists(const string& text);
 vector<string> getCommaDividedWords(const string& text);
+string getCommonOutputByText(const string& fileName, const string& suffix=string(""));
 vector<string> getDirectoryNames(const string& directoryName);
 string getDirectoryPath(const string& fileName);
 double getDouble(const string& doubleString);
@@ -18,6 +19,7 @@ double getFileRandomNumber(const string& dataDirectory, const string& fileName);
 string getFileText(const string& fileName);
 int getInt(const string& integerString);
 string getInternetText(const string& address);
+//bool getIsStringIn(vector<string> strings, const string& elementInput);
 bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts, const string& dataDirectory, const string& fileName, int height, int64 share, int step=4000);
 string getJoinedPath(const string& directoryPath, const string& fileName);
 string getLocationText(const string& address);
@@ -38,6 +40,9 @@ vector<string> getTokens(const string& text=string(), const string& delimiters=s
 void makeDirectory(const string& directoryPath);
 void writeFileText(const string& fileName, const string& fileText);
 void writeFileTextByDirectory(const string& directoryPath, const string& fileName, const string& fileText);
+
+
+static const double globalMinimumIdenticalProportion = 0.500001;
 
 
 // DeprecatedDeprecatedDeprecatedDeprecated
@@ -187,6 +192,38 @@ double getFileRandomNumber(const string& dataDirectory, const string& fileName)
 	return getDouble(numberFileText);
 }
 
+// Get the common output according to the peers listed in a text.
+string getCommonOutputByText(const string& fileText, const string& suffix)
+{
+	vector<string> peerNames = getPeerNames(fileText);
+	vector<string> pages = getLocationTexts(getSuffixedFileNames(peerNames, suffix));
+	int minimumIdentical = (int)ceil(globalMinimumIdenticalProportion * (double)pages.size());
+	map<string, int> pageMap;
+
+	for (vector<string>::iterator pageIterator = pages.begin(); pageIterator < pages.end(); pageIterator++)
+	{
+		string firstLine = string();
+		vector<string> lines = getTextLines(*pageIterator);
+
+		if (lines.size() > 0)
+			firstLine = getLower(lines[0]);
+
+		if (getStartsWith(firstLine, string("format")) && (firstLine.find(string("pluribusunum")) != string::npos))
+		{
+			if (pageMap.count(*pageIterator))
+				pageMap[*pageIterator] += 1;
+			else
+				pageMap[*pageIterator] = 1;
+		}
+	}
+
+	for (map<string,int>::iterator pageMapIterator = pageMap.begin(); pageMapIterator != pageMap.end(); pageMapIterator++)
+		if ((*pageMapIterator).second >= minimumIdentical)
+			return (*pageMapIterator).first;
+
+	return string();
+}
+
 // Get the entire text of a file.
 string getFileText(const string& fileName)
 {
@@ -316,6 +353,16 @@ string getInternetText(const string& address)
 
 	return string();
 }
+
+// Determine if the string is in the vector.
+//bool getIsStringIn(vector<string> strings, const string& elementInput)
+//{
+//	for (int elementIndex = 0; elementIndex < strings.size(); elementIndex++)
+//		if (strings[elementIndex] == elementInput)
+//			return true;
+//
+//	return false;
+//}
 
 // Determine if the transactions add up to a share per address for each address.
 bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts, const string& dataDirectory, const string& fileName, int height, int64 share, int step)
@@ -509,7 +556,15 @@ vector<string> getSuffixedFileNames(vector<string> fileNames, const string& suff
 	vector<string> suffixedFileNames;
 
 	for(int fileNameIndex = 0; fileNameIndex < fileNames.size(); fileNameIndex++)
-		suffixedFileNames.push_back(getSuffixedFileName(fileNames[fileNameIndex], suffix));
+	{
+		string fileName = fileNames[fileNameIndex];
+		int doNotAddSuffixIndex = fileName.find("_do_not_add_suffix_");
+
+		if (doNotAddSuffixIndex == string::npos)
+			suffixedFileNames.push_back(getSuffixedFileName(fileName, suffix));
+		else
+			suffixedFileNames.push_back(fileName.substr(0, doNotAddSuffixIndex));
+	}
 
 	return suffixedFileNames;
 }
