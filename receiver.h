@@ -28,6 +28,7 @@ vector<string> getPeerNames(const string& text);
 string getReplaced(const string& text, const string& searchString, const string& replaceString);
 bool getStartsWith(const string& firstString, const string& secondString);
 string getStepFileName(const string& fileName, int step, int value);
+string getStepOutput(const string& directoryPathInput, const string& fileName, int step, int value);
 string getStepText(const string& dataDirectory, const string& fileName, int step, int value);
 string getStepTextRecursively(const string& directoryPath, const string& fileName, const string& previousTextInput, int step, int valueDown, int value);
 string getStringByBoolean(bool boolean);
@@ -53,38 +54,19 @@ vector<string> getCoinAddressStrings(const string& dataDirectory, const string& 
 }
 
 // Get the coin list from a text for a height.
-vector<string> getCoinListOld(const string& directoryPath, const string& fileName, int height, int step)
-{
-	string suffixedFileName = getSuffixedFileName(fileName, string("0"));
-	string stepOutput = getFileText(suffixedFileName);
-	vector<vector<string> > coinLists = getCoinLists(stepOutput);
-
-	if ((int)coinLists.size() == 0)
-	{
-		printf("Warning, no coin lists were found for the file: %s", suffixedFileName.c_str());
-		return getTokens();
-	}
-
-	int modulo = height % (int)coinLists.size();
-
-	return coinLists[modulo];
-}
-
-// Get the coin list from a text for a height.
 vector<string> getCoinList(const string& directoryPath, const string& fileName, int height, int step)
 {
-//	string stepOutput = getStepOutput(directoryPath, fileName, step, height);
-	string suffixedFileName = getSuffixedFileName(fileName, string("0"));
-	string stepOutput = getFileText(suffixedFileName);
+	string stepOutput = getStepOutput(directoryPath, fileName, step, height);
 	vector<vector<string> > coinLists = getCoinLists(stepOutput);
 
 	if ((int)coinLists.size() == 0)
 	{
-		printf("Warning, no coin lists were found for the file: %s", suffixedFileName.c_str());
+		printf("Warning, no coin lists were found for the file: %s", fileName.c_str());
 		return getTokens();
 	}
 
-	int modulo = height % (int)coinLists.size();
+	int remainder = height - step * (height / step);
+	int modulo = remainder % (int)coinLists.size();
 
 	return coinLists[modulo];
 }
@@ -505,6 +487,38 @@ bool getStartsWith(const string& firstString, const string& secondString)
 string getStepFileName(const string& fileName, int step, int value)
 {
 	return getSuffixedFileName(fileName, getStringByInt(value / step));
+}
+
+// Get the step output according to the peers listed in a file.
+string getStepOutput(const string& directoryPathInput, const string& fileName, int step, int value)
+{
+	string directoryPath = string();
+
+	if (directoryPathInput != string())
+		directoryPath = getJoinedPath(directoryPathInput, fileName.substr(0, fileName.rfind('.')));
+
+	string stepText = getStepText(directoryPath, fileName, step, value);
+
+	if (stepText != string())
+	{
+		writeNextIfValueHigher(directoryPath, fileName, step, stepText, value);
+		return stepText;
+	}
+
+	int valueDown = value - step;
+	string previousText = string();
+
+	while (valueDown >= 0)
+	{
+		previousText = getStepText(directoryPath, fileName, step, valueDown);
+
+		if (previousText != string())
+			return getStepTextRecursively(directoryPath, fileName, previousText, step, valueDown, value);
+
+		valueDown -= step;
+	}
+
+	return string();
 }
 
 // Get the random number from a file random_number in the same directory as the given file.
