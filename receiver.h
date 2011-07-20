@@ -9,7 +9,7 @@ static const double globalMinimumIdenticalProportion = 0.500001;
 static const double globalWriteNextThreshold = 0.75;
 
 
-vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step=4000);
+vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step);
 vector<string> getCoinList(const string& directoryPath, const string& fileName, int height, int step);
 vector<vector<string> > getCoinLists(const string& text);
 vector<string> getCommaDividedWords(const string& text);
@@ -22,7 +22,7 @@ double getFileRandomNumber(const string& dataDirectory, const string& fileName);
 string getFileText(const string& fileName);
 int getInt(const string& integerString);
 string getInternetText(const string& address);
-bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts, const string& dataDirectory, const string& fileName, int height, int64 share, int step=4000);
+bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts, const string& dataDirectory, const string& fileName, int height, int64 share, int step);
 string getJoinedPath(const string& directoryPath, const string& fileName);
 string getLocationText(const string& address);
 vector<string> getLocationTexts(vector<string> addresses);
