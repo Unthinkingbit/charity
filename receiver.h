@@ -1,5 +1,6 @@
 #include <boost/asio.hpp>
 #include <boost/filesystem.hpp>
+#include <dirent.h>
 
 using namespace boost;
 using namespace std;
