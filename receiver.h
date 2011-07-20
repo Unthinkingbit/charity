@@ -681,6 +681,11 @@ void makeDirectory(const string& directoryPath)
 // Write a text to a file.
 void writeFileText(const string& fileName, const string& fileText)
 {
+	string directoryPath = getDirectoryPath(fileName);
+
+	if (!getExists(directoryPath))
+		makeDirectory(directoryPath);
+
 	ofstream fileStream(fileName.c_str());
 
 	if (fileStream.is_open())
