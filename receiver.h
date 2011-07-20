@@ -31,10 +31,10 @@ string getLower(const string& text);
 vector<string> getPeerNames(const string& text);
 string getReplaced(const string& text, const string& searchString, const string& replaceString);
 bool getStartsWith(const string& firstString, const string& secondString);
-string getStepFileName(const string& fileName, int step, int value);
-string getStepOutput(const string& directoryPathInput, const string& fileName, int step, int value);
-string getStepText(const string& dataDirectory, const string& fileName, int step, int value);
-string getStepTextRecursively(const string& directoryPath, const string& fileName, const string& previousTextInput, int step, int valueDown, int value);
+string getStepFileName(const string& fileName, int height, int step);
+string getStepOutput(const string& directoryPathInput, const string& fileName, int height, int step);
+string getStepText(const string& dataDirectory, const string& fileName, int height, int step);
+string getStepTextRecursively(const string& directoryPath, const string& fileName, int height, const string& previousTextInput, int step, int valueDown);
 string getStringByBoolean(bool boolean);
 string getStringByDouble(double doublePrecision);
 string getStringByInt(int integer);
@@ -45,7 +45,7 @@ vector<string> getTokens(const string& text=string(), const string& delimiters=s
 void makeDirectory(const string& directoryPath);
 void writeFileText(const string& fileName, const string& fileText);
 void writeFileTextByDirectory(const string& directoryPath, const string& fileName, const string& fileText);
-void writeNextIfValueHigher(const string& directoryPath, const string& fileName, int step, const string& stepText, int value);
+void writeNextIfValueHigher(const string& directoryPath, const string& fileName, int height, int step, const string& stepText);
 
 
 // Get the coin address strings for a height.
@@ -57,7 +57,7 @@ vector<string> getCoinAddressStrings(const string& dataDirectory, const string& 
 // Get the coin list from a text for a height.
 vector<string> getCoinList(const string& directoryPath, const string& fileName, int height, int step)
 {
-	string stepOutput = getStepOutput(directoryPath, fileName, step, height);
+	string stepOutput = getStepOutput(directoryPath, fileName, height, step);
 	vector<vector<string> > coinLists = getCoinLists(stepOutput);
 
 	if ((int)coinLists.size() == 0)
@@ -510,35 +510,35 @@ bool getStartsWith(const string& firstString, const string& secondString)
 }
 
 // Get the step file name by the file name.
-string getStepFileName(const string& fileName, int step, int value)
+string getStepFileName(const string& fileName, int height, int step)
 {
-	return getSuffixedFileName(fileName, getStringByInt(value / step));
+	return getSuffixedFileName(fileName, getStringByInt(height / step));
 }
 
 // Get the step output according to the peers listed in a file.
-string getStepOutput(const string& directoryPathInput, const string& fileName, int step, int value)
+string getStepOutput(const string& directoryPathInput, const string& fileName, int height, int step)
 {
 	string directoryPath = string();
 
 	if (directoryPathInput != string())
 		directoryPath = getJoinedPath(directoryPathInput, fileName.substr(0, fileName.rfind('.')));
 
-	string stepText = getStepText(directoryPath, fileName, step, value);
+	string stepText = getStepText(directoryPath, fileName, height, step);
 
 	if (stepText != string())
 	{
-		writeNextIfValueHigher(directoryPath, fileName, step, stepText, value);
+		writeNextIfValueHigher(directoryPath, fileName, height, step, stepText);
 		return stepText;
 	}
 
-	int valueDown = value - step;
+	int valueDown = height - step;
 	string previousText = string();
 	while (valueDown >= 0)
 	{
-		previousText = getStepText(directoryPath, fileName, step, valueDown);
+		previousText = getStepText(directoryPath, fileName, valueDown, step);
 
 		if (previousText != string())
-			return getStepTextRecursively(directoryPath, fileName, previousText, step, valueDown, value);
+			return getStepTextRecursively(directoryPath, fileName, height, previousText, step, valueDown);
 
 		valueDown -= step;
 	}
@@ -547,9 +547,9 @@ string getStepOutput(const string& directoryPathInput, const string& fileName, i
 }
 
 // Get the step text by the file name.
-string getStepText(const string& dataDirectory, const string& fileName, int step, int value)
+string getStepText(const string& dataDirectory, const string& fileName, int height, int step)
 {
-	string stepFileName = getStepFileName(fileName, step, value);
+	string stepFileName = getStepFileName(fileName, height, step);
 	if (dataDirectory == string())
 		return getFileText(stepFileName);
 
@@ -568,16 +568,16 @@ string getStepText(const string& dataDirectory, const string& fileName, int step
 }
 
 // Get the step text recursively.
-string getStepTextRecursively(const string& directoryPath, const string& fileName, const string& previousTextInput, int step, int valueDown, int value)
+string getStepTextRecursively(const string& directoryPath, const string& fileName, int height, const string& previousTextInput, int step, int valueDown)
 {
 	string previousText = previousTextInput.substr();
 	string stepFileName;
 
-	for(int valueUp = valueDown; valueUp < value; valueUp += step)
+	for(int valueUp = valueDown; valueUp < height; valueUp += step)
 	{
 		int nextValue = valueUp + step;
 		previousText = getCommonOutputByText(previousText, getStringByInt(nextValue / step));
-		stepFileName = getStepFileName(fileName, step, nextValue);
+		stepFileName = getStepFileName(fileName, nextValue, step);
 		writeFileTextByDirectory(directoryPath, stepFileName, previousText);
 	}
 
@@ -702,18 +702,18 @@ void writeFileTextByDirectory(const string& directoryPath, const string& fileNam
 	writeFileText(getJoinedPath(directoryPath, fileName), fileText);
 }
 
-// Write next step file if value is higher than the threshold.
-void writeNextIfValueHigher(const string& directoryPath, const string& fileName, int step, const string& stepText, int value)
+// Write next step file if height is higher than the threshold.
+void writeNextIfValueHigher(const string& directoryPath, const string& fileName, int height, int step, const string& stepText)
 {
-	int remainder = value - step * (value / step);
+	int remainder = height - step * (height / step);
 	double floatPart = double(remainder) / double(step);
 	double lessThanOneMinusThreshold = 0.95 * (1.0 - globalWriteNextThreshold);
 	double fileRandomNumber = getFileRandomNumber(directoryPath, fileName);
 
 	if (floatPart < globalWriteNextThreshold + lessThanOneMinusThreshold * fileRandomNumber)
 		return;
-	int nextValue = value + step;
-	string nextFileName = getStepFileName(fileName, step, nextValue);
+	int nextValue = height + step;
+	string nextFileName = getStepFileName(fileName, nextValue, step);
 
 	if (getFileText(nextFileName) == string())
 	{
