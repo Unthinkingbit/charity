@@ -345,6 +345,7 @@ string getInternetText(const string& address)
 	catch (std::exception& e)
 	{
 		cout << "Exception: " << e.what() << "\n";
+		return string();
 	}
 
 	return string();
