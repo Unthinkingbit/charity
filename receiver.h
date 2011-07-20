@@ -372,7 +372,30 @@ bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts,
 	for (int i = 0; i < coinAddressStrings.size(); i++)
 	{
 		if (receiverMap[coinAddressStrings[i]] < sharePerAddress)
+		{
+			cout << endl << "In receiver.h, getIsSufficientAmount rejected the addresses or amounts." << endl;
+			cout << "For the given:" << endl;
+			cout << "Height: " << height << endl;
+			cout << "Share: " << share << endl;
+			cout << "Step: " << step << endl;
+			cout << "The expected addresses are:" << endl;
+
+			for (int i = 0; i < coinAddressStrings.size(); i++)
+				cout << coinAddressStrings[i] << endl;
+
+			cout << endl << "The given addresses are:" << endl;
+
+			for (int i = 0; i < addressStrings.size(); i++)
+				cout << addressStrings[i] << endl;
+
+			cout << endl << "The given amounts are:" << endl;
+
+			for (int i = 0; i < amounts.size(); i++)
+				cout << amounts[i] << endl;
+
+			cout << endl;
 			return false;
+		}
 	}
 
 	return true;
