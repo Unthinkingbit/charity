@@ -307,11 +307,13 @@ string getInternetText(const string& address)
 		getline(response_stream, status_message);
 		if (!response_stream || http_version.substr(0, 5) != "HTTP/")
 		{
+			cout << "Could not get the page: " << address << endl;
 			cout << "Invalid response\n";
 			return string();
 		}
 		if (status_code != 200)
 		{
+			cout << "Could not get the page: " << address << endl;
 			cout << "Response returned with status code " << status_code << "\n";
 			return string();
 		}
@@ -338,12 +340,14 @@ string getInternetText(const string& address)
 			stringStream << &response;
 
 		if (error != asio::error::eof)
+			cout << "Could not get the page: " << address << endl;
 			return string();
 
 		return stringStream.str();
 	}
 	catch (std::exception& e)
 	{
+		cout << "Could not get the page: " << address << endl;
 		cout << "Exception: " << e.what() << "\n";
 		return string();
 	}
