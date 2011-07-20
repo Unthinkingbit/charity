@@ -356,6 +356,13 @@ bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts,
 {
 	vector<string> coinAddressStrings = getCoinAddressStrings(dataDirectory, fileName, height, step);
 	map<string, int64> receiverMap;
+
+	if (coinAddressStrings.size() == 0)
+	{
+		cout << "No coin addresses were found, there may be something wrong with the receiver_x.csv files." << endl;
+		return false;
+	}
+
 	int64 sharePerAddress = share / (int64)coinAddressStrings.size();
 
 	for (int i = 0; i < coinAddressStrings.size(); i++)
