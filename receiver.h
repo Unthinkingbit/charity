@@ -128,6 +128,39 @@ vector<string> getCommaDividedWords(const string& text)
 	return commaDividedWords;
 }
 
+// Get the common output according to the peers listed in a text.
+string getCommonOutputByText(const string& fileText, const string& suffix)
+{
+	vector<string> peerNames = getPeerNames(fileText);
+	vector<string> pages = getLocationTexts(getSuffixedFileNames(peerNames, suffix));
+	int minimumIdentical = (int)ceil(globalMinimumIdenticalProportion * (double)pages.size());
+	map<string, int> pageMap;
+
+	for (vector<string>::iterator pageIterator = pages.begin(); pageIterator < pages.end(); pageIterator++)
+	{
+		string firstLine = string();
+		vector<string> lines = getTextLines(*pageIterator);
+
+		if (lines.size() > 0)
+			firstLine = getLower(lines[0]);
+
+		if (getStartsWith(firstLine, string("format")) && (firstLine.find(string("pluribusunum")) != string::npos))
+		{
+			if (pageMap.count(*pageIterator))
+				pageMap[*pageIterator] += 1;
+			else
+				pageMap[*pageIterator] = 1;
+		}
+	}
+
+	for (map<string,int>::iterator pageMapIterator = pageMap.begin(); pageMapIterator != pageMap.end(); pageMapIterator++)
+		if ((*pageMapIterator).second >= minimumIdentical)
+			return (*pageMapIterator).first;
+
+	return string();
+}
+
+// Get the vector of directory names of the given directory.
 vector<string> getDirectoryNames(const string& directoryName)
 {
 	vector<string> directoryNames;
@@ -188,38 +221,6 @@ double getFileRandomNumber(const string& dataDirectory, const string& fileName)
 	}
 
 	return getDouble(numberFileText);
-}
-
-// Get the common output according to the peers listed in a text.
-string getCommonOutputByText(const string& fileText, const string& suffix)
-{
-	vector<string> peerNames = getPeerNames(fileText);
-	vector<string> pages = getLocationTexts(getSuffixedFileNames(peerNames, suffix));
-	int minimumIdentical = (int)ceil(globalMinimumIdenticalProportion * (double)pages.size());
-	map<string, int> pageMap;
-
-	for (vector<string>::iterator pageIterator = pages.begin(); pageIterator < pages.end(); pageIterator++)
-	{
-		string firstLine = string();
-		vector<string> lines = getTextLines(*pageIterator);
-
-		if (lines.size() > 0)
-			firstLine = getLower(lines[0]);
-
-		if (getStartsWith(firstLine, string("format")) && (firstLine.find(string("pluribusunum")) != string::npos))
-		{
-			if (pageMap.count(*pageIterator))
-				pageMap[*pageIterator] += 1;
-			else
-				pageMap[*pageIterator] = 1;
-		}
-	}
-
-	for (map<string,int>::iterator pageMapIterator = pageMap.begin(); pageMapIterator != pageMap.end(); pageMapIterator++)
-		if ((*pageMapIterator).second >= minimumIdentical)
-			return (*pageMapIterator).first;
-
-	return string();
 }
 
 // Get the entire text of a file.
@@ -673,6 +674,7 @@ void makeDirectory(const string& directoryPath)
 {
 	if (getExists(directoryPath))
 		return;
+
 	if (filesystem::create_directories(filesystem::path(directoryPath)))
 		printf("The following directory was made: %s", directoryPath.c_str());
 	else
@@ -682,11 +684,7 @@ void makeDirectory(const string& directoryPath)
 // Write a text to a file.
 void writeFileText(const string& fileName, const string& fileText)
 {
-	string directoryPath = getDirectoryPath(fileName);
-
-	if (!getExists(directoryPath))
-		makeDirectory(directoryPath);
-
+	makeDirectory(getDirectoryPath(fileName));
 	ofstream fileStream(fileName.c_str());
 
 	if (fileStream.is_open())
