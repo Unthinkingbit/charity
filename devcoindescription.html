@@ -90,6 +90,7 @@ The sending code in CreateBlock looks like:
         minerValue -= sharePerAddress
     }
 ..
+//    pblock->vtx[0].vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
     txNew.vout[0].nValue = minerValue + nFees;
 
 The validation code in ConnectBlock needs the addition of:

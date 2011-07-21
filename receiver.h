@@ -1,6 +1,5 @@
 #include <boost/asio.hpp>
 #include <boost/filesystem.hpp>
-#include <dirent.h>
 
 using namespace boost;
 using namespace std;
@@ -16,7 +15,6 @@ vector<string> getCoinList(const string& directoryPath, const string& fileName, 
 vector<vector<string> > getCoinLists(const string& text);
 vector<string> getCommaDividedWords(const string& text);
 string getCommonOutputByText(const string& fileName, const string& suffix=string(""));
-vector<string> getDirectoryNames(const string& directoryName);
 string getDirectoryPath(const string& fileName);
 double getDouble(const string& doubleString);
 bool getExists(const string& fileName);
@@ -158,27 +156,6 @@ string getCommonOutputByText(const string& fileText, const string& suffix)
 			return (*pageMapIterator).first;
 
 	return string();
-}
-
-// Get the vector of directory names of the given directory.
-vector<string> getDirectoryNames(const string& directoryName)
-{
-	vector<string> directoryNames;
-	struct dirent *entry;
-	DIR *directory = opendir(directoryName.c_str());
-
-	if (directory == NULL)
-	{
-		printf("Warning, can not open directory: %s", directoryName.c_str());
-		return directoryNames;
-	}
-
-	while((entry = readdir(directory)))
-		directoryNames.push_back(string(entry->d_name));
-
-	closedir(directory);
-
-	return directoryNames;
 }
 
 // Get the directory name of the given file.
