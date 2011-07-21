@@ -653,7 +653,7 @@ void makeDirectory(const string& directoryPath)
 		return;
 
 	if (filesystem::create_directories(filesystem::path(directoryPath)))
-		printf("The following directory was made: %s", directoryPath.c_str());
+		printf("The following directory was made: %s\n", directoryPath.c_str());
 	else
 		printf("Receiver.h can not make the directory %s so give it read/write permission for that directory.", directoryPath.c_str());
 }
