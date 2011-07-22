@@ -1,8 +1,7 @@
 <html>
- <head>
-  <title>Devcoin - The Open Source Developer Coin</title>
- </head>
- <body>
+<head><title>Devcoin - The Open Source Developer Coin</title></head>
+<body>
+<pre>
 Introduction
 
 Devcoin is the coin where 90% of the generation goes to open source developers and 10% to the miners.
@@ -75,6 +74,8 @@ Administration
 Any active developer can choose to be an adminstrator at any time, and leave at any time.  They are paid for the time they administrate.
 
 An administrator has to maintain at least one copy of the receiver list.  They have to be available within four days notice for voting.  They have to choose at least one category to vote on inductees.
+
+The administrators get 10% of the devcoins as payment for their work and for being available for voting.
 
 
 Technical
@@ -204,6 +205,10 @@ The pchMessageStart in LoadBlockIndex was changed to:
         pchMessageStart[2] = 'v';
         pchMessageStart[3] = '-';
 
+The default port was changed to 52333 and the default test net port changed to 62333:
+
+inline unsigned short GetDefaultPort() { return fTestNet ? 62333 : 52333; }
+
 Random numbers for voting are determined by a hash of the string composed of the name of the person and the next block of the highest difficulty block chain, which at the time of this writing is bitcoin.  For consecutive random numbers, the next number is the hash of the string doubled and so on.  For example, say someone applies to be accepted as an active developer.  When they post their application, the hash of their name and the next block after their post is combined to make a string.  The hexadecimal hash of that string is used as a number from zero to one, multiplied by the number of administrators, to get the first administrator.  The hexadecimal hash of the doubled string is multiplied by the number of remaining adminstrators, to get the second administrator.  The hash of the tripled string is multiplied by the remaining, to get the third administrator.
 
 
@@ -217,5 +222,6 @@ Because miners get only 10% of the coins, the difficulty will be 10% that of a b
 
 For active developers, their receive key will a large portion of their devcoins, and if that key was lost or stolen they would suffer terribly.  So the almoner software will be upgraded to handle a list of keys.  There will also be bounties for software and hardware key generators.
 
+</pre>
 </body>
 </html>
