@@ -127,6 +127,22 @@ vector<string> getCommaDividedWords(const string& text)
 }
 
 // Get the common output according to the peers listed in a text.
+string getTextWithoutWhitespaceByLines(vector<string> lines)
+{
+	string textWithoutWhitespace = string();
+
+	for (vector<string>::iterator lineIterator = lines.begin(); lineIterator < lines.end(); lineIterator++)
+	{
+		string line = getReplaced(*lineIterator, string(" "), string());
+
+		if (lines.size() > 0)
+			textWithoutWhitespace += line + string("\n");
+	}
+
+	return textWithoutWhitespace;
+}
+
+// Get the common output according to the peers listed in a text.
 string getCommonOutputByText(const string& fileText, const string& suffix)
 {
 	vector<string> peerNames = getPeerNames(fileText);
@@ -138,16 +154,17 @@ string getCommonOutputByText(const string& fileText, const string& suffix)
 	{
 		string firstLine = string();
 		vector<string> lines = getTextLines(*pageIterator);
+		string textWithoutWhitespace = getTextWithoutWhitespaceByLines(lines);
 
 		if (lines.size() > 0)
 			firstLine = getLower(lines[0]);
 
 		if (getStartsWith(firstLine, string("format")) && (firstLine.find(string("pluribusunum")) != string::npos))
 		{
-			if (pageMap.count(*pageIterator))
-				pageMap[*pageIterator] += 1;
+			if (pageMap.count(textWithoutWhitespace))
+				pageMap[textWithoutWhitespace] += 1;
 			else
-				pageMap[*pageIterator] = 1;
+				pageMap[textWithoutWhitespace] = 1;
 		}
 	}
 
@@ -668,7 +685,6 @@ void makeDirectory(const string& directoryPath)
 	if (getReplaced(directoryPath, string(" "), string()) == string() || directoryPath == string("."))
 		return;
 
-	cout << "directoryPath" << directoryPath << endl;
 	if (getExists(directoryPath))
 		return;
 
