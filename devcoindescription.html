@@ -46,14 +46,14 @@ Bounties
 
 The initial bounties are for making a web site where all devcoin qualifying writing could be uploaded.  The web site would have limited advertising (only text ads or a single non animated banner ad), which would support the site, any remaining income would be distributed among the writers.  The next bounty is for an open source devcoin block explorer.
 
-The medium term bounties are for a forum site which requires bitcoins / devcoins to join and post, the money would support the site, any remaining income would be distributed according to the wishes of the posters.  A web email which requires coins to join and post, the money would support the site, any remaining income would be distributed to charity.  Software changes to the mainline client to make it more difficult to double spend.  Software changes to the mainline client to make it easier to make alternative clients.  Expansion of the devcoin writer web site to also host music, art and movies.
+The medium term bounties are for a forum site which requires bitcoins / devcoins to join and post, the money would support the site, any remaining income would be distributed according to the wishes of the posters.  A web email which requires coins to join and post, the money would support the site, any remaining income would be distributed to charity.  Software upgrades to the mainline client to make it more difficult to double spend.  Software changes to the mainline client to make it easier to make alternative clients.  Expansion of the devcoin writer web site to also host music, art and movies.
 
 In the long term, bounties for improvements of open source software in general.  Bounties for open source machinery, circuits, vehicles, housing, games and medicine.  Bounties for open source villages and other types of communities.  Bounties for open source transportation, energy and resource extraction systems.  The ultimate purpose of the bounties is to fund all kinds of open source development, so that people could choose to live in an open source community where everything therein could be developed or built by anyone.
 
 
 Active Developer
 
-If you actively develop open source software, you can apply to get a share of devcoin generation by posting in an induction thread, like:
+If you actively develop open source of any kind, you can apply to get a share of devcoin generation by posting in an induction thread, like:
 https://forum.bitcoin.org/index.php?topic=18498
 
 Your candidacy would then be voted on, usually within a week.  Depending on the vote you would either be inducted or you could try again after a certain time.
@@ -161,14 +161,61 @@ static const int64 MAX_MONEY = 21000000000 * COIN;
 
 and CENT was replaced by the MIN_TX_FEE wherever the min transaction fee was meant to be used.
 
+The default data directory, irc channel and pchMessageStart was changed to devcoin.  The default directory code in GetDefaultDataDir was changed to:
+
+    // Windows: C:\Documents and Settings\username\Application Data\Devcoin
+    // Mac: ~/Library/Application Support/Devcoin
+    // Unix: ~/.devcoin
+#ifdef __WXMSW__
+    // Windows
+    return MyGetSpecialFolderPath(CSIDL_APPDATA, true) + "\\Devcoin";
+#else
+    char* pszHome = getenv("HOME");
+    if (pszHome == NULL || strlen(pszHome) == 0)
+        pszHome = (char*)"/";
+    string strHome = pszHome;
+    if (strHome[strHome.size()-1] != '/')
+        strHome += '/';
+#ifdef __WXMAC_OSX__
+    // Mac
+    strHome += "Library/Application Support/";
+    filesystem::create_directory(strHome.c_str());
+    return strHome + "Devcoin";
+#else
+    // Unix
+    return strHome + ".devcoin";
+
+The send code in ThreadIRCSeed2 was changed to:
+
+            Send(hSocket, "JOIN #devcoinTEST\r");
+            Send(hSocket, "WHO #devcoinTEST\r");
+        } else {
+            // randomly join #bitcoin00-#bitcoin99
+//            int channel_number = GetRandInt(100);
+//            Send(hSocket, strprintf("JOIN #bitcoin%02d\r", channel_number).c_str());
+//            Send(hSocket, strprintf("WHO #bitcoin%02d\r", channel_number).c_str());
+            Send(hSocket, "JOIN #devcoin\r");
+            Send(hSocket, "WHO #devcoin\r");
+
+The pchMessageStart in LoadBlockIndex was changed to:
+
+        pchMessageStart[0] = 'd';
+        pchMessageStart[1] = 'e';
+        pchMessageStart[2] = 'v';
+        pchMessageStart[3] = '-';
+
 Random numbers for voting are determined by a hash of the string composed of the name of the person and the next block of the highest difficulty block chain, which at the time of this writing is bitcoin.  For consecutive random numbers, the next number is the hash of the string doubled and so on.  For example, say someone applies to be accepted as an active developer.  When they post their application, the hash of their name and the next block after their post is combined to make a string.  The hexadecimal hash of that string is used as a number from zero to one, multiplied by the number of administrators, to get the first administrator.  The hexadecimal hash of the doubled string is multiplied by the number of remaining adminstrators, to get the second administrator.  The hash of the tripled string is multiplied by the remaining, to get the third administrator.
 
 
 Concerns
 
-The primary concern is that in the long term, most organizations become corrupt, regardless of the intentions of the founders.  The single best defense against the corruption of an organization is competition.  Devcoin would be the first currency to give part of its generation to developers.  However, developers are welcome to fork it in turn, and create say a reformcoin, that also gives generation to developers, but starts with another set of founders.  If the reformcoin is less corrupt than devcoin, people will sell the devcoin and buy reformcoins.  Even if most people remain with devcoin, just the possibility that people could move to reformcoin will tend to rein in the corruption of the devcoin.  To increase the availability of competition, there will be bounties for software to easily make alternate currencies derived from devcoin, and bounties for easy to use range voting software.  This would also make it easier for people to make other coins like town coins, and project coins.
+The primary concern is that in the long term, most organizations become corrupt, regardless of the intentions of the founders.  The single best defense against the corruption of an organization is competition.  Devcoin would be the first currency to give part of its generation to developers.  However, developers are welcome to fork it in turn, and create say a reformcoin, that also gives generation to developers, but starts with another set of founders.  If the reformcoin is less corrupt than devcoin, people will sell the devcoin and buy reformcoins.  Even if most people remain with devcoin, just the possibility that people could move to reformcoin will tend to rein in the corruption of the devcoin.  To increase the availability of competition, there will be bounties for software to easily make alternate currencies derived from devcoin, and bounties for easy to use range voting software.  This would also make it easier for people to make other coins like town coins and project coins.
 
-..
+..transparency
+
+Because miners get only 10% of the coins, the difficulty will be 10% that of a bitcoin type chain of equal value.  So double spending attacks will be much easier.  To protect against this, bounties will be offered for upgrades to the mainline client to make it more difficult to double spend.
+
+..key theft
 
 </body>
 </html>

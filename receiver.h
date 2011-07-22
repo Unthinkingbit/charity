@@ -40,6 +40,7 @@ string getStringByInt(int integer);
 string getSuffixedFileName(const string& fileName, const string& suffix=string());
 vector<string> getSuffixedFileNames(vector<string> fileNames, const string& suffix=string());
 vector<string> getTextLines(const string& text);
+string getTextWithoutWhitespaceByLines(vector<string> lines);
 vector<string> getTokens(const string& text=string(), const string& delimiters=string(" "));
 void makeDirectory(const string& directoryPath);
 void writeFileText(const string& fileName, const string& fileText);
@@ -124,22 +125,6 @@ vector<string> getCommaDividedWords(const string& text)
 	commaDividedWords.push_back(text.substr(0, commaIndex));
 	commaDividedWords.push_back(text.substr(commaIndex + 1));
 	return commaDividedWords;
-}
-
-// Get the common output according to the peers listed in a text.
-string getTextWithoutWhitespaceByLines(vector<string> lines)
-{
-	string textWithoutWhitespace = string();
-
-	for (vector<string>::iterator lineIterator = lines.begin(); lineIterator < lines.end(); lineIterator++)
-	{
-		string line = getReplaced(*lineIterator, string(" "), string());
-
-		if (lines.size() > 0)
-			textWithoutWhitespace += line + string("\n");
-	}
-
-	return textWithoutWhitespace;
 }
 
 // Get the common output according to the peers listed in a text.
@@ -660,6 +645,22 @@ vector<string> getSuffixedFileNames(vector<string> fileNames, const string& suff
 vector<string> getTextLines(const string& text)
 {
 	return getTokens(getReplaced(getReplaced(text, string("\r"), string("\n")), string("\n\n"), string("\n")), string("\n"));
+}
+
+// Get the text without whitespace, joined with newlines in between.
+string getTextWithoutWhitespaceByLines(vector<string> lines)
+{
+	string textWithoutWhitespace = string();
+
+	for (vector<string>::iterator lineIterator = lines.begin(); lineIterator < lines.end(); lineIterator++)
+	{
+		string line = getReplaced(*lineIterator, string(" "), string());
+
+		if (line.size() > 0)
+			textWithoutWhitespace += line + string("\n");
+	}
+
+	return textWithoutWhitespace;
 }
 
 // Get the tokens of the text split by the delimeters.
