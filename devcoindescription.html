@@ -44,9 +44,12 @@ The filmmakers category includes people who make movies, shorts, and animation. 
 
 Bounties
 
-The initial bounties are for the first five inductees in the programmer and hardware category, and the first five in the writer category.  Also there is a bounty for making a web site where all devcoin qualifying writing can be uploaded.  The web site would have limited advertising (only text ads or a single non animated banner ad), which would support the site, any remaining income would be distributed among the contributors.
+The initial bounties are for the first five inductees in the programmer and hardware category, and the first five in the writer category.  Also there is a bounty for making a web site where all devcoin qualifying writing can be uploaded.  The web site would have limited advertising (only text ads or a single non animated banner ad), which would support the site, any remaining income would be distributed among the writers.
 
-..
+The medium term bounties are for the next set of inductees for the remaining categories.  A forum site which requires bitcoins / devcoins to join and post, the money would support the site, any remaining income would be distributed according to the wishes of the posters.  A web email which requires coins to join and post, the money would support the site, any remaining income would be distributed to charity.  Software changes to the mainline client to make it more difficult to double spend.  Software changes to the mainline client to make it easier to make alternative clients.  Expansion of the devcoin writer web site to also host music, art and movies.
+
+In the long term, bounties for open source machinery, circuits, vehicles, housing, games and medicine.  Bounties for open source villages and other types of communities.  Bounties for open source transportation, energy and resource extraction systems.  The ultimate purpose of the bounties is to fund all kinds of open source development, so that people could choose to live in an open source community where everything therein could be developed or built by anyone.
+
 
 Ongoing Development
 
@@ -74,7 +77,7 @@ Any active developer can choose to be an adminstrator at any time, and leave at 
 An administrator has to maintain at least one copy of the receiver list.  They have to be available within four days notice for voting.  They have to choose at least one category to vote on inductees.
 
 
-Technology
+Technical
 
 Devcoin is an alternate bitcoin block chain.  The devcoin client is a fork of bitcoin-qt.  The generation is constant at 50,000 coins per block, which is 1,000 times higher than the bitcoin starting rate.  At a typical rate of 144 blocks a day, 1,008 a week, roughly 4,000 a month, that means the 200,000,000 devcoins are generated each month.  Of those, 90% go to the developers, so the developers get 180,000,000 devcoins a month in total.
 
@@ -139,6 +142,11 @@ static const int64 initialSubsidy = 50000 * COIN;
 static const int64 share = initialSubsidy * 9 / 10;
 static const int64 fallbackReduction = (initialSubsidy + share) / 2;
 
+Code in GetBlockValue is changed:
+
+//int64 nSubsidy = 50 * COIN;
+int64 nSubsidy = initialSubsidy;
+
 The constants for the transaction fees and max money are changed:
 
 //static const int64 MIN_TX_FEE = 50000;
@@ -148,12 +156,9 @@ static const int64 MIN_RELAY_TX_FEE = 10000000;
 //static const int64 MAX_MONEY = 21000000 * COIN;
 static const int64 MAX_MONEY = 21000000000 * COIN;
 
-Code in GetBlockValue is changed:
-
-//int64 nSubsidy = 50 * COIN;
-int64 nSubsidy = initialSubsidy;
-
 CENT was replaced by the MIN_TX_FEE wherever the min transaction fee was meant to be used.
+
+Random numbers for voting are determined by a hash of the string composed of the name of the person and the next block of the highest difficulty block chain, which at the time of this writing is bitcoin.  For consecutive random numbers, the next number is the hash of the string doubled and so on.  For example, say someone applies to be accepted as an active developer.  When they post their application, the hash of their name and the next block after their post is combined to make a string.  The hexadecimal hash of that string is used as a number from zero to one, multiplied by the number of administrators, to get the first administrator.  The hexadecimal hash of the doubled string is multiplied by the number of remaining adminstrators, to get the second administrator.  The hash of the tripled string is multiplied by the remaining, to get the third administrator.
 
 
 Concerns
