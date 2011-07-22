@@ -62,7 +62,7 @@ Your candidacy would then be voted on, usually within a week.  Depending on the 
 <br>
 Voting<br>
 <br>
-Voting for will be range voting on a scale of 0 to 99.<br>
+Voting for will be range voting on a scale of 0 to 99:<br>
 <a href="http://rangevoting.org/">http://rangevoting.org/</a><br>
 <a href="http://rangevoting.org/Why99.html">http://rangevoting.org/Why99.html</a><br>
 <br>
@@ -84,7 +84,7 @@ Technical<br>
 <br>
 Devcoin is an alternate bitcoin block chain.  The devcoin client is a fork of bitcoin-qt.  The generation is constant at 50,000 coins per block, which is 1,000 times higher than the bitcoin starting rate.  At a typical rate of 144 blocks a day, 1,008 a week, roughly 4,000 a month, that means the 200,000,000 devcoins are generated each month.  Of those, 90% go to the developers, so the developers get 180,000,000 devcoins a month in total.<br>
 <br>
-The sending code in CreateBlock looks like the following.<br>
+The sending code in CreateBlock looks like the following:<br>
 <pre>
 	vector<string> coinAddressStrings = getCoinAddressStrings(GetDataDir(), string("receiver.csv"), (int)pindexPrev->nHeight+1);
     txNew.vout.resize(coinAddressStrings.size() + 1);
@@ -111,9 +111,9 @@ The sending code in CreateBlock looks like the following.<br>
 ..
 //    pblock->vtx[0].vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
     txNew.vout[0].nValue = minerValue + nFees;
-
-The validation code in ConnectBlock needs the addition of:
-
+</pre>
+The validation code in ConnectBlock needs the addition of:<br>
+<pre>
 	//
 	// Check that the required share was sent to each beneficiary
 	//
@@ -131,9 +131,9 @@ The validation code in ConnectBlock needs the addition of:
 		if (!getIsSufficientAmount(addressStrings, amounts, GetDataDir(), string("receiver.csv"), (int)pindex->nHeight, share))
 			return error("ConnectBlock() : Share to beneficiary is insufficient");
 	}
-</pre><br>
+</pre>
 <br>
-Receiver.h accesses a synchronized list of receivers.<br>
+Receiver.h accesses a synchronized list of receivers:<br>
 https://raw.github.com/Unthinkingbit/charity/master/receiver.h<br>
 <br>
 For example, say the devcoin client requests the height 9000 receivers, the height step is 4000 and only the root receiver_0.csv saved.  Receiver.h will first look for the receiver_2.csv file.  Since it's not there it will step down and look for receiver_1.csv.  Still not there so it looks for and finds receiver_0.csv.  It then downloads receiver_1.csv by looking at the peers in receiver_0.csv and saves in the data directory.  It then downloads receiver_2.csv by looking at the peers in receiver_1.csv and saves in the data directory.  Once it has receiver_2.csv, it parses it to get the list of receivers and uses height modulo list length to return the receivers for height 9000.<br>
@@ -150,12 +150,12 @@ Code in GetBlockValue is changed:
 
 //int64 nSubsidy = 50 * COIN;
 int64 nSubsidy = initialSubsidy;
-</pre><br>
+</pre>
 <br>
 There has been talk about shifting the decimal place in bitcoin, because a maximum of 21,000,000 bitcoins would lead to people having to deal in milliBitcoins if bitcoin gets really popular.  However, once a block chain is made, it is really difficult to change the value of the currency.  So even though people will generally want to move the decimal place, it would be not be done and people would be stuck with an awkward currency unit.  In the 'RFC: SI-type of naming convention for BTC' thread a lot of the problems people have dealing with a large currency unit are discussed.<br>
 http://forum.bitcoin.org/index.php?topic=9299.0<br>
 <br>
-Since devcoin is a new currency, it is easy to multiply the coins by 1,000.  The constants for the transaction fees and max money are changed.<br>
+Since devcoin is a new currency, it is easy to multiply the coins by 1,000.  The constants for the transaction fees and max money are changed:<br>
 <pre>
 //static const int64 MIN_TX_FEE = 50000;
 static const int64 MIN_TX_FEE = 50000000;
@@ -163,11 +163,11 @@ static const int64 MIN_TX_FEE = 50000000;
 static const int64 MIN_RELAY_TX_FEE = 10000000;
 //static const int64 MAX_MONEY = 21000000 * COIN;
 static const int64 MAX_MONEY = 21000000000 * COIN;
-
-and CENT was replaced by the MIN_TX_FEE wherever the min transaction fee was meant to be used.
-
-The default data directory, irc channel and pchMessageStart was changed to devcoin.  The default directory code in GetDefaultDataDir was changed to:
-
+</pre>
+and CENT was replaced by the MIN_TX_FEE wherever the min transaction fee was meant to be used.<br>
+<br>
+The default data directory, irc channel and pchMessageStart was changed to devcoin.  The default directory code in GetDefaultDataDir was changed to:<br>
+<pre>
     // Windows: C:\Documents and Settings\username\Application Data\Devcoin
     // Mac: ~/Library/Application Support/Devcoin
     // Unix: ~/.devcoin
@@ -189,9 +189,9 @@ The default data directory, irc channel and pchMessageStart was changed to devco
 #else
     // Unix
     return strHome + ".devcoin";
-
-The send code in ThreadIRCSeed2 was changed to:
-
+</pre>
+The send code in ThreadIRCSeed2 was changed to:<br>
+<pre>
             Send(hSocket, "JOIN #devcoinTEST\r");
             Send(hSocket, "WHO #devcoinTEST\r");
         } else {
@@ -201,16 +201,16 @@ The send code in ThreadIRCSeed2 was changed to:
 //            Send(hSocket, strprintf("WHO #bitcoin%02d\r", channel_number).c_str());
             Send(hSocket, "JOIN #devcoin\r");
             Send(hSocket, "WHO #devcoin\r");
-
-The pchMessageStart in LoadBlockIndex was changed to:
-
+</pre>
+The pchMessageStart in LoadBlockIndex was changed to:<br>
+<pre>
         pchMessageStart[0] = 'd';
         pchMessageStart[1] = 'e';
         pchMessageStart[2] = 'v';
         pchMessageStart[3] = '-';
-
-The default port was changed to 52333 and the default test net port changed to 62333:
-
+</pre>
+The default port was changed to 52333 and the default test net port changed to 62333:<br>
+<pre>
 inline unsigned short GetDefaultPort() { return fTestNet ? 62333 : 52333; }
 </pre>
 <br>
