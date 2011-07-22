@@ -31,7 +31,7 @@ Categories
 
 Licenses for programming and hardware which qualify for devcoins are the AGPL, Apache, BSD, GPL, LGPL, MIT, public domain, and unlicense.  Licenses for writers, musicians, painters and graphic artists, and filmmakers which qualify for devcoins are the Creative Commons Share Alike (wikipedia license), Creative Commons Attribution, public domain, and unlicense.
 
-Programmers and hardware developers includes, but is not limited to, people who develop open source software, websites, machinery, circuits, vehicles, housing, games and medicine.
+Programmers and hardware developers includes, but is not limited to, people who develop open source software, websites, machinery, circuits, vehicles, housing, games, medicine, and transportation, energy and resource extraction systems.
 
 Writers includes people who write books, articles, fiction, poetry, and documentation.  Fan fiction only qualifies if the source license also qualifies for devcoins.
 
@@ -44,14 +44,14 @@ The filmmakers category includes people who make movies, shorts, and animation. 
 
 Bounties
 
-The initial bounties are for the first five inductees in the programmer and hardware category, and the first five in the writer category.  Also there is a bounty for making a web site where all devcoin qualifying writing can be uploaded.  The web site would have limited advertising (only text ads or a single non animated banner ad), which would support the site, any remaining income would be distributed among the writers.
+The initial bounties are for making a web site where all devcoin qualifying writing could be uploaded.  The web site would have limited advertising (only text ads or a single non animated banner ad), which would support the site, any remaining income would be distributed among the writers.  The next bounty is for an open source devcoin block explorer.
 
-The medium term bounties are for the next set of inductees for the remaining categories.  A forum site which requires bitcoins / devcoins to join and post, the money would support the site, any remaining income would be distributed according to the wishes of the posters.  A web email which requires coins to join and post, the money would support the site, any remaining income would be distributed to charity.  Software changes to the mainline client to make it more difficult to double spend.  Software changes to the mainline client to make it easier to make alternative clients.  Expansion of the devcoin writer web site to also host music, art and movies.
+The medium term bounties are for a forum site which requires bitcoins / devcoins to join and post, the money would support the site, any remaining income would be distributed according to the wishes of the posters.  A web email which requires coins to join and post, the money would support the site, any remaining income would be distributed to charity.  Software changes to the mainline client to make it more difficult to double spend.  Software changes to the mainline client to make it easier to make alternative clients.  Expansion of the devcoin writer web site to also host music, art and movies.
 
-In the long term, bounties for open source machinery, circuits, vehicles, housing, games and medicine.  Bounties for open source villages and other types of communities.  Bounties for open source transportation, energy and resource extraction systems.  The ultimate purpose of the bounties is to fund all kinds of open source development, so that people could choose to live in an open source community where everything therein could be developed or built by anyone.
+In the long term, bounties for improvements of open source software in general.  Bounties for open source machinery, circuits, vehicles, housing, games and medicine.  Bounties for open source villages and other types of communities.  Bounties for open source transportation, energy and resource extraction systems.  The ultimate purpose of the bounties is to fund all kinds of open source development, so that people could choose to live in an open source community where everything therein could be developed or built by anyone.
 
 
-Ongoing Development
+Active Developer
 
 If you actively develop open source software, you can apply to get a share of devcoin generation by posting in an induction thread, like:
 https://forum.bitcoin.org/index.php?topic=18498
@@ -72,7 +72,7 @@ Other issues will be decided in a similar fashion.  If the issue is particular t
 
 Administration
 
-Any active developer can choose to be an adminstrator at any time, and leave at any time.  They are paid for the time they adminstrate.
+Any active developer can choose to be an adminstrator at any time, and leave at any time.  They are paid for the time they administrate.
 
 An administrator has to maintain at least one copy of the receiver list.  They have to be available within four days notice for voting.  They have to choose at least one category to vote on inductees.
 
@@ -132,11 +132,11 @@ The validation code in ConnectBlock needs the addition of:
 Receiver.h accesses a synchronized list of receivers:
 https://raw.github.com/Unthinkingbit/charity/master/receiver.h
 
-For example, say the devcoin client requests the height 9000 receivers, the height step is 4000 and only the root receiver_0.csv saved.  Receiver.h will first look for the receiver_2.csv.  Since it's not there it will step down and look for receiver_1.csv.  Still not there so it looks for and finds receiver_0.csv.  It then downloads and saves in the data directory; receiver_1.csv by looking at the peers in receiver_0.csv.  It then downloads and saves in the data directory; receiver_2.csv by looking at the peers in receiver_1.csv.  Once it has receiver_2.csv, it parses it to get the list of receivers and uses height modulo list length to return the receivers for 9000.
+For example, say the devcoin client requests the height 9000 receivers, the height step is 4000 and only the root receiver_0.csv saved.  Receiver.h will first look for the receiver_2.csv file.  Since it's not there it will step down and look for receiver_1.csv.  Still not there so it looks for and finds receiver_0.csv.  It then downloads receiver_1.csv by looking at the peers in receiver_0.csv and saves in the data directory.  It then downloads receiver_2.csv by looking at the peers in receiver_1.csv and saves in the data directory.  Once it has receiver_2.csv, it parses it to get the list of receivers and uses height modulo list length to return the receivers for height 9000.
 
-Receiver also looks ahead after it is a random portion between 0.75 and roughly 0.95 of the next step so that there is no mass downloading when the block height switches from x999 to x000.  To resist ddos attacks and to work even when some web sites are down, it picks the page which the majority of peers have available.  The step size of 4000 gives an update roughly each month.
+Receiver also looks ahead, after it is a random portion between 0.75 and roughly 0.95 of the way to the next step so that there is no mass downloading when the block height switches from x999 to x000.  To resist ddos attacks and to work even when some web sites are down, it picks the page which the majority of peers have available.  The step size of 4000 gives an update roughly each month.
 
-The constants required for the share, subsidy, and fallback reduction are changed:
+The constants required for the subsidy are changed and constants for share, and fallback reduction are added:
 
 static const int64 initialSubsidy = 50000 * COIN;
 static const int64 share = initialSubsidy * 9 / 10;
@@ -147,7 +147,10 @@ Code in GetBlockValue is changed:
 //int64 nSubsidy = 50 * COIN;
 int64 nSubsidy = initialSubsidy;
 
-The constants for the transaction fees and max money are changed:
+There has been talk about shifting the decimal place in bitcoin, because a maximum of 21,000,000 bitcoins would lead to people having to deal in milliBitcoins if bitcoin gets really popular.  However, once a block chain is made, it is really difficult to change the value of the currency.  So even though people will generally want to move the decimal place, it would be not be done and people would be stuck with an awkward currency unit.  In the 'RFC: SI-type of naming convention for BTC' thread a lot of the problems people have dealing with a large currency unit are discussed:
+http://forum.bitcoin.org/index.php?topic=9299.0
+
+Since devcoin is a new currency, it is easy to multiply the coins by 1,000.  The constants for the transaction fees and max money are changed:
 
 //static const int64 MIN_TX_FEE = 50000;
 static const int64 MIN_TX_FEE = 50000000;
@@ -156,7 +159,7 @@ static const int64 MIN_RELAY_TX_FEE = 10000000;
 //static const int64 MAX_MONEY = 21000000 * COIN;
 static const int64 MAX_MONEY = 21000000000 * COIN;
 
-CENT was replaced by the MIN_TX_FEE wherever the min transaction fee was meant to be used.
+and CENT was replaced by the MIN_TX_FEE wherever the min transaction fee was meant to be used.
 
 Random numbers for voting are determined by a hash of the string composed of the name of the person and the next block of the highest difficulty block chain, which at the time of this writing is bitcoin.  For consecutive random numbers, the next number is the hash of the string doubled and so on.  For example, say someone applies to be accepted as an active developer.  When they post their application, the hash of their name and the next block after their post is combined to make a string.  The hexadecimal hash of that string is used as a number from zero to one, multiplied by the number of administrators, to get the first administrator.  The hexadecimal hash of the doubled string is multiplied by the number of remaining adminstrators, to get the second administrator.  The hash of the tripled string is multiplied by the remaining, to get the third administrator.
 

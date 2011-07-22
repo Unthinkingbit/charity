@@ -61,7 +61,7 @@ vector<string> getCoinList(const string& directoryPath, const string& fileName, 
 
 	if ((int)coinLists.size() == 0)
 	{
-		printf("Warning, no coin lists were found for the file: %s", fileName.c_str());
+		printf("Warning, no coin lists were found for the file: %s\n", fileName.c_str());
 		return getTokens();
 	}
 
@@ -320,10 +320,17 @@ string getInternetText(const string& address)
 			stringStream << &response;
 
 		if (error != asio::error::eof)
+		{
 			cout << "Could not get the page: " << address << endl;
 			return string();
+		}
 
-		return stringStream.str();
+		string internetText = stringStream.str();
+
+		if (internetText.size() == 0)
+			cout << "Only blank page at: " << address << endl;
+
+		return internetText;
 	}
 	catch (std::exception& e)
 	{
@@ -540,7 +547,16 @@ string getStepText(const string& dataDirectory, const string& fileName, int heig
 	string stepText = getFileText(stepFileName);
 
 	if (stepText == string())
-		return string();
+	{
+		if (stepFileName == string("receiver_0.csv"))
+		{
+			cout << "Downloading receiver_0.csv base file." << endl;
+			stepText = getInternetText("http://pastebin.com/raw.php?i=DB1dyxuU");
+			writeFileText(stepFileName, stepText);
+		}
+		else
+			return string();
+	}
 
 	writeFileText(directorySubName, stepText);
 	return stepText;
@@ -649,18 +665,28 @@ vector<string> getTokens(const string& text, const string& delimiters)
 // Make a directory if it does not already exist.
 void makeDirectory(const string& directoryPath)
 {
+	if (getReplaced(directoryPath, string(" "), string()) == string() || directoryPath == string("."))
+		return;
+
+	cout << "directoryPath" << directoryPath << endl;
 	if (getExists(directoryPath))
 		return;
 
 	if (filesystem::create_directories(filesystem::path(directoryPath)))
 		printf("The following directory was made: %s\n", directoryPath.c_str());
 	else
-		printf("Receiver.h can not make the directory %s so give it read/write permission for that directory.", directoryPath.c_str());
+		printf("Receiver.h can not make the directory %s so give it read/write permission for that directory.\n", directoryPath.c_str());
 }
 
 // Write a text to a file.
 void writeFileText(const string& fileName, const string& fileText)
 {
+	if (fileText == string())
+	{
+		cout << "Warning, writeFileText in receiver.h won't write the file:\n" << fileName << "\nbecause the text is blank.\n";
+		return;
+	}
+
 	makeDirectory(getDirectoryPath(fileName));
 	ofstream fileStream(fileName.c_str());
 
