@@ -5,21 +5,24 @@ using namespace boost;
 using namespace std;
 
 
+static int globalDownloadIndex = 10;
 static const double globalMinimumIdenticalProportion = 0.500001;
-static const double globalWriteNextThreshold = 0.75;
 static const int globalStepDefault = 4000;
+static int globalTimeOut = 10;
+static int globalTimeOutDouble = globalTimeOut + globalTimeOut;
+static const double globalWriteNextThreshold = 0.75;
 
 
 vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step=globalStepDefault);
-vector<string> getCoinList(const string& directoryPath, const string& fileName, int height, int step);
-vector<vector<string> > getCoinLists(const string& text);
 vector<string> getCommaDividedWords(const string& text);
 string getCommonOutputByText(const string& fileName, const string& suffix=string(""));
+vector<string> getDirectoryNames(const string& directoryName);
 string getDirectoryPath(const string& fileName);
 double getDouble(const string& doubleString);
 bool getExists(const string& fileName);
 double getFileRandomNumber(const string& dataDirectory, const string& fileName);
 string getFileText(const string& fileName);
+string getHttpsText(const string& address);
 int getInt(const string& integerString);
 string getInternetText(const string& address);
 bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts, const string& dataDirectory, const string& fileName, int height, int64 share, int step=globalStepDefault);
@@ -28,7 +31,7 @@ string getLocationText(const string& address);
 vector<string> getLocationTexts(vector<string> addresses);
 string getLower(const string& text);
 vector<string> getPeerNames(const string& text);
-string getReplaced(const string& text, const string& searchString, const string& replaceString);
+string getReplaced(const string& text, const string& searchString=string(" "), const string& replaceString=string());
 bool getStartsWith(const string& firstString, const string& secondString);
 string getStepFileName(const string& fileName, int height, int step);
 string getStepOutput(const string& directoryPathInput, const string& fileName, int height, int step);
@@ -39,6 +42,7 @@ string getStringByDouble(double doublePrecision);
 string getStringByInt(int integer);
 string getSuffixedFileName(const string& fileName, const string& suffix=string());
 vector<string> getSuffixedFileNames(vector<string> fileNames, const string& suffix=string());
+string getTempDirectoryPath();
 vector<string> getTextLines(const string& text);
 string getTextWithoutWhitespaceByLines(vector<string> lines);
 vector<string> getTokens(const string& text=string(), const string& delimiters=string(" "));
@@ -51,32 +55,8 @@ void writeNextIfValueHigher(const string& directoryPath, const string& fileName,
 // Get the coin address strings for a height.
 vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step)
 {
-	return getCoinList(dataDirectory, fileName, height, step);
-}
-
-// Get the coin list from a text for a height.
-vector<string> getCoinList(const string& directoryPath, const string& fileName, int height, int step)
-{
-	string stepOutput = getStepOutput(directoryPath, fileName, height, step);
-	vector<vector<string> > coinLists = getCoinLists(stepOutput);
-
-	if ((int)coinLists.size() == 0)
-	{
-		printf("Warning, no coin lists were found for the file: %s\n", fileName.c_str());
-		return getTokens();
-	}
-
-	int remainder = height - step * (height / step);
-	int modulo = remainder % (int)coinLists.size();
-
-	return coinLists[modulo];
-}
-
-// Get the coin lists from a text.
-vector<vector<string> > getCoinLists(const string& text)
-{
 	vector<vector<string> > coinLists;
-	vector<string> textLines = getTextLines(text);
+	vector<string> textLines = getTextLines(getStepOutput(dataDirectory, fileName, height, step));
 	bool isCoinSection = false;
 
 	for (int lineIndex = 0; lineIndex < textLines.size(); lineIndex++)
@@ -86,7 +66,7 @@ vector<vector<string> > getCoinLists(const string& text)
 		vector<string> words = getCommaDividedWords(line);
 
 		if (words.size() > 0)
-			firstLowerSpaceless = getReplaced(getLower(words[0]), string(" "), string());
+			firstLowerSpaceless = getReplaced(getLower(words[0]));
 
 		if (firstLowerSpaceless == string("coin"))
 		{
@@ -107,7 +87,16 @@ vector<vector<string> > getCoinLists(const string& text)
 			isCoinSection = true;
 	}
 
-	return coinLists;
+	if ((int)coinLists.size() == 0)
+	{
+		printf("Warning, no coin lists were found for the file: %s\n", fileName.c_str());
+		return getTokens();
+	}
+
+	int remainder = height - step * (height / step);
+	int modulo = remainder % (int)coinLists.size();
+
+	return coinLists[modulo];
 }
 
 // Get the words divided around the comma.
@@ -130,6 +119,14 @@ vector<string> getCommaDividedWords(const string& text)
 // Get the common output according to the peers listed in a text.
 string getCommonOutputByText(const string& fileText, const string& suffix)
 {
+	if (suffix == string("0") || suffix == string("1"))
+	{
+		string receiverFileName = string("receiver_") + suffix + string(".csv");
+
+		if (getExists(receiverFileName))
+			return getFileText(receiverFileName);
+	}
+
 	vector<string> peerNames = getPeerNames(fileText);
 	vector<string> pages = getLocationTexts(getSuffixedFileNames(peerNames, suffix));
 	int minimumIdentical = (int)ceil(globalMinimumIdenticalProportion * (double)pages.size());
@@ -160,10 +157,35 @@ string getCommonOutputByText(const string& fileText, const string& suffix)
 	return string();
 }
 
+// Get the vector of directory names of the given directory.
+vector<string> getDirectoryNames(const string& directoryName)
+{
+	vector<string> directoryNames;
+
+	if (!getExists(directoryName))
+	{
+		printf("Warning, can not open directory: %s\n", directoryName.c_str());
+		return directoryNames;
+	}
+
+	filesystem::directory_iterator endIterator;
+
+	for (filesystem::directory_iterator directoryIterator(directoryName); directoryIterator != endIterator; ++directoryIterator)
+	{
+		if (!filesystem::is_directory(directoryIterator->status()))
+			directoryNames.push_back(directoryIterator->leaf());
+	}
+
+	return directoryNames;
+}
+
 // Get the directory name of the given file.
 string getDirectoryPath(const string& fileName)
 {
-	return (filesystem::path(fileName)).parent_path().string();
+	string directoryPath = getReplaced((filesystem::path(fileName)).parent_path().string());
+	if (directoryPath == string())
+		return string(".");
+	return directoryPath;
 }
 
 // Get a double precision float from a string.
@@ -217,6 +239,53 @@ string getFileText(const string& fileName)
 	fileText.assign((istreambuf_iterator<char>(fileStream)), istreambuf_iterator<char>());
 	fileStream.close();
 	return fileText;
+}
+
+// Get the entire text of an https page.
+string getHttpsText(const string& address)
+{
+
+	string directoryPath = getJoinedPath(getTempDirectoryPath(), string("devcoin_temp_files"));
+	string pythonString = string("python https.py -address ");
+	makeDirectory(directoryPath);
+	vector<string> directoryNames = getDirectoryNames(directoryPath);
+
+	for (int i = 0; i < directoryNames.size(); i++)
+	{
+		string directoryName = directoryNames[i];
+		int firstUnderscoreIndex = directoryName.find("_");
+
+		if (firstUnderscoreIndex != string::npos)
+			if (time(NULL) > getInt(directoryName.substr(0, firstUnderscoreIndex)))
+				remove(getJoinedPath(directoryPath, directoryName).c_str());
+	}
+
+	int startTime = time(NULL);
+	string temporarySuffix = getStringByInt(startTime + globalTimeOutDouble) + string("_");
+	temporarySuffix += getStringByInt(globalDownloadIndex) + string("_.txt");
+	string temporaryName = getJoinedPath(directoryPath, temporarySuffix);
+	int timeToLeave = startTime + globalTimeOut;
+	globalDownloadIndex += 1;
+
+	if (globalDownloadIndex > 987654321)
+		globalDownloadIndex = 0;
+
+	pythonString += address + string(" -output ") + temporaryName;
+	std::system(pythonString.c_str());
+	while (time(NULL) <= timeToLeave)
+	{
+		sleep(2);
+
+		if (getExists(temporaryName))
+		{
+			string httpsText = getFileText(temporaryName);
+			remove(temporaryName.c_str());
+			return httpsText;
+		}
+	}
+
+	cout << "Could not get the page: " << address << endl;
+	return string();
 }
 
 // Get an integer from a string.
@@ -411,7 +480,9 @@ string getJoinedPath(const string& directoryPath, const string& fileName)
 // Get the page by the address, be it a file name or hypertext address.
 string getLocationText(const string& address)
 {
-	if (getStartsWith(address, string("http://")) || getStartsWith(address, string("https://")))
+	if (getStartsWith(address, string("https://")))
+		return getHttpsText(address);
+	if (getStartsWith(address, string("http://")))
 		return getInternetText(address);
 	return getFileText(address);
 }
@@ -455,16 +526,16 @@ vector<string> getPeerNames(const string& text)
 		vector<string> words = getCommaDividedWords(line);
 
 		if (words.size() > 0)
-			firstLowerSpaceless = getReplaced(getLower(words[0]), string(" "), string());
+			firstLowerSpaceless = getReplaced(getLower(words[0]));
 
 		if (firstLowerSpaceless == string("peer"))
-			peerNames.push_back(getReplaced(words[1], string(" "), string()));
+			peerNames.push_back(getReplaced(words[1]));
 
 		if (firstLowerSpaceless == string("_endpeers"))
 			isPeerSection = false;
 
 		if (isPeerSection)
-			peerNames.push_back(getReplaced(words[0], string(" "), string()));
+			peerNames.push_back(getReplaced(words[0]));
 
 		if (firstLowerSpaceless == string("_beginpeers"))
 			isPeerSection = true;
@@ -476,10 +547,11 @@ vector<string> getPeerNames(const string& text)
 // Get the string with the search string replaced with the replace string.
 string getReplaced(const string& text, const string& searchString, const string& replaceString)
 {
-	string::size_type position = 0;
+	string::size_type position = 1;
 	string replaced = text.substr();
 
-	while ((position = replaced.find(searchString, position)) != string::npos)
+	// position - 1 is to delete a repeated searchString
+	while ((position = replaced.find(searchString, position - 1)) != string::npos)
 	{
 		replaced.replace(position, searchString.size(), replaceString );
 		position++;
@@ -641,6 +713,47 @@ vector<string> getSuffixedFileNames(vector<string> fileNames, const string& suff
 	return suffixedFileNames;
 }
 
+string getTempDirectoryPath()
+{
+#	ifdef BOOST_POSIX_API
+		const char* val = 0;
+
+		(val = getenv("TMPDIR" )) || (val = getenv("TMP"    )) || (val = getenv("TEMP"   )) || (val = getenv("TEMPDIR"));
+		filesystem::path p((val!=0) ? val : "/tmp");
+
+		if (p.empty())
+		{
+			cout << "Could not get temp directory path" << endl;
+			return string(".");
+		}
+
+		return p.string();
+
+#   else  // Windows
+		return string(".");
+// Windows code is commented out because I can't test it on my Linux system.
+//		vector<path::value_type> buf(filesystem::GetTempPathW(0, NULL));
+
+//		if (buf.empty() || filesystem::GetTempPathW(buf.size(), &buf[0])==0)
+//		{
+//			cout << "Could not get temp directory path" << endl;
+//			return string(".");
+//		}
+
+//		buf.pop_back();
+
+//		filesystem::path p(buf.begin(), buf.end());
+
+//		if (!filesystem::is_directory(p)))
+//		{
+//			cout << "Could not get temp directory path" << endl;
+//			return string(".");
+//		}
+
+//		return p.string();
+#   endif
+}
+
 // Get all the lines of text of a text.
 vector<string> getTextLines(const string& text)
 {
@@ -654,7 +767,7 @@ string getTextWithoutWhitespaceByLines(vector<string> lines)
 
 	for (vector<string>::iterator lineIterator = lines.begin(); lineIterator < lines.end(); lineIterator++)
 	{
-		string line = getReplaced(*lineIterator, string(" "), string());
+		string line = getReplaced(*lineIterator);
 
 		if (line.size() > 0)
 			textWithoutWhitespace += line + string("\n");
@@ -683,7 +796,7 @@ vector<string> getTokens(const string& text, const string& delimiters)
 // Make a directory if it does not already exist.
 void makeDirectory(const string& directoryPath)
 {
-	if (getReplaced(directoryPath, string(" "), string()) == string() || directoryPath == string("."))
+	if (getReplaced(directoryPath) == string() || directoryPath == string("."))
 		return;
 
 	if (getExists(directoryPath))
