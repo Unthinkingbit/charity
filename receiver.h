@@ -11,6 +11,8 @@ static const int globalStepDefault = 4000;
 static int globalTimeOut = 10;
 static int globalTimeOutDouble = globalTimeOut + globalTimeOut;
 static const double globalWriteNextThreshold = 0.75;
+static const double globalLessThanOne = 0.95;
+static const double globalLessThanOneMinusThreshold = globalLessThanOne * (1.0 - globalWriteNextThreshold);
 
 
 vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step=globalStepDefault);
@@ -291,11 +293,20 @@ string getHttpsText(const string& address)
 // Get an integer from a string.
 int getInt(const string& integerString)
 {
-	int integer;
-	istringstream intStream(integerString);
+	try
+	{
+		int integer;
+		istringstream intStream(integerString);
 
-	intStream >> integer;
-	return integer;
+		intStream >> integer;
+		return integer;
+	}
+	catch (std::exception& e)
+	{
+		cout << "Could not get int for: " << integerString << endl;
+		cout << "Exception: " << e.what() << endl;
+		return 0;
+	}
 }
 
 // Get the entire text of an internet page.
@@ -583,6 +594,14 @@ string getStepOutput(const string& directoryPathInput, const string& fileName, i
 	if (directoryPathInput != string())
 		directoryPath = getJoinedPath(directoryPathInput, fileName.substr(0, fileName.rfind('.')));
 
+	// To fix wrong receiver file problem.
+	string stepFileName = getStepFileName(fileName, height, step);
+	if (stepFileName == string("receiver_1.csv"))
+	{
+		if (getExists(stepFileName))
+			writeFileTextByDirectory(directoryPath, stepFileName, getFileText(stepFileName));
+	}
+
 	string stepText = getStepText(directoryPath, fileName, height, step);
 
 	if (stepText != string())
@@ -838,20 +857,38 @@ void writeFileTextByDirectory(const string& directoryPath, const string& fileNam
 void writeNextIfValueHigher(const string& directoryPath, const string& fileName, int height, int step, const string& stepText)
 {
 	int remainder = height - step * (height / step);
-	double floatPart = double(remainder) / double(step);
-	double lessThanOneMinusThreshold = 0.95 * (1.0 - globalWriteNextThreshold);
-	double fileRandomNumber = getFileRandomNumber(directoryPath, fileName);
+	double aboveThreshold = globalLessThanOneMinusThreshold * getFileRandomNumber(directoryPath, fileName);
+	int remainderThreshold = (int)(double(step) * (globalWriteNextThreshold + aboveThreshold));
+	string writeNextWhenFileName = getJoinedPath(directoryPath, string("write_next_when.txt"));
 
-	if (floatPart < globalWriteNextThreshold + lessThanOneMinusThreshold * fileRandomNumber)
+	if (remainder < remainderThreshold)
 		return;
-	int nextValue = height + step;
-	string nextFileName = getStepFileName(fileName, nextValue, step);
 
-	if (getFileText(nextFileName) == string())
+	if (getExists(writeNextWhenFileName))
+	{
+		if (remainder < getInt(getFileText(writeNextWhenFileName)))
+			return;
+		else
+			remove(writeNextWhenFileName.c_str());
+	}
+
+	int nextValue = height + step;
+	string nextFileName = getJoinedPath(directoryPath, getStepFileName(fileName, nextValue, step));
+
+	if (!getExists(nextFileName))
 	{
 		string nextText = getCommonOutputByText(stepText, getStringByInt(nextValue / step));
 
-		if (nextText != string())
-			writeFileTextByDirectory(directoryPath, nextFileName, nextText);
+		if (nextText == string())
+		{
+			int addition = 10;
+
+			if (remainder > (int)(globalLessThanOne * (double)step))
+				addition = 3;
+
+			writeFileText(writeNextWhenFileName, getStringByInt(remainder + addition));
+		}
+		else
+			writeFileText(nextFileName, nextText);
 	}
 }
