@@ -175,7 +175,7 @@ vector<string> getDirectoryNames(const string& directoryName)
 	for (filesystem::directory_iterator directoryIterator(directoryName); directoryIterator != endIterator; ++directoryIterator)
 	{
 		if (!filesystem::is_directory(directoryIterator->status()))
-			directoryNames.push_back(directoryIterator->leaf());
+			directoryNames.push_back((string)directoryIterator->path().filename());
 	}
 
 	return directoryNames;
