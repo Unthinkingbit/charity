@@ -45,9 +45,9 @@ The filmmakers category includes people who make movies, shorts, and animation. 
 <br>
 Bounties<br>
 <br>
-The initial bounties are for making a web site where all devcoin qualifying writing could be uploaded.  The web site would have limited advertising (only text ads or a single non animated banner ad), which would support the site, any remaining income would be distributed among the writers.  The next bounty is for an open source devcoin block explorer.<br>
+The initial bounties are for developers of charity pools and their first users.  Bounties for the first five software or hardware developers inducted, and for the first five writers inducted.   Also a bounty for an open source devcoin block explorer.<br>
 <br>
-The medium term bounties are for a forum site which requires bitcoins / devcoins to join and post, the money would support the site, any remaining income would be distributed according to the wishes of the posters.  A web email which requires coins to join and post, the money would support the site, any remaining income would be distributed to charity.  Software upgrades to the mainline client to make it more difficult to double spend.  Software changes to the mainline client to make it easier to make alternative clients.  Expansion of the devcoin writer web site to also host music, art and movies.<br>
+The medium term bounties are for a web site where all devcoin qualifying writing could be uploaded.  The web site would have limited advertising (only text ads or a single non animated banner ad), which would support the site, any remaining income would be distributed among the writers.  A forum site which requires bitcoins / devcoins to join and post, the money would support the site, any remaining income would be distributed according to the wishes of the posters.  A web email which requires coins to join and post, the money would support the site, any remaining income would be distributed to charity.  Software upgrades to the mainline client to make it more difficult to double spend.  The addition of merge mining for devcoin.  Software changes to the mainline client to make it easier to make alternative clients.  Expansion of the devcoin writer web site to also host music, art and movies.<br>
 <br>
 In the long term, bounties for improvements of open source software in general.  Bounties for open source machinery, circuits, vehicles, housing, games and medicine.  Bounties for open source villages and other types of communities.  Bounties for open source transportation, energy and resource extraction systems.  The ultimate purpose of the bounties is to fund all kinds of open source development, so that people could choose to live in an open source community where everything therein could be developed or built by anyone.<br>
 <br>
@@ -60,6 +60,8 @@ https://forum.bitcoin.org/index.php?topic=18498<br>
 Your candidacy would then be voted on, usually within a week or at the next receiver list update, whichever is later.  Depending on the vote you would either be inducted or you could try again after a certain time.<br>
 <br>
 The voting guideline follows.  If your work is used by more than a thousand people, the vote should be 40 if the work is of low quality and 99 if the work is of high quality.  If your work is used by a between a hundred and a thousand people, the vote should be 30 if the work is of low quality and 90 if the work is of high quality.  If your work is used by between ten and a hundred people, the vote should be 20 if the work is of low quality and 80 if the work is of high quality.  If your work is used by between two and ten people, the vote should be 10 if the work is low quality and 60 if the work is of high quality.<br>
+<br>
+In general an active developer is expected to develop at least 10 hours per week on average.  This amount of time is typical for an active developer who does not get paid to work on open source and can only develop in their spare time.
 <br>
 <br>
 Voting<br>
@@ -77,11 +79,11 @@ Administration<br>
 <br>
 Any active developer can choose to be an adminstrator at any time, and leave at any time.  They are paid for the time they administrate.<br>
 <br>
-An administrator has to maintain at least one copy of the receiver list.  They have to be available within four days notice for voting.  They have to choose at least one category to vote on inductees.<br>
+An administrator has be available within four days notice for voting.  They have to choose at least one category to vote on inductees; for this they get one administrator share.  They can choose to also maintain at least one copy of the receiver list, for which they would get another administrator share.<br>
 <br>
-The administrators get 10% of the devcoins as payment for their work and for being available for voting.<br>
+The administrators get 10% of the devcoins as payment, divided among the administrator shares.<br>
 <br>
-If someone thinks an administrator is corrupt, they can put up 50 $ to have three other administrators vote on whether there really is corruption.  If the defendant gets 50% or more, the defendant stays.  If the defendent gets 33% to 50%, they're out for three months.  If the defendent gets less than 33%, they're out for a year.  If the vote is below 50%, the money is returned to the accuser, if the vote is 50% or over, the administrators vote on whether the money should be returned to the accuser or distributed among the active developers.<br>
+If someone thinks an administrator is corrupt; for example there is evidence of a kickback, they can advance 50 $ to have three other administrators vote on whether there really is corruption.  If the defendant gets 50% or more, the defendant stays; any new accusations within a month require a cumulative doubling of the last advance.  If the defendent gets 33% to 50%, they're out for three months and can apply for a new vote afterwards.  If the defendent gets less than 33%, they're out for a year and can apply for a new vote afterwards.  If the vote is below 50%, the money is returned to the accuser, if the vote is 50% or over, the administrators vote on whether the money should be returned to the accuser or distributed among the active developers.<br>
 <br>
 <br>
 Technical<br>
@@ -128,8 +130,11 @@ The validation code in ConnectBlock needs the addition of:<br>
 
 		for (int i = 1; i < vtx[0].vout.size(); i++)
 		{
-			addressStrings.push_back(vtx[0].vout[i].scriptPubKey.GetBitcoinAddress());
-			amounts.push_back(vtx[0].vout[i].nValue);
+			if (vtx[0].vout[i].scriptPubKey.GetBitcoinAddressHash160() != 0)
+			{
+				addressStrings.push_back(vtx[0].vout[i].scriptPubKey.GetBitcoinAddress());
+				amounts.push_back(vtx[0].vout[i].nValue);
+			}
 		}
 
 		if (!getIsSufficientAmount(addressStrings, amounts, GetDataDir(), string("receiver.csv"), (int)pindex->nHeight, share))
