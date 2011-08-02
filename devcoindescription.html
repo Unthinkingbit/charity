@@ -110,7 +110,7 @@ The sending code in CreateBlock looks like the following:<br>
 		minerValue -= fallbackReduction;
 	else
 		sharePerAddress = share / (int64)coinAddressStrings.size();
-    for (int i=0; i<coinAddressStrings.size(); i++)
+    for (int i=0; i &lt; coinAddressStrings.size(); i++)
     {
         // Create transaction
         uint160 hash160 = 0;
@@ -137,7 +137,7 @@ The validation code in ConnectBlock needs the addition of:<br>
 		std::vector<std::string> addressStrings;
 		std::vector<int64> amounts;
 
-		for (int i = 1; i < vtx[0].vout.size(); i++)
+		for (int i = 1; i &lt; vtx[0].vout.size(); i++)
 		{
 			if (vtx[0].vout[i].scriptPubKey.GetBitcoinAddressHash160() != 0)
 			{
