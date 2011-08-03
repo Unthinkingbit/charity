@@ -273,7 +273,8 @@ string getHttpsText(const string& address)
 		globalDownloadIndex = 0;
 
 	pythonString += address + string(" -output ") + temporaryName;
-	std::system(pythonString.c_str());
+	if (std::system(pythonString.c_str()) != 0)
+		return string();
 	while (time(NULL) <= timeToLeave)
 	{
 		sleep(2);
