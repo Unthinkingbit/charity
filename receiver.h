@@ -76,7 +76,7 @@ vector<string> getCoinAddressStrings(const string& dataDirectory, const string& 
 			coinLists.push_back(coinList);
 		}
 
-		if (firstLowerSpaceless == string("_endcoins"))
+		if (firstLowerSpaceless == string("_endcoins") || firstLowerSpaceless == string("_endaddresses"))
 			isCoinSection = false;
 
 		if (isCoinSection)
@@ -85,7 +85,7 @@ vector<string> getCoinAddressStrings(const string& dataDirectory, const string& 
 			coinLists.push_back(coinList);
 		}
 
-		if (firstLowerSpaceless == string("_begincoins"))
+		if (firstLowerSpaceless == string("_begincoins") || firstLowerSpaceless == string("_beginaddresses"))
 			isCoinSection = true;
 	}
 
