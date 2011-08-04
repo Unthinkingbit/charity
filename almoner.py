@@ -137,26 +137,28 @@ def getStartsWithWords(text, words):
 	return False
 
 def getTextLines(text):
-	'Get the all the lines of text of a text.'
-	textLines = text.replace('\r', '\n').replace('\n\n', '\n').split('\n')
-	if len(textLines) == 1:
-		if textLines[0] == '':
-			return []
+	'Get the all the stripped lines of text of a text.'
+	originalLines = text.replace('\r', '\n').replace('\n\n', '\n').split('\n')
+	textLines = []
+	for originalLine in originalLines:
+		originalLineStripped = originalLine.strip()
+		if originalLineStripped != '':
+			textLines.append(originalLineStripped)
 	return textLines
 
 def sendOutputTo(outputTo, text):
 	'Send output to a file or a standard output.'
 	if outputTo == '':
-		return
+		return False
 	if outputTo.endswith('stderr'):
 		sys.stderr.write(text)
 		sys.stderr.flush()
-		return
+		return False
 	if outputTo.endswith('stdout'):
 		sys.stdout.write(text)
 		sys.stdout.flush()
-		return
-	writeFileText(outputTo, text)
+		return False
+	return writeFileText(outputTo, text)
 
 def setShares(contributors):
 	'Set each shares to the utility value divided by the total of the utility values.'
@@ -189,14 +191,17 @@ def writeFileText(fileName, fileText, writeMode='w+'):
 		file.close()
 	except IOError:
 		print('The file ' + fileName + ' can not be written to.')
+		return False
+	return True
 
 def writeOutput(arguments):
 	'Write output.'
 	if len(arguments) < 2 or '-h' in arguments or '-help' in arguments:
 		print(  __doc__)
 		return
-	outputTo = getParameter(arguments, 'stdout', 'output')
-	sendOutputTo(outputTo, getOutput(arguments))
+	outputTo = getParameter(arguments, 'almoner.csv', 'output')
+	if sendOutputTo(outputTo, getOutput(arguments)):
+		print('The almoner file has been written to:\n%s\n' % outputTo)
 
 def writeTitleValue(cString, title, value):
 	'Write the title and value line, if the value is not empty.'
@@ -236,7 +241,7 @@ class Contributor:
 		if len(firstLowerSpaceless) < 1:
 			return
 		secondWord = words[1].lstrip()
-		if firstLowerSpaceless == 'bitcoinaddress':
+		if 'coinaddress' in firstLowerSpaceless:
 			self.bitcoinAddress = secondWord
 		elif firstLowerSpaceless == 'contributor':
 			self.contributor = secondWord
