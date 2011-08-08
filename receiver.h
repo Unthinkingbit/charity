@@ -1,5 +1,6 @@
 #include <boost/asio.hpp>
 #include <boost/filesystem.hpp>
+#include <curl/curl.h>
 
 using namespace boost;
 using namespace std;
@@ -15,6 +16,7 @@ static const double globalLessThanOne = 0.95;
 static const double globalLessThanOneMinusThreshold = globalLessThanOne * (1.0 - globalWriteNextThreshold);
 
 
+static size_t curlWriteFunction(void* buf, size_t size, size_t nmemb, void* userp);
 vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step=globalStepDefault);
 vector<string> getCommaDividedWords(const string& text);
 string getCommonOutputByText(const string& fileName, const string& suffix=string(""));
@@ -25,6 +27,7 @@ bool getExists(const string& fileName);
 double getFileRandomNumber(const string& dataDirectory, const string& fileName);
 string getFileText(const string& fileName);
 string getHttpsText(const string& address);
+string getHttpsTextPython(const string& address);
 int getInt(const string& integerString);
 string getInternetText(const string& address);
 bool getIsSufficientAmount(vector<string> addressStrings, vector<int64> amounts, const string& dataDirectory, const string& fileName, int height, int64 share, int step=globalStepDefault);
@@ -53,6 +56,21 @@ void writeFileText(const string& fileName, const string& fileText);
 void writeFileTextByDirectory(const string& directoryPath, const string& fileName, const string& fileText);
 void writeNextIfValueHigher(const string& directoryPath, const string& fileName, int height, int step, const string& stepText);
 
+
+// Callback function writes data to a std::ostream.
+static size_t curlWriteFunction(void* buf, size_t size, size_t nmemb, void* userp)
+{
+	if(userp)
+	{
+		std::ostream& os = *static_cast<std::ostream*>(userp);
+		std::streamsize len = size * nmemb;
+
+		if(os.write(static_cast<char*>(buf), len))
+			return len;
+	}
+
+	return 0;
+}
 
 // Get the coin address strings for a height.
 vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step)
@@ -251,6 +269,36 @@ string getFileText(const string& fileName)
 
 // Get the entire text of an https page.
 string getHttpsText(const string& address)
+{
+	CURL *curl;
+	curl = curl_easy_init();
+
+	if(curl)
+	{
+		CURLcode code;
+		std::ostringstream oss;
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 0L);
+		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &oss);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlWriteFunction);
+		curl_easy_setopt(curl, CURLOPT_URL, address.c_str());
+		code = curl_easy_perform(curl);
+
+		// always cleanup
+		curl_easy_cleanup(curl);
+
+		if (code == CURLE_OK)
+			return oss.str();
+	}
+
+	return string();
+}
+
+// Get the entire text of an https page.
+string getHttpsTextPython(const string& address)
 {
 
 	string directoryPath = getJoinedPath(getTempDirectoryPath(), string("devcoin_temp_files"));
