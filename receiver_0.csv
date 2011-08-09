@@ -1,7 +1,5 @@
 Format,pluribusunum
 _beginpeers
-http://www.perth-exchange.org/receiver.csv
-http://galaxies.mygamesonline.org/receiver.csv
 https://raw.github.com/Unthinkingbit/charity/master/receiver.csv
 _endpeers
 _begincoins
@@ -27,7 +25,7 @@ _begincoins
 199tVFYQyA98C5rdcnNj3zRpRCYMLmyRdn
 17vec4jQGCzMEsTnivizHPaowE715tu2CB
 17vec4jQGCzMEsTnivizHPaowE715tu2CB
-17vec4jQGCzMEsTnivizHPaowE715tu2CB
-17vec4jQGCzMEsTnivizHPaowE715tu2CB
+121Pb2BBrU7C61vBdWCKVuFFmaEZr6xFAX
+121Pb2BBrU7C61vBdWCKVuFFmaEZr6xFAX
 121Pb2BBrU7C61vBdWCKVuFFmaEZr6xFAX
 _endcoins
