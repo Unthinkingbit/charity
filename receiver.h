@@ -649,9 +649,15 @@ string getStepOutput(const string& directoryPathInput, const string& fileName, i
 	if (directoryPathInput != string())
 		directoryPath = getJoinedPath(directoryPathInput, fileName.substr(0, fileName.rfind('.')));
 
-	// To fix wrong receiver file problem.
+	// To fix wrong receiver file problem and old receiver chain problem.
 	string stepFileName = getStepFileName(fileName, height, step);
 	if (stepFileName == string("receiver_1.csv"))
+	{
+		if (getExists(stepFileName))
+			writeFileTextByDirectory(directoryPath, stepFileName, getFileText(stepFileName));
+	}
+
+	if (stepFileName == string("receiver_2.csv"))
 	{
 		if (getExists(stepFileName))
 			writeFileTextByDirectory(directoryPath, stepFileName, getFileText(stepFileName));

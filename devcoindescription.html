@@ -261,9 +261,9 @@ The pchMessageStart in LoadBlockIndex was changed to:<br>
         pchMessageStart[2] = 'v';
         pchMessageStart[3] = '-';
 </pre>
-The default port was changed to 52333 and the default test net port changed to 62333:<br>
+The default port was changed to 53333 and the default test net port changed to 63333:<br>
 <pre>
-inline unsigned short GetDefaultPort() { return fTestNet ? 62333 : 52333; }
+inline unsigned short GetDefaultPort() { return fTestNet ? 63333 : 53333; }
 </pre>
 <br>
 Random numbers for voting are determined by a hash of the string composed of the name of the person and the next block of the highest difficulty block chain, which at the time of this writing is bitcoin.  For consecutive random numbers, the next number is the hash of the string doubled and so on.  For example, say someone applies to be accepted as an active developer.  When they post their application, the hash of their name and the next block after their post is combined to make a string.  The hexadecimal hash of that string is used as a number from zero to one, multiplied by the number of administrators, to get the first administrator.  The hexadecimal hash of the doubled string is multiplied by the number of remaining adminstrators, to get the second administrator.  The hash of the tripled string is multiplied by the remaining, to get the third administrator.<br>
