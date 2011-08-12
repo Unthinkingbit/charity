@@ -44,11 +44,16 @@ __license__ = 'MIT'
 globalOpenSourceStartWords = 'agpl apache bsd creative gnu gpl mit public unlicense'.split()
 
 
-def getAlmonerText(contributors):
+def getAlmonerText(contributors, hasName):
 	'Get the almoner text which consists of lines each of which have a coin address followed by a space then the share.'
+	print(  'hasName')
+	print(  hasName)
 	almonerText = ''
 	for contributor in contributors:
-		almonerText += 'Coin,%s,%s\n' % (contributor.bitcoinAddress, contributor.share)
+		almonerText += 'Coin,'
+		if hasName:
+			almonerText += getLinkText(contributor.contributor) + '-'
+		almonerText += '%s,%s\n' % (contributor.bitcoinAddress, contributor.share)
 	return almonerText
 
 def getColonDividedWords(text):
@@ -117,7 +122,10 @@ def getOutput(arguments):
 	contributors = getContributors(fileName)
 	setUtilityValues(contributors)
 	setShares(contributors)
-	return getAlmonerText(contributors)
+	hasName = False
+	if getParameter(arguments, '', 'name').lower().startswith('t'):
+		hasName = True
+	return getAlmonerText(contributors, hasName)
 
 def getParameter(arguments, defaultValue, name):
 	'Get the parameter of the given name from the arguments.'
