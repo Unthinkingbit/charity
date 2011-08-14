@@ -42,18 +42,22 @@ import urllib
 __license__ = 'MIT'
 
 
-def getAddressFractions(text):
+def getAddressFractions(lines):
 	'Get the AddressFractions by text.'
 	addressFractions = []
-	isAddressSection = True
-	for line in getTextLines(text):
+	isAddressSection = False
+	for line in lines:
 		firstLowerSpaceless = ''
 		words = getCommaDividedWords(line)
 		if len(words) > 0:
 			firstLowerSpaceless = words[0].lower().replace(' ', '')
 		words = getCommaDividedWords(line)
+		if firstLowerSpaceless == '_endaddresses' or firstLowerSpaceless == '_endcoins':
+			isAddressSection = False
 		if isAddressSection:
 			addressFractions.append(AddressFraction(line))
+		if firstLowerSpaceless == '_beginaddresses' or firstLowerSpaceless == '_begincoins':
+			isAddressSection = True
 	return addressFractions
 
 def getCommaDividedWords(text):
@@ -88,11 +92,23 @@ def getFileText(fileName, printWarning=True, readMode='r'):
 			print('The file ' + fileName + ' does not exist.')
 	return ''
 
-def getGenereceiverText(denominatorSequences):
+def getGenereceiverText(denominatorSequences, lines):
 	'Get the genereceiver text which consists of lines of comma separated addresses.'
 	genereceiverOutput = cStringIO.StringIO()
-	for denominatorSequence in denominatorSequences:
-		genereceiverOutput.write(denominatorSequence.getReceiverString())
+	shouldWrite = True
+	for line in lines:
+		firstLowerSpaceless = ''
+		words = getCommaDividedWords(line)
+		if len(words) > 0:
+			firstLowerSpaceless = words[0].lower().replace(' ', '')
+		if firstLowerSpaceless == '_endaddresses' or firstLowerSpaceless == '_endcoins':
+			shouldWrite = True
+		if shouldWrite:
+			genereceiverOutput.write('%s\n' % line)
+		if firstLowerSpaceless == '_beginaddresses' or firstLowerSpaceless == '_begincoins':
+			shouldWrite = False
+			for denominatorSequence in denominatorSequences:
+				genereceiverOutput.write(denominatorSequence.getReceiverString())
 	return genereceiverOutput.getvalue()
 
 def getInternetText(address):
@@ -105,32 +121,19 @@ def getInternetText(address):
 	except IOError:
 		return ''
 
-def getIsDescending(fileName):
-	'Return false unless the fileName finishes with an odd number.'
-	underscoreIndex = fileName.find('_')
-	if underscoreIndex == -1:
-		return False
-	afterUnderscore = fileName[underscoreIndex + 1 :]
-	dotIndex = afterUnderscore.rfind('.')
-	if dotIndex == -1:
-		return False
-	afterUnderscore = afterUnderscore[: dotIndex]
-	if not afterUnderscore.isdigit():
-		return False
-	return int(afterUnderscore) % 2 == 1
-
 def getLocationText(address):
 	'Get the page by the address, be it a file name or hypertext address.'
 	if address.startswith('http://') or address.startswith('https://'):
 		return getInternetText(address)
 	return getFileText(address)
 
-def getOutput(arguments):
+def getOutput(fileName, suffixNumber):
 	'Get the output according to the arguments.'
-	fileName = getParameter(arguments, 'account.csv', 'input')
-	addressFractions = getAddressFractions(getLocationText(fileName))
-	denominatorSequences = getDenominatorSequences(addressFractions, getIsDescending(fileName))
-	return getGenereceiverText(denominatorSequences)
+	lines = getTextLines(getLocationText(fileName))
+	addressFractions = getAddressFractions(lines)
+	isDescending = suffixNumber % 2 == 1
+	denominatorSequences = getDenominatorSequences(addressFractions, isDescending)
+	return getGenereceiverText(denominatorSequences, lines)
 
 def getParameter(arguments, defaultValue, name):
 	'Get the parameter of the given name from the arguments.'
@@ -141,6 +144,27 @@ def getParameter(arguments, defaultValue, name):
 	if nameIndexNext >= len(arguments):
 		return defaultValue
 	return arguments[nameIndexNext]
+
+def getSuffixedFileName(fileName, suffix=''):
+	'Get the file name with the suffix.'
+	lastDotIndex = fileName.rfind('.')
+	if suffix == '' or lastDotIndex == -1:
+		return fileName
+	return '%s_%s%s' % (fileName[: lastDotIndex], suffix, fileName[lastDotIndex :])
+
+def getSuffixNumber(fileName):
+	'Determine the suffix number, returning 0 if there is not one.'
+	underscoreIndex = fileName.find('_')
+	if underscoreIndex == -1:
+		return 0
+	afterUnderscore = fileName[underscoreIndex + 1 :]
+	dotIndex = afterUnderscore.rfind('.')
+	if dotIndex == -1:
+		return 0
+	afterUnderscore = afterUnderscore[: dotIndex]
+	if not afterUnderscore.isdigit():
+		return 0
+	return int(afterUnderscore)
 
 def getTextLines(text):
 	'Get the all the stripped lines of text of a text.'
@@ -182,8 +206,10 @@ def writeOutput(arguments):
 	if len(arguments) < 2 or '-h' in arguments or '-help' in arguments:
 		print(  __doc__)
 		return
-	outputTo = getParameter(arguments, 'test_receiver.csv', 'output')
-	if sendOutputTo(outputTo, getOutput(arguments)):
+	fileName = getParameter(arguments, 'account.csv', 'input')
+	suffixNumber = getSuffixNumber(fileName)
+	outputTo = getSuffixedFileName(getParameter(arguments, 'test_receiver.csv', 'output'), str(suffixNumber))
+	if sendOutputTo(outputTo, getOutput(fileName, suffixNumber)):
 		print('The receiver file has been written to:\n%s\n' % outputTo)
 
 

@@ -1,5 +1,11 @@
+Format,pluribusunum
+_beginpeers
+https://raw.github.com/Unthinkingbit/charity/master/receiver.csv
+_endpeers
+_begincoins
 i-qw,1/1
 b, 5/2, 2
 c, 2/3, http://hello
 aa
 e, 11/3
+_endcoins
