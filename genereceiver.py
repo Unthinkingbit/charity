@@ -95,6 +95,16 @@ def getGenereceiverText(denominatorSequences):
 		genereceiverOutput.write(denominatorSequence.getReceiverString())
 	return genereceiverOutput.getvalue()
 
+def getInternetText(address):
+	'Get the entire text of an internet page.'
+	try:
+		page = urllib.urlopen(address)
+		text = page.read()
+		page.close()
+		return text
+	except IOError:
+		return ''
+
 def getIsDescending(fileName):
 	'Return false unless the fileName finishes with an odd number.'
 	underscoreIndex = fileName.find('_')
@@ -109,10 +119,16 @@ def getIsDescending(fileName):
 		return False
 	return int(afterUnderscore) % 2 == 1
 
+def getLocationText(address):
+	'Get the page by the address, be it a file name or hypertext address.'
+	if address.startswith('http://') or address.startswith('https://'):
+		return getInternetText(address)
+	return getFileText(address)
+
 def getOutput(arguments):
 	'Get the output according to the arguments.'
 	fileName = getParameter(arguments, 'account.csv', 'input')
-	addressFractions = getAddressFractions(getFileText(fileName))
+	addressFractions = getAddressFractions(getLocationText(fileName))
 	denominatorSequences = getDenominatorSequences(addressFractions, getIsDescending(fileName))
 	return getGenereceiverText(denominatorSequences)
 
@@ -166,7 +182,7 @@ def writeOutput(arguments):
 	if len(arguments) < 2 or '-h' in arguments or '-help' in arguments:
 		print(  __doc__)
 		return
-	outputTo = getParameter(arguments, 'receiver.csv', 'output')
+	outputTo = getParameter(arguments, 'test_receiver.csv', 'output')
 	if sendOutputTo(outputTo, getOutput(arguments)):
 		print('The receiver file has been written to:\n%s\n' % outputTo)
 
@@ -181,11 +197,16 @@ class AddressFraction:
 		if len(words) < 1:
 			return
 		self.coinAddress = words[0]
+		lastDashIndex = self.coinAddress.rfind('-')
+		if lastDashIndex != -1:
+			self.coinAddress = self.coinAddress[lastDashIndex + 1 :]
 		if len(words) == 1:
 			self.fractions.append(Fraction())
 			return
 		for word in words[1 :]:
-			self.fractions.append(Fraction(word))
+			wordStripped = word.replace('/', '').strip()
+			if wordStripped.isdigit() or len(wordStripped) == 0:
+				self.fractions.append(Fraction(word))
 
 	def __repr__(self):
 		"Get the string representation of this class."
