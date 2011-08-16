@@ -6,6 +6,7 @@ using namespace boost;
 using namespace std;
 
 
+static map<string, string> globalCacheMap;
 static int globalDownloadIndex = 10;
 static const double globalMinimumIdenticalProportion = 0.500001;
 static const int globalStepDefault = 4000;
@@ -17,6 +18,7 @@ static const double globalLessThanOneMinusThreshold = globalLessThanOne * (1.0 -
 
 
 static size_t curlWriteFunction(void* buf, size_t size, size_t nmemb, void* userp);
+string getCachedText(const string& fileName);
 vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step=globalStepDefault);
 vector<string> getCommaDividedWords(const string& text);
 string getCommonOutputByText(const string& fileName, const string& suffix=string(""));
@@ -72,12 +74,23 @@ static size_t curlWriteFunction(void* buf, size_t size, size_t nmemb, void* user
 	return 0;
 }
 
+// Get the cached text or read it from a file.
+string getCachedText(const string& fileName)
+{
+	if (globalCacheMap.count(fileName) == 0)
+		globalCacheMap[fileName] = getFileText(fileName);
+
+	return globalCacheMap[fileName];
+}
+
 // Get the coin address strings for a height.
 vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step)
 {
+	vector<string> coinList;
 	vector<vector<string> > coinLists;
 	vector<string> textLines = getTextLines(getStepOutput(dataDirectory, fileName, height, step));
 	bool isCoinSection = false;
+	string oldToken = string();
 
 	for (int lineIndex = 0; lineIndex < textLines.size(); lineIndex++)
 	{
@@ -116,7 +129,17 @@ vector<string> getCoinAddressStrings(const string& dataDirectory, const string& 
 	int remainder = height - step * (height / step);
 	int modulo = remainder % (int)coinLists.size();
 
-	return coinLists[modulo];
+	vector<string> originalList = coinLists[modulo];
+
+	for (vector<string>::iterator tokenIterator = originalList.begin(); tokenIterator != originalList.end(); tokenIterator++)
+	{
+		if (*tokenIterator != string("="))
+			oldToken = tokenIterator->substr();
+
+		coinList.push_back(oldToken);
+	}
+
+	return coinList;
 }
 
 // Get the words divided around the comma.
@@ -152,7 +175,7 @@ string getCommonOutputByText(const string& fileText, const string& suffix)
 	int minimumIdentical = (int)ceil(globalMinimumIdenticalProportion * (double)pages.size());
 	map<string, int> pageMap;
 
-	for (vector<string>::iterator pageIterator = pages.begin(); pageIterator < pages.end(); pageIterator++)
+	for (vector<string>::iterator pageIterator = pages.begin(); pageIterator != pages.end(); pageIterator++)
 	{
 		string firstLine = string();
 		vector<string> lines = getTextLines(*pageIterator);
@@ -696,7 +719,8 @@ string getStepText(const string& dataDirectory, const string& fileName, int heig
 	string directorySubName = getJoinedPath(dataDirectory, stepFileName);
 
 	if (getExists(directorySubName))
-		return getFileText(directorySubName);
+			return getCachedText(directorySubName);
+//			return getFileText(directorySubName);
 
 	string stepText = getFileText(stepFileName);
 
@@ -845,7 +869,7 @@ string getTextWithoutWhitespaceByLines(vector<string> lines)
 {
 	string textWithoutWhitespace = string();
 
-	for (vector<string>::iterator lineIterator = lines.begin(); lineIterator < lines.end(); lineIterator++)
+	for (vector<string>::iterator lineIterator = lines.begin(); lineIterator != lines.end(); lineIterator++)
 	{
 		string line = getReplaced(*lineIterator);
 
