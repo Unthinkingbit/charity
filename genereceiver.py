@@ -1,32 +1,31 @@
 """
-Genereceiver
- is a program to determine how many bitcoins to donate to each recipient.
+Genereceiver is a program to generate a devcoin receiver file from an account file.
 
-This is meant to be used by bitcoin pools or miners to automatically donate to a list of recipients.  With this program, people could simply decide how much to donate, they don't have to also look up bitcoin addresses for each recipient.
+This is meant to be used by devcoin accountants and auditors to create and check the receiver files.  The account file has a list of addresses and shares.  Anything after a dash is a comment.
 
 
 ==Commands==
 ===Help===
 The -h option or the -help option will print the help, which is this document.  The example follows:
-python almoner.py -h
+python genereceiver.py -h
 
 ===Input===
 The -input option sets the input file name.  The example follows:
-python almoner.py -input bitcoindonationinformation.html
+python genereceiver.py -input account_3.csv
 
-An example of a donation information input file is at:
+An example of an account information input file is at:
 https://github.com/Unthinkingbit/charity/blob/master/bitcoindonationinformation.html
 
 ===Output===
 The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout or is empty, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name.  The example follows:
 python almoner.py -input bitcoindonationinformation.txt -output stdout
 
-An example of an almoner output file is at:
-https://github.com/Unthinkingbit/charity/blob/master/almoner.csv
+An example of an genereceiver output file is at:
+https://github.com/Unthinkingbit/charity/blob/master/account_2.csv
 
 
 ==Install==
-For almoner to run, you need Python 2.x, almoner will probably not run with python 3.x.  To check if it is on your machine, in a terminal type:
+For genereceiver to run, you need Python 2.x, almoner will probably not run with python 3.x.  To check if it is on your machine, in a terminal type:
 python
 
 If python 2.x is not on your machine, download the latest python 2.x, which is available from:
@@ -225,7 +224,7 @@ class AddressFraction:
 		self.coinAddress = words[0]
 		lastDashIndex = self.coinAddress.rfind('-')
 		if lastDashIndex != -1:
-			self.coinAddress = self.coinAddress[lastDashIndex + 1 :]
+			self.coinAddress = self.coinAddress[: lastDashIndex]
 		if len(words) == 1:
 			self.fractions.append(Fraction())
 			return

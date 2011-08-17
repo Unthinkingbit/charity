@@ -46,14 +46,12 @@ globalOpenSourceStartWords = 'agpl apache bsd creative gnu gpl mit public unlice
 
 def getAlmonerText(contributors, hasName):
 	'Get the almoner text which consists of lines each of which have a coin address followed by a space then the share.'
-	print(  'hasName')
-	print(  hasName)
 	almonerText = ''
 	for contributor in contributors:
-		almonerText += 'Coin,'
+		almonerText += 'Coin,%s' % contributor.bitcoinAddress
 		if hasName:
-			almonerText += getLinkText(contributor.contributor) + '-'
-		almonerText += '%s,%s\n' % (contributor.bitcoinAddress, contributor.share)
+			almonerText += '-%s' % getLinkText(contributor.contributor)
+		almonerText += ',%s\n' % contributor.share
 	return almonerText
 
 def getColonDividedWords(text):
