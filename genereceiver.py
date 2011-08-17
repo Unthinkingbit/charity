@@ -10,15 +10,19 @@ The -h option or the -help option will print the help, which is this document.  
 python genereceiver.py -h
 
 ===Input===
+Default is https://raw.github.com/Unthinkingbit/charity/master/account_3.csv
+
 The -input option sets the input file name.  The example follows:
-python genereceiver.py -input account_3.csv
+python genereceiver.py -input https://raw.github.com/Unthinkingbit/charity/master/account_3.csv
 
 An example of an account information input file is at:
-https://github.com/Unthinkingbit/charity/blob/master/bitcoindonationinformation.html
+https://raw.github.com/Unthinkingbit/charity/master/account_3.csv
 
 ===Output===
-The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout or is empty, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name.  The example follows:
-python almoner.py -input bitcoindonationinformation.txt -output stdout
+Default is test_receiver.csv
+
+The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name.  The example follows:
+python genereceiver.py -output test_receiver.csv
 
 An example of an genereceiver output file is at:
 https://github.com/Unthinkingbit/charity/blob/master/account_2.csv
@@ -205,7 +209,7 @@ def writeOutput(arguments):
 	if len(arguments) < 2 or '-h' in arguments or '-help' in arguments:
 		print(  __doc__)
 		return
-	fileName = getParameter(arguments, 'account.csv', 'input')
+	fileName = getParameter(arguments, 'https://raw.github.com/Unthinkingbit/charity/master/account_3.csv', 'input')
 	suffixNumber = getSuffixNumber(fileName)
 	outputTo = getSuffixedFileName(getParameter(arguments, 'test_receiver.csv', 'output'), str(suffixNumber))
 	if sendOutputTo(outputTo, getOutput(fileName, suffixNumber)):
