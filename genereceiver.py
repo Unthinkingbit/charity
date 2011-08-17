@@ -6,7 +6,7 @@ This is meant to be used by devcoin accountants and auditors to create and check
 
 ==Commands==
 ===Help===
-The -h option or the -help option will print the help, which is this document.  The example follows:
+The -h option, the -help option, or fewer than two options, will print the help, which is this document.  The example follows:
 python genereceiver.py -h
 
 ===Input===
@@ -21,11 +21,11 @@ https://raw.github.com/Unthinkingbit/charity/master/account_3.csv
 ===Output===
 Default is test_receiver.csv
 
-The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name.  The example follows:
+The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name, with whatever suffix the input file has.  The example follows:
 python genereceiver.py -output test_receiver.csv
 
 An example of an genereceiver output file is at:
-https://github.com/Unthinkingbit/charity/blob/master/account_2.csv
+https://raw.github.com/Unthinkingbit/charity/master/test_receiver_3.csv
 
 
 ==Install==
@@ -110,9 +110,13 @@ def getGenereceiverText(denominatorSequences, lines):
 			genereceiverOutput.write('%s\n' % line)
 		if firstLowerSpaceless == '_beginaddresses' or firstLowerSpaceless == '_begincoins':
 			shouldWrite = False
+			oldNumberOfLines = len(getTextLines(genereceiverOutput.getvalue()))
 			for denominatorSequence in denominatorSequences:
 				genereceiverOutput.write(denominatorSequence.getReceiverString())
+			addedNumberOfLines = len(getTextLines(genereceiverOutput.getvalue())) - oldNumberOfLines
+			print('Number of address lines: %s' % addedNumberOfLines)
 	return genereceiverOutput.getvalue()
+	
 
 def getInternetText(address):
 	'Get the entire text of an internet page.'
