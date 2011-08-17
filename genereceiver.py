@@ -230,6 +230,9 @@ class AddressFraction:
 			self.fractions.append(Fraction())
 			return
 		for word in words[1 :]:
+			lastDashIndex = word.rfind('-')
+			if lastDashIndex != -1:
+				word = word[: lastDashIndex]
 			wordStripped = word.replace('/', '').strip()
 			if wordStripped.isdigit() or len(wordStripped) == 0:
 				self.fractions.append(Fraction(word))
