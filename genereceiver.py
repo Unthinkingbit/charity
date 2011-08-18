@@ -6,7 +6,7 @@ This is meant to be used by devcoin accountants and auditors to create and check
 
 ==Commands==
 ===Help===
-The -h option, the -help option, or fewer than two options, will print the help, which is this document.  The example follows:
+The -h option, the -help option, will print the help, which is this document.  The example follows:
 python genereceiver.py -h
 
 ===Input===
@@ -210,7 +210,7 @@ def writeFileText(fileName, fileText, writeMode='w+'):
 
 def writeOutput(arguments):
 	'Write output.'
-	if len(arguments) < 2 or '-h' in arguments or '-help' in arguments:
+	if '-h' in arguments or '-help' in arguments:
 		print(  __doc__)
 		return
 	fileName = getParameter(arguments, 'https://raw.github.com/Unthinkingbit/charity/master/account_3.csv', 'input')
@@ -273,7 +273,7 @@ class DenominatorSequence:
 		floatWidth = float(len(self.coinAddresses)) / float(numberOfSlots)
 		maximumSlotWidth = int(math.ceil(floatWidth))
 		minimumSlotWidth = int(math.floor(floatWidth))
-		remainingNumberOfNarrows = numberOfCells - len(self.coinAddresses)
+		remainingNumberOfNarrows = min(numberOfCells - len(self.coinAddresses), numberOfSlots)
 		remainingNumberOfWides = numberOfSlots - remainingNumberOfNarrows
 		receiverOutput = cStringIO.StringIO()
 		coinAddressIndex = 0
