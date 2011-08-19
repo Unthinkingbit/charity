@@ -37,6 +37,7 @@ http://www.python.org/download/
 """
 
 import cStringIO
+import hashlib
 import math
 import sys
 import urllib
@@ -113,8 +114,21 @@ def getGenereceiverText(denominatorSequences, lines):
 			oldNumberOfLines = len(getTextLines(genereceiverOutput.getvalue()))
 			for denominatorSequence in denominatorSequences:
 				genereceiverOutput.write(denominatorSequence.getReceiverString())
-			addedNumberOfLines = len(getTextLines(genereceiverOutput.getvalue())) - oldNumberOfLines
-			print('Number of address lines: %s' % addedNumberOfLines)
+			addedNumberOfSlots = len(getTextLines(genereceiverOutput.getvalue())) - oldNumberOfLines
+			minimumNumberOfPayments = 4000 / addedNumberOfSlots
+			remainder = 4000 - minimumNumberOfPayments * addedNumberOfSlots
+			print('Number of address slots: %s' % addedNumberOfSlots)
+			if remainder == 0:
+				print('Number of payments: %s' % minimumNumberOfPayments)
+			else:
+				maximumNumberOfPayments = (minimumNumberOfPayments + 1)
+				print('Maximum number of payments: %s' % maximumNumberOfPayments)
+				print('Minimum number of payments: %s' % minimumNumberOfPayments)
+				print('Maximum value of slot: %s' % (maximumNumberOfPayments * 45000))
+				print('Minimum value of slot: %s' % (minimumNumberOfPayments * 45000))
+				print('Slots with maximum number of payments: %s' % (addedNumberOfSlots - remainder))
+				print('Slots with minimum number of payments: %s' % remainder)
+			print('')
 	return genereceiverOutput.getvalue()
 	
 
@@ -216,8 +230,12 @@ def writeOutput(arguments):
 	fileName = getParameter(arguments, 'https://raw.github.com/Unthinkingbit/charity/master/account_3.csv', 'input')
 	suffixNumber = getSuffixNumber(fileName)
 	outputTo = getSuffixedFileName(getParameter(arguments, 'test_receiver.csv', 'output'), str(suffixNumber))
-	if sendOutputTo(outputTo, getOutput(fileName, suffixNumber)):
+	outputText = getOutput(fileName, suffixNumber)
+	if sendOutputTo(outputTo, outputText):
 		print('The receiver file has been written to:\n%s\n' % outputTo)
+		sha256FileName = getSuffixedFileName(outputTo, 'sha256')
+		writeFileText(sha256FileName, hashlib.sha256(outputText).hexdigest())
+		print('The sha256 receiver file has been written to:\n%s\n' % sha256FileName)
 
 
 class AddressFraction:
