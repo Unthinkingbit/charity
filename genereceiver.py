@@ -117,17 +117,17 @@ def getGenereceiverText(denominatorSequences, lines):
 			addedNumberOfSlots = len(getTextLines(genereceiverOutput.getvalue())) - oldNumberOfLines
 			minimumNumberOfPayments = 4000 / addedNumberOfSlots
 			remainder = 4000 - minimumNumberOfPayments * addedNumberOfSlots
-			print('Number of address slots: %s' % addedNumberOfSlots)
+			print('Number of shares: %s' % addedNumberOfSlots)
 			if remainder == 0:
 				print('Number of payments: %s' % minimumNumberOfPayments)
 			else:
 				maximumNumberOfPayments = (minimumNumberOfPayments + 1)
 				print('Maximum number of payments: %s' % maximumNumberOfPayments)
 				print('Minimum number of payments: %s' % minimumNumberOfPayments)
-				print('Maximum value of slot: %s' % (maximumNumberOfPayments * 45000))
-				print('Minimum value of slot: %s' % (minimumNumberOfPayments * 45000))
-				print('Slots with maximum number of payments: %s' % (addedNumberOfSlots - remainder))
-				print('Slots with minimum number of payments: %s' % remainder)
+				print('Maximum value of share: %s' % (maximumNumberOfPayments * 45000))
+				print('Minimum value of share: %s' % (minimumNumberOfPayments * 45000))
+				print('Shares with maximum number of payments: %s' % (addedNumberOfSlots - remainder))
+				print('Shares with minimum number of payments: %s' % remainder)
 			print('')
 	return genereceiverOutput.getvalue()
 	
