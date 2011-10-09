@@ -198,7 +198,7 @@ string getCommonOutputByText(const string& fileText, const string& suffix)
 	for (map<string,int>::iterator pageMapIterator = pageMap.begin(); pageMapIterator != pageMap.end(); pageMapIterator++)
 		if ((*pageMapIterator).second >= minimumIdentical)
 		{
-			cout << "Number of identical pages in getCommonOutputByText: " << pages.size() << endl << endl;
+			cout << "Number of identical pages in getCommonOutputByText: " << (*pageMapIterator).second << endl << endl;
 			return (*pageMapIterator).first;
 		}
 
