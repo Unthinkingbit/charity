@@ -2,7 +2,7 @@ Format,pluribusunum
 _beginpeers
 http://galaxies.mygamesonline.org/receiver.csv
 https://raw.github.com/Unthinkingbit/charity/master/receiver.csv
-https://raw.github.com/jackjack-jj/charity/master/receiver.csv
+http://devcoinblockexplorer.info/receiver.csv
 _endpeers
 _begincoins
 1JEnRbir5ceXZYH7HXyQZabM4LRQU7MRsx
@@ -32,7 +32,7 @@ _begincoins
 16irnhMJJufLdW5aL9cNA5tqbwiHyzm4P7,1/5-http://107.20.193.62:2750/block/00000000004db4ef3358168fa91dde15a3ee7e9c71c86a17380b886af83f98db
 1M1BzQBpb8sbCuNzBTaae9PBdvjLthVrbR-Jackjack,2-https://bitcointalk.org/index.php?topic=24813.msg429585#msg429585
 121Pb2BBrU7C61vBdWCKVuFFmaEZr6xFAX-Markm,1-General administrator(vote:1, receiver file:2, accountant or auditor:1, almoner:2)
-1Fhex5BvBGaChJqK75Z6MPxtK9muSsScKC-Shattienator,1/5-https://bitcointalk.org/index.php?topic=34586.msg527776#msg527776,1/5-https://bitcointalk.org/index.php?action=profile;u=22994
+1Fhex5BvBGaChJqK75Z6MPxtK9muSsScKC-Shattienator,3-http://devcoinblockexplorer.info:2750/,1/5-https://bitcointalk.org/index.php?topic=34586.msg527776#msg527776,1/5-https://bitcointalk.org/index.php?topic=34586.msg533588#msg533588,2/5-File Administrator
 1QFNbLgpFKwFYKLNc9XkYbzgCryd3XYfuX-Twobits,2/5-https://bitcointalk.org/index.php?topic=34586.msg512933#msg512933
 17vec4jQGCzMEsTnivizHPaowE715tu2CB-Unthinkingbit,1-General administrator
 _endcoins
