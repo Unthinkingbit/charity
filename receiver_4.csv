@@ -2,7 +2,7 @@ Format,pluribusunum
 _beginpeers
 http://galaxies.mygamesonline.org/receiver.csv
 https://raw.github.com/Unthinkingbit/charity/master/receiver.csv
-http://devcoinblockexplorer.info/receiver.csv
+http://devcoinblockexplorer.info/receiver/receiver.csv
 _endpeers
 _begincoins
 121Pb2BBrU7C61vBdWCKVuFFmaEZr6xFAX
