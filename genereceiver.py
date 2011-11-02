@@ -166,6 +166,22 @@ def getParameter(arguments, defaultValue, name):
 		return defaultValue
 	return arguments[nameIndexNext]
 
+def getReceiverLine(coinAddresses):
+	'Get the receiver format line.'
+	if len(coinAddresses) == 0:
+		return ''
+	addressQuantityDictionary = {}
+	for coinAddress in coinAddresses:
+		if coinAddress in addressQuantityDictionary:
+			addressQuantityDictionary[coinAddress] += 1
+		else:
+			addressQuantityDictionary[coinAddress] = 1
+	firstQuantity = addressQuantityDictionary.values()[0]
+	for addressQuantity in addressQuantityDictionary.values():
+		if addressQuantity != firstQuantity:
+			return '%s\n' % ','.join(coinAddresses)
+	return '%s\n' % ','.join(addressQuantityDictionary.keys())
+
 def getSuffixedFileName(fileName, suffix=''):
 	'Get the file name with the suffix.'
 	lastDotIndex = fileName.rfind('.')
@@ -297,11 +313,11 @@ class DenominatorSequence:
 		coinAddressIndex = 0
 		for wideIndex in xrange(remainingNumberOfWides):
 			endIndex = coinAddressIndex + maximumSlotWidth
-			receiverOutput.write('%s\n' % ','.join(self.coinAddresses[coinAddressIndex : endIndex]))
+			receiverOutput.write(getReceiverLine(self.coinAddresses[coinAddressIndex : endIndex]))
 			coinAddressIndex = endIndex
 		for narrowIndex in xrange(remainingNumberOfNarrows):
 			endIndex = coinAddressIndex + minimumSlotWidth
-			receiverOutput.write('%s\n' % ','.join(self.coinAddresses[coinAddressIndex : endIndex]))
+			receiverOutput.write(getReceiverLine(self.coinAddresses[coinAddressIndex : endIndex]))
 			coinAddressIndex = endIndex
 		return receiverOutput.getvalue()
 
