@@ -18,7 +18,7 @@ https://github.com/Unthinkingbit/charity/blob/master/bitcoindonationinformation.
 
 ===Output===
 The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout or is empty, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name.  The example follows:
-python almoner.py -input bitcoindonationinformation.txt -output stdout
+python almoner.py -input bitcoindonationinformation.html
 
 An example of an almoner output file is at:
 https://github.com/Unthinkingbit/charity/blob/master/almoner.csv
