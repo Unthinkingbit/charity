@@ -11,14 +11,14 @@ python almoner.py -h
 
 ===Input===
 The -input option sets the input file name.  The example follows:
-python almoner.py -input bitcoindonationinformation.html
+python almoner.py -input bitcoinshare.html
 
 An example of a donation information input file is at:
-https://github.com/Unthinkingbit/charity/blob/master/bitcoindonationinformation.html
+https://github.com/Unthinkingbit/charity/blob/master/bitcoinshare.html
 
 ===Output===
 The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout or is empty, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name.  The example follows:
-python almoner.py -input bitcoindonationinformation.html
+python almoner.py -input bitcoinshare.html
 
 An example of an almoner output file is at:
 https://github.com/Unthinkingbit/charity/blob/master/almoner.csv
@@ -39,21 +39,12 @@ import sys
 __license__ = 'MIT'
 
 
-def getAddressText(fileName):
-	'Get the address text by the file name.'
-	if fileName == '':
-		return ''
-	addressText = ''
-	for contributor in almoner.getContributors(fileName):
-		addressText += '%s\n' % contributor.bitcoinAddress
-	return addressText
-
 def getOutput(arguments):
 	'Get the output according to the arguments.'
-	bitcoinFileName = almoner.getParameter(arguments, 'bitcoindonationinformation.html', 'inputbitcoin')
+	bitcoinFileName = almoner.getParameter(arguments, 'bitcoinshare.html', 'inputbitcoin')
 	devcoinFileName = almoner.getParameter(arguments, '', 'inputdevcoin')
-	bitcoinOutput = getAddressText(bitcoinFileName)
-	devcoinOutput = getAddressText(devcoinFileName)
+	bitcoinOutput = almoner.getAddressText(bitcoinFileName)
+	devcoinOutput = almoner.getAddressText(devcoinFileName)
 	output = bitcoinOutput + devcoinOutput
 	print('Number of bitcoin lines: %s' % len(almoner.getTextLines(bitcoinOutput)))
 	print('Number of devcoin lines: %s' % len(almoner.getTextLines(devcoinOutput)))

@@ -11,14 +11,14 @@ python almoner.py -h
 
 ===Input===
 The -input option sets the input file name.  The example follows:
-python almoner.py -input bitcoindonationinformation.html
+python almoner.py -input bitcoinshare.html
 
 An example of a donation information input file is at:
-https://github.com/Unthinkingbit/charity/blob/master/bitcoindonationinformation.html
+https://github.com/Unthinkingbit/charity/blob/master/bitcoinshare.html
 
 ===Output===
 The -output option sets the output.  If the output ends with stderr, the output will be sent to stderr  If the output ends with stdout or is empty, the output will be sent to stdout.  If the output does not end with stderr or stdout, the output will be written to a file by that name.  The example follows:
-python almoner.py -input bitcoindonationinformation.html
+python almoner.py -input bitcoinshare.html
 
 An example of an almoner output file is at:
 https://github.com/Unthinkingbit/charity/blob/master/almoner.csv
@@ -43,6 +43,19 @@ __license__ = 'MIT'
 
 globalOpenSourceStartWords = 'agpl apache bsd creative gnu gpl mit public unlicense'.split()
 
+
+def getAddressLines(fileName):
+	'Get the address lines by the file name.'
+	if fileName == '':
+		return []
+	addressLines = []
+	for contributor in getContributors(fileName):
+		addressLines.append(contributor.bitcoinAddress)
+	return addressLines
+
+def getAddressText(fileName):
+	'Get the address text by the file name.'
+	return getTextByLines(getAddressLines(fileName))
 
 def getAlmonerText(contributors, hasName):
 	'Get the almoner text which consists of lines each of which have a coin address followed by a space then the share.'
@@ -100,6 +113,16 @@ def getFloat(defaultValue, text):
 	except:
 		pass
 	return defaultValue
+	
+def getInternetText(address):
+	'Get the entire text of an internet page.'
+	try:
+		page = urllib.urlopen(address)
+		text = page.read()
+		page.close()
+		return text
+	except IOError:
+		return ''
 
 def getLinkText(text):
 	'Get the text part of a text without the tag part.'
@@ -113,6 +136,12 @@ def getLinkText(text):
 		elif isLinkText:
 			cLinkText.write(character)
 	return cLinkText.getvalue().strip()
+
+def getLocationText(address):
+	'Get the page by the address, be it a file name or hypertext address.'
+	if address.startswith('http://') or address.startswith('https://'):
+		return getInternetText(address)
+	return getFileText(address)
 
 def getOutput(arguments):
 	'Get the output according to the arguments.'
@@ -141,6 +170,13 @@ def getStartsWithWords(text, words):
 		if text.startswith(word):
 			return True
 	return False
+
+def getTextByLines(lines):
+	'Get the text by lines, each ended with a newline.'
+	text = ''
+	for line in lines:
+		text += '%s\n' % line
+	return text
 
 def getTextLines(text):
 	'Get the all the stripped lines of text of a text.'

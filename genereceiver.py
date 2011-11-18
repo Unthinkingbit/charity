@@ -131,7 +131,6 @@ def getGenereceiverText(denominatorSequences, lines):
 			print('')
 	return genereceiverOutput.getvalue()
 	
-
 def getInternetText(address):
 	'Get the entire text of an internet page.'
 	try:
