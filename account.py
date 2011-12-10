@@ -58,9 +58,9 @@ def addReceiverLines(coinAddresses, receiverLines):
 	firstQuantity = addressQuantityDictionary.values()[0]
 	for addressQuantity in addressQuantityDictionary.values():
 		if addressQuantity != firstQuantity:
-			receiverLines += coinAddresses
+			receiverLines.append(','.join(coinAddresses))
 			return
-	receiverLines += addressQuantityDictionary.keys()
+	receiverLines.append(','.join(addressQuantityDictionary.keys()))
 
 def getAccountLines(arguments, fileName):
 	'Get the lines according to the arguments.'
@@ -220,11 +220,11 @@ class DenominatorSequence:
 	def getReceiverLines(self):
 		'Get the receiver lines.'
 		numberOfSlots = int(math.ceil(float(len(self.coinAddresses)) / float(self.denominator)))
-		numberOfCells = numberOfSlots * self.denominator
 		floatWidth = float(len(self.coinAddresses)) / float(numberOfSlots)
 		maximumSlotWidth = int(math.ceil(floatWidth))
 		minimumSlotWidth = int(math.floor(floatWidth))
-		remainingNumberOfNarrows = min(numberOfCells - len(self.coinAddresses), numberOfSlots)
+		numberOfCells = numberOfSlots * maximumSlotWidth
+		remainingNumberOfNarrows = numberOfCells - len(self.coinAddresses)
 		remainingNumberOfWides = numberOfSlots - remainingNumberOfNarrows
 		receiverLines = []
 		coinAddressIndex = 0
