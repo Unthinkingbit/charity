@@ -49,7 +49,8 @@ The painters and graphic artists category does not currently include photographe
 
 The filmmakers category includes people who make movies, shorts, and animation.  Fan films only qualify if the source license also qualifies for devcoins.
 
-==Active Developer==
+==Developer==
+===Active Developer===
 If you actively develop open source of any kind, you can apply to get a share of devcoin generation by posting in an induction thread, like the [https://forum.bitcoin.org/index.php?topic=18498 Bitcoin Donation Information] thread.
 
 Your candidacy would then be voted on, usually within eight days.  Depending on the vote you would either be inducted or you could try again after a certain time.
@@ -62,15 +63,10 @@ Devcoins are granted only for good accomplishments.  They are not deserved or gi
 
 In general an active developer is expected to create good accomplishments that would take an average developer at least ten hours per week to accomplish.  This amount of time is typical for an active developer who does not get paid to work on open source and can only develop in their spare time.
 
-==Occasional Developer==
+===Occasional Developer===
 For people who occasionally develop, for example if they occasionally write articles, they could send them to magazine like the [http://bitcoinweekly.com/ Bitcoin Weekly,] whose editor is an active developer.  An editor can apply to be inducted as an active developer if all the content of the magazine is open source, the editor checks to see that the articles are not plagarized, and the terms of the devcoin split between the editor and writers are public.  If the editor is inducted, the editor would then distribute their devcoin share in turn with the contributors according to the public contract.
 
 An editor or project maintainer can apply to be inducted for any category of creative work, as long as the work qualifies for devcoins, the work is original, and the terms of the devcoin split are public.
-
-==Collaborative Developer==
-People who develop a collaborative project, like a wiki, get shares for their work according to how much they work.  An active developer who creates ten hours a week of good accomplishments gets a share.  A part time developer who contributes every month, but does not create ten hours a week of accomplishments gets half a share.  A contributor who occasionally writes articles gets 0.2 shares in the generation round that the article is submitted.  A contributor who occasionally edits the wiki gets 0.1 shares in the generation round of the edits.
-
-The shares are added up and rounded, totals ending in .5 are rounded to the nearest even number.  The result is the number of collaborative editors who get on the active developer list, and therefore get a direct share of the generation.  They in turn send the collaborators who are not on the developer list their share of the devcoins at least every generation round (every 4,000 blocks, roughly once a month).  If they do not give the collaborators their share they will be removed from the active developer list.
 
 ==Voting==
 Voting will be [http://rangevoting.org/ range voting] on a scale of [http://rangevoting.org/Why99.html 0 to 99.]
@@ -95,28 +91,12 @@ If an adminstrator is disrupting devcoin or someone thinks an administrator is c
 ==Technical==
 Devcoin is an alternate bitcoin block chain.  The devcoin client is a fork of bitcoin-qt.  The latest versions are at [http://sourceforge.net/projects/galacticmilieu/files/ Marks's site.]  The block explorers are listed on the [[devcoin block explorer]] page.
 
-===Generation Rate===
-There has been talk about shifting the decimal place in bitcoin, because a maximum of 21,000,000 bitcoins would lead to people having to deal in milliBitcoins if bitcoin gets really popular.  However, once a block chain is made, it is really difficult to change the value of the currency.  So even though people will generally want to move the decimal place, it would be not be done and people would be stuck with an awkward currency unit.  In the [http://forum.bitcoin.org/index.php?topic=9299.0 RFC: SI-type of naming convention for BTC] thread a lot of the problems people have dealing with a large currency unit are discussed.
-
-Since devcoin is a new currency, it is easy to multiply the coins by 1,000.  The constants for the transaction fees and max money are changed:
-<pre>
-//static const int64 MIN_TX_FEE = 50000;
-static const int64 MIN_TX_FEE = 50000000;
-//static const int64 MIN_RELAY_TX_FEE = 10000;
-static const int64 MIN_RELAY_TX_FEE = 10000000;
-//static const int64 MAX_MONEY = 21000000 * COIN;
-static const int64 MAX_MONEY = 21000000000 * COIN;
-</pre>
-and CENT was replaced by the MIN_TX_FEE wherever the min transaction fee was meant to be used.
-
-The generation is constant at 50,000 coins per block, which is 1,000 times higher than the bitcoin starting rate.  At a typical rate of 144 blocks a day, 1,008 a week, roughly 4,000 a month, that means the 200,000,000 devcoins are generated each month.  Of those, 90% go to the developers, so the developers get 180,000,000 devcoins a month in total.
-
 ===Create Block===
 The sending code in CreateBlock looks like the following:
 <pre>
 	vector<string> coinAddressStrings = getCoinAddressStrings(GetDataDir(), string("receiver.csv"), (int)pindexPrev->nHeight+1);
     txNew.vout.resize(coinAddressStrings.size() + 1);
-    txNew.vout[0].scriptPubKey << reservekey.GetReservedKey() << OP_CHECKSIG;
+    txNew.vout[0].scriptPubKey &lt;&lt; reservekey.GetReservedKey() &lt;&lt; OP_CHECKSIG;
     int64 minerValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
 	int64 sharePerAddress = 0;
 	if (coinAddressStrings.size() == 0)
@@ -132,7 +112,7 @@ The sending code in CreateBlock looks like the following:
             return NULL;
         }
 
-        txNew.vout[i + 1].scriptPubKey << OP_DUP << OP_HASH160 << hash160 << OP_EQUALVERIFY << OP_CHECKSIG;
+        txNew.vout[i + 1].scriptPubKey &lt;&lt; OP_DUP &lt;&lt; OP_HASH160 &lt;&lt; hash160 &lt;&lt; OP_EQUALVERIFY &lt;&lt; OP_CHECKSIG;
         txNew.vout[i + 1].nValue = sharePerAddress;
         minerValue -= sharePerAddress
     }
@@ -141,30 +121,119 @@ The sending code in CreateBlock looks like the following:
     txNew.vout[0].nValue = minerValue + nFees;
 </pre>
 
-===Validate Block===
-The validation code in ConnectBlock needs the addition of:
+===Difficulty===
+Because the devcoin difficulty is lower than the bitcoin difficulty, miners can switch in and out of the chain, which means the block generation rate varies wildly.  To fix this problem, the difficulty is determined with a continous average rather a step function, and it is calculated over one day instead of two weeks.  This leads to greater daily variation than bitcoin because it is being averaged over a small time; but it is a much smaller variation than the current factor of more than two as a miner switches in and out.
+
+The time difference is determined by sorting the blocks by time stamp, then subtracting the time stamp of the sixth block from the bottom from the time stamp of the sixth block from the top.  This is to prevent the time travel exploit.
+
+The first attempt at the continuous average function switched over at [https://bitcointalk.org/index.php?topic=34586.msg527776#msg527776 block 10,700 and was a failure].  The next attempt switched over at [https://bitcointalk.org/index.php?topic=34586.msg539108#msg539108 block 10,800 and was a success].  The successful GetNextWorkRequired function follows below.
+
 <pre>
-	//
-	// Check that the required share was sent to each beneficiary
-	//
-	if (vtx[0].GetValueOut() > (GetBlockValue(pindex->nHeight, nFees) - fallbackReduction))
-	{
-		std::vector<std::string> addressStrings;
-		std::vector<int64> amounts;
+unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast)
+{
+    const int nSmoothBlock = 10700;
+    const int64 nTargetSpacing = 10 * 60;
+    int64 nTargetTimespan = 24 * 60 * 60; // one day
 
-		for (int i = 1; i &lt; vtx[0].vout.size(); i++)
-		{
-			if (vtx[0].vout[i].scriptPubKey.GetBitcoinAddressHash160() != 0)
-			{
-				addressStrings.push_back(vtx[0].vout[i].scriptPubKey.GetBitcoinAddress());
-				amounts.push_back(vtx[0].vout[i].nValue);
-			}
-		}
+    if (pindexLast->nHeight &lt; nSmoothBlock)
+        nTargetTimespan *= 14; // two weeks
 
-		if (!getIsSufficientAmount(addressStrings, amounts, GetDataDir(), string("receiver.csv"), (int)pindex->nHeight, share))
-			return error("ConnectBlock() : Share to beneficiary is insufficient");
-	}
+    int64 nInterval = nTargetTimespan / nTargetSpacing;
+
+    // Genesis block
+    if (pindexLast == NULL)
+        return bnProofOfWorkLimit.GetCompact();
+
+    const int nMedianBlock = 10800;
+    int64 nIntervalMinusOne = nInterval-1;
+
+    if (pindexLast->nHeight &lt; 10)
+        return pindexLast->nBits;
+
+    // Change at each block after nSmoothBlock
+    if (pindexLast->nHeight &lt; nSmoothBlock)
+        if ((pindexLast->nHeight+1) % nInterval != 0)
+            return pindexLast->nBits;
+
+    // Go back by what we want to be one day worth of blocks
+    const CBlockIndex* pindexFirst = pindexLast;
+    vector<int64> blockTimes;
+    CBigNum averageBits;
+    averageBits.SetCompact(0);
+
+    for (int i = 0; pindexFirst && i &lt; nIntervalMinusOne; i++)
+    {
+        averageBits += CBigNum().SetCompact(pindexFirst->nBits);
+        blockTimes.push_back(pindexFirst->GetBlockTime());
+        pindexFirst = pindexFirst->pprev;
+    }
+
+    assert(pindexFirst);
+    int blockTimeEndIndex = blockTimes.size() - 6;
+    sort(blockTimes.begin(), blockTimes.end());
+    averageBits /= nIntervalMinusOne;
+
+    // Limit adjustment step
+    int64 nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
+    int64 nMedianTimespan = blockTimes[blockTimeEndIndex] - blockTimes[6];
+    nMedianTimespan *= nIntervalMinusOne / (int64)(blockTimeEndIndex - 6);
+
+    // Change nActualTimespan after nMedianBlock
+    if (pindexLast->nHeight > nMedianBlock)
+    {
+        nActualTimespan = nMedianTimespan;
+    }
+
+    printf("  nActualTimespan = %"PRI64d"  before bounds\n", nActualTimespan);
+
+    if (nActualTimespan &lt; nTargetTimespan/4)
+        nActualTimespan = nTargetTimespan/4;
+
+    if (nActualTimespan > nTargetTimespan*4)
+        nActualTimespan = nTargetTimespan*4;
+
+    // Retarget
+    CBigNum bnNew;
+    bnNew.SetCompact(pindexLast->nBits);
+
+    // Change bnNew after nMedianBlock
+    if (pindexLast->nHeight > nMedianBlock)
+        bnNew = averageBits;
+
+    bnNew *= nActualTimespan;
+    bnNew /= nTargetTimespan;
+
+    if (bnNew > bnProofOfWorkLimit)
+        bnNew = bnProofOfWorkLimit;
+
+    /// debug print
+    printf("GetNextWorkRequired RETARGET\n");
+    printf("nTargetTimespan = %"PRI64d"    nActualTimespan = %"PRI64d"\n", nTargetTimespan, nActualTimespan);
+    printf("Before: %08x  %s\n", pindexLast->nBits, CBigNum().SetCompact(pindexLast->nBits).getuint256().ToString().c_str());
+    printf("After:  %08x  %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
+
+    return bnNew.GetCompact();
+}
 </pre>
+
+===Generation Rate===
+There has been talk about shifting the decimal place in bitcoin, because a maximum of 21,000,000 bitcoins would lead to people having to deal in milliBitcoins if bitcoin gets really popular.  However, once a block chain is made, it is really difficult to change the value of the currency.  So even though people will generally want to move the decimal place, it would be not be done and people would be stuck with an awkward currency unit.  In the [http://forum.bitcoin.org/index.php?topic=9299.0 RFC: SI-type of naming convention for BTC] thread a lot of the problems people have dealing with a large currency unit are discussed.
+
+Since devcoin is a new currency, it is easy to multiply the coins by 1,000.  Also, to make spam unprofitable the transactions fees were increased.  The new constants for the transaction fees and max money follow below.
+<pre>
+//static const int64 MIN_TX_FEE = 50000;
+static const int64 MIN_TX_FEE = 500000000;
+//static const int64 MIN_RELAY_TX_FEE = 10000;
+static const int64 MIN_RELAY_TX_FEE = MIN_TX_FEE;
+//static const int64 MAX_MONEY = 21000000 * COIN;
+static const int64 MAX_MONEY = 21000000000 * COIN;
+</pre>
+and CENT was replaced by the MIN_TX_FEE wherever the min transaction fee was meant to be used.
+
+The generation is constant at 50,000 coins per block, which is 1,000 times higher than the bitcoin starting rate.  At a typical rate of 144 blocks a day, 1,008 a week, roughly 4,000 a month, that means the 200,000,000 devcoins are generated each month.  Of those, 90% go to the developers, so the developers get 180,000,000 devcoins a month in total.
+
+===Random Number===
+Random numbers for voting are determined by a hash of the string composed of the post time and the next block of the highest difficulty block chain, which at the time of this writing is bitcoin.  For consecutive random numbers, the next number is the hash of the string doubled and so on.  For example, say someone applies to be accepted as an active developer.  When they post their application, the hash of their post time and the next block after their post is combined to make a string.  The hexadecimal hash of that string is used as a number from zero to one, multiplied by the number of administrators, to get the first administrator.  The hexadecimal hash of the doubled string is multiplied by the number of remaining adminstrators, to get the second administrator.  The hash of the tripled string is multiplied by the remaining, to get the third administrator.
 
 ===Receiver Files===
 ====Client Procedure====
@@ -178,22 +247,11 @@ Receiver also looks ahead, after it is a random portion between 0.75 and roughly
 The file are generated from the [https://raw.github.com/Unthinkingbit/charity/master/bitcoinshare.html list of bitcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/devcoinshare.html list of devcoin developers], the [https://github.com/Unthinkingbit/charity/blob/master/peer.csv receiver site prefixes], and the bounty file for that round; for example, the [https://github.com/Unthinkingbit/charity/blob/master/bounty_6.csv round six bounty file].
 
 Then download the python scripts [https://raw.github.com/Unthinkingbit/charity/master/account.py account] and [https://raw.github.com/Unthinkingbit/charity/master/almoner.py almoner] into the same folder as the files.  Then in that folder open a terminal and type:
+<pre>
 python account.py -input bounty_6.csv
+</pre>
 
 This will create the receiver_6.csv file and the account_6.csv file.  The receiver file is then uploaded by all the file administrators to their respective sites.  The account_6.csv file is to help people keep track of where the coins are going, it is not necessary for devcoin to function.
-
-===Subsidy and Share===
-The constants required for the subsidy are changed and constants for share, and fallback reduction are added.
-<pre>
-static const int64 initialSubsidy = 50000 * COIN;
-static const int64 share = initialSubsidy * 9 / 10;
-static const int64 fallbackReduction = (initialSubsidy + share) / 2;
-
-Code in GetBlockValue is changed:
-
-//int64 nSubsidy = 50 * COIN;
-int64 nSubsidy = initialSubsidy;
-</pre>
 
 ===Renaming Bitcoin to Devcoin===
 The default data directory, irc channel and pchMessageStart was changed to devcoin.
@@ -251,8 +309,83 @@ The default port was changed to 53333 and the default test net port changed to 6
 inline unsigned short GetDefaultPort() { return fTestNet ? 63333 : 53333; }
 </pre>
 
-===Random Number===
-Random numbers for voting are determined by a hash of the string composed of the post time and the next block of the highest difficulty block chain, which at the time of this writing is bitcoin.  For consecutive random numbers, the next number is the hash of the string doubled and so on.  For example, say someone applies to be accepted as an active developer.  When they post their application, the hash of their post time and the next block after their post is combined to make a string.  The hexadecimal hash of that string is used as a number from zero to one, multiplied by the number of administrators, to get the first administrator.  The hexadecimal hash of the doubled string is multiplied by the number of remaining adminstrators, to get the second administrator.  The hash of the tripled string is multiplied by the remaining, to get the third administrator.
+===Spam Proofing===
+To make spam unprofitable, the following changes were made:
+
+*1) Increase the MIN_TX_FEE
+*2) Set MIN_RELAY_TX_FEE = MIN_TX_FEE
+*3) Added an extra fee to sendMany for each tiny sub transaction
+*4) Eliminated free transactions
+
+The MIN_TX_FEE and MIN_RELAY_TX_FEE changes are listed in the Generation Rate section.
+
+To add the extra fee and eliminate free transactions, the following change was made in GetMinFee in main.h:
+<pre>
+//        if (fAllowFree)
+//        {
+//            if (nBlockSize == 1)
+//            {
+//                // Transactions under 10K are free
+//                // (about 4500bc if made of 50bc inputs)
+//                if (nBytes &lt; 10000)
+//                    nMinFee = 0;
+//            }
+//            else
+//            {
+//                // Free transaction area
+//                if (nNewBlockSize &lt; 27000)
+//                    nMinFee = 0;
+//            }
+//        }
+
+//        // To limit dust spam, require MIN_TX_FEE/MIN_RELAY_TX_FEE if any output is less than 0.01
+//        if (nMinFee &lt; nBaseFee)
+//            BOOST_FOREACH(const CTxOut& txout, vout)
+//                if (txout.nValue &lt; CENT)
+//                    nMinFee = nBaseFee;
+
+         // To limit dust spam, require an additional one tenth of MIN_TX_FEE/MIN_RELAY_TX_FEE for each output
+         BOOST_FOREACH(const CTxOut& txout, vout)
+              nMinFee += nBaseFee / 10;
+</pre>
+
+===Subsidy and Share===
+The constants required for the subsidy are changed and constants for share, and fallback reduction are added.
+<pre>
+static const int64 initialSubsidy = 50000 * COIN;
+static const int64 share = initialSubsidy * 9 / 10;
+static const int64 fallbackReduction = (initialSubsidy + share) / 2;
+
+Code in GetBlockValue is changed:
+
+//int64 nSubsidy = 50 * COIN;
+int64 nSubsidy = initialSubsidy;
+</pre>
+
+===Validate Block===
+The validation code in ConnectBlock needs the addition of:
+<pre>
+	//
+	// Check that the required share was sent to each beneficiary
+	//
+	if (vtx[0].GetValueOut() > (GetBlockValue(pindex->nHeight, nFees) - fallbackReduction))
+	{
+		std::vector<std::string> addressStrings;
+		std::vector<int64> amounts;
+
+		for (int i = 1; i &lt; vtx[0].vout.size(); i++)
+		{
+			if (vtx[0].vout[i].scriptPubKey.GetBitcoinAddressHash160() != 0)
+			{
+				addressStrings.push_back(vtx[0].vout[i].scriptPubKey.GetBitcoinAddress());
+				amounts.push_back(vtx[0].vout[i].nValue);
+			}
+		}
+
+		if (!getIsSufficientAmount(addressStrings, amounts, GetDataDir(), string("receiver.csv"), (int)pindex->nHeight, share))
+			return error("ConnectBlock() : Share to beneficiary is insufficient");
+	}
+</pre>
 
 ==Concerns==
 The primary concern is that in the long term, most organizations become corrupt, regardless of the intentions of the founders.  The single best defense against the corruption of an organization is competition.  Devcoin would be the first currency to give part of its generation to developers.  However, developers are welcome to fork it in turn, and create say a reformcoin, that also gives generation to developers, but starts with another set of founders.  If the reformcoin is less corrupt than devcoin, people will sell the devcoin and buy reformcoins.  Even if most people remain with devcoin, just the possibility that people could move to reformcoin would tend to rein in the corruption of the devcoin.  To increase the availability of competition, there will be bounties for software to easily make alternate currencies derived from devcoin, and bounties for easy to use range voting software.  This would also make it easier for people to make other coins like town coins and project coins.
