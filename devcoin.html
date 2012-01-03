@@ -53,7 +53,7 @@ The filmmakers category includes people who make movies, shorts, and animation. 
 ===Active Developer===
 If you actively develop open source of any kind, you can apply to get a share of devcoin generation by posting in an induction thread, like the [https://forum.bitcoin.org/index.php?topic=18498 Bitcoin Donation Information] thread.
 
-Your candidacy would then be voted on, usually within eight days.  Depending on the vote you would either be inducted or you could try again after a certain time.
+Your candidacy would then be decided on, usually within eight days. If there is consensus that you are a good developer, you'll be in. If there is no consensus, your candidacy would be voted on. Depending on the vote you would either be inducted or you could try again after a certain time.
 
 The voting guideline follows.  If your work is used by more than a thousand people, the vote should be 40 if the work is of low quality and 99 if the work is of high quality.  If your work is used by a between a hundred and a thousand people, the vote should be 30 if the work is of low quality and 90 if the work is of high quality.  If your work is used by between ten and a hundred people, the vote should be 20 if the work is of low quality and 80 if the work is of high quality.  If your work is used by between two and ten people, the vote should be 10 if the work is low quality and 60 if the work is of high quality.  If you make are helpful to your users or readers and/or make informative posts, that would be counted towards your vote.  If you disrupt projects, that would be counted against your vote.
 
@@ -71,7 +71,7 @@ An editor or project maintainer can apply to be inducted for any category of cre
 ==Voting==
 Voting will be [http://rangevoting.org/ range voting] on a scale of [http://rangevoting.org/Why99.html 0 to 99.]
 
-For induction, three administrators will be chosen at random.  They will range vote to decide whether the candidate will be inducted.  If the candidate gets 50% or more (49.5 on the 0 to 99 scale), they're in and they get their induction bounty.  In they get 40% or more, they can try again in a month, and they get a one time lifetime accomplishment bounty equal to half the current induction bounty.  If they get less than 40%, they can try again in 3 months.
+For induction voting, three administrators will be chosen at random.  They will range vote to decide whether the candidate will be inducted.  If the candidate gets 50% or more (49.5 on the 0 to 99 scale), they're in and they get their induction bounty.  In they get 40% or more, they can try again in a month, and they get a one time lifetime accomplishment bounty equal to half the current induction bounty.  If they get less than 40%, they can try again in 3 months.
 
 Other issues will be decided in a similar fashion.  If the issue is particular to a single developer, bounty or prize, three administrators are chosen at random to vote.  If the issue affects the community, every active developer can vote.
 
@@ -89,7 +89,7 @@ An administrator can choose to disburse bounties, for which they get a fifth of 
 If an adminstrator is disrupting devcoin or someone thinks an administrator is corrupt; for example there is evidence of a kickback, someone can advance 50 $ to have three other administrators vote on whether there really is corruption.  If the defendant gets 50% or more, the defendant stays; any new accusations within a month require a cumulative doubling of the last advance.  If the advance reaches 200 $, a five member jury is chosen, at 800 $ a seven member jury is chosen, and so on for each quadrupling.  If the defendent gets 40% to 50%, they're out for three months and can apply for a new vote afterwards.  If the defendent gets less than 40%, they're out for a year and can apply for a new vote afterwards.  If the vote is below 50%, the money is returned to the accuser, if the vote is 50% or over, the administrators vote on whether the money should be returned to the accuser or distributed among the active developers.
 
 ==Technical==
-Devcoin is an alternate bitcoin block chain.  The devcoin client is a fork of bitcoin-qt.  The latest versions are at [http://sourceforge.net/projects/galacticmilieu/files/ Marks's site.]  The block explorers are listed on the [[devcoin block explorer]] page.
+Devcoin is an alternate bitcoin block chain. The devcoin daemon is a fork of the bitcoin daemon and the client is a fork of the bitcoin wxWindows version.  The latest versions are at [http://sourceforge.net/projects/galacticmilieu/files/ Marks's site.] The block explorers are listed on the [[devcoin block explorer]] page.
 
 ===Create Block===
 The sending code in CreateBlock looks like the following:
@@ -242,6 +242,32 @@ Random numbers for voting are determined by a hash of the string composed of the
 For example, say the devcoin client requests the height 9000 receivers, the height step is 4000 and only the root receiver_0.csv saved.  Receiver.h will first look for the receiver_2.csv file.  Since it's not there it will step down and look for receiver_1.csv.  Still not there so it looks for and finds receiver_0.csv.  It then downloads receiver_1.csv by looking at the peers in receiver_0.csv and saves in the data directory.  It then downloads receiver_2.csv by looking at the peers in receiver_1.csv and saves in the data directory.  Once it has receiver_2.csv, it parses it to get the list of receivers and uses height modulo list length to return the receivers for height 9000.
 
 Receiver also looks ahead, after it is a random portion between 0.75 and roughly 0.95 of the way to the next step so that there is no mass downloading when the block height switches from x999 to x000.  To resist ddos attacks and to work even when some web sites are down, it picks the page which the majority of peers have available.  The step size of 4000 gives an update roughly each month.
+
+====Disbursing the Share====
+The generation share is 90% of the block, which is 90% * 50,000 devcoins = 45,000 devcoins.  It is disbursed to the devcoin addresses in the receiver file, in round robin order. In each generation round, for a given block height, the index of the line of addresses is the block height above the start of the round, modulo the number of addresses. The code snippet for that follows below.
+
+<pre>
+vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step)
+{
+..
+	int remainder = height - step * (height / step);
+	int modulo = remainder % (int)coinLists.size();
+
+	vector<string> originalList = coinLists[modulo];
+
+	for (vector<string>::iterator tokenIterator = originalList.begin(); tokenIterator != originalList.end(); tokenIterator++)
+	{
+		if (*tokenIterator != string("="))
+			oldToken = tokenIterator->substr();
+
+		coinList.push_back(oldToken);
+	}
+
+	return coinList;
+}
+</pre>
+
+Then in CreateBlock, the share per address is calculated by dividing the generation share by the number of coin addresses in the line of addresses.  A subtransaction to create share per address coin value is then added for each coin address to the generation transaction. The transactions from generation can be seen by looking at a [[devcoin block explorer]].
 
 ====Generating the Files====
 The file are generated from the [https://raw.github.com/Unthinkingbit/charity/master/bitcoinshare.html list of bitcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/devcoinshare.html list of devcoin developers], the [https://github.com/Unthinkingbit/charity/blob/master/peer.csv receiver site prefixes], and the bounty file for that round; for example, the [https://github.com/Unthinkingbit/charity/blob/master/bounty_6.csv round six bounty file].
