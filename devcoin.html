@@ -264,14 +264,14 @@ vector<string> getCoinAddressStrings(const string& dataDirectory, const string& 
 Then in CreateBlock, the share per address is calculated by dividing the generation share by the number of coin addresses in the line of addresses.  A subtransaction to create share per address coin value is then added for each coin address to the generation transaction. The transactions from generation can be seen by looking at a [[devcoin block explorer]].
 
 ====Generating the Files====
-The file are generated from the [https://raw.github.com/Unthinkingbit/charity/master/bitcoinshare.html list of bitcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/devcoinshare.html list of devcoin developers], the [https://github.com/Unthinkingbit/charity/blob/master/peer.csv receiver site prefixes], and the bounty file for that round; for example, the [https://github.com/Unthinkingbit/charity/blob/master/bounty_6.csv round six bounty file].
+The file are generated from the [https://raw.github.com/Unthinkingbit/charity/master/bitcoinshare.html list of bitcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/devcoinshare.html list of devcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/peer.csv receiver site prefixes], and the bounty file for that round; for example, the [https://raw.github.com/Unthinkingbit/charity/master/bounty_7.csv round seven bounty file].
 
 Then download the python scripts [https://raw.github.com/Unthinkingbit/charity/master/account.py account] and [https://raw.github.com/Unthinkingbit/charity/master/almoner.py almoner] into the same folder as the files.  Then in that folder open a terminal and type:
 <pre>
-python account.py -input bounty_6.csv
+python account.py -input bounty_7.csv
 </pre>
 
-This will create the receiver_6.csv file and the account_6.csv file.  The receiver file is then uploaded by all the file administrators to their respective sites.  The account_6.csv file is to help people keep track of where the coins are going, it is not necessary for devcoin to function.
+This will create the receiver_7.csv file and the account_7.csv file.  The receiver file is then uploaded by all the file administrators to their respective sites.  The account_7.csv file is to help people keep track of where the coins are going, it is not necessary for devcoin to function.
 
 ===Renaming Bitcoin to Devcoin===
 The default data directory, irc channel and pchMessageStart was changed to devcoin.
