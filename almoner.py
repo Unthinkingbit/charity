@@ -310,7 +310,7 @@ class Contributor:
 		writeTitleValue(cString, 'Project Homepage', self.projectHomepage)
 		writeTitleValue(cString, 'Project License', self.projectLicense)
 		writeTitleValue(cString, 'Project Type', self.projectType)
-		cString.write('Share: %s' % str(round(100.0 * self.share, 1)) +'%\n')
+		cString.write('Share: %s%\n' % str(round(100.0 * self.share, 1)))
 		writeTitleValue(cString, 'Utility', self.utility)
 		cString.write('Utility Value: %s\n' % self.utilityValue)
 		return cString.getvalue()
