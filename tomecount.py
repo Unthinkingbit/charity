@@ -48,6 +48,7 @@ If python 2.x is not on your machine, download the latest python 2.x, which is a
 http://www.python.org/download/
 """
 
+from datetime import date
 import almoner
 import cStringIO
 import math
@@ -57,7 +58,7 @@ import sys
 __license__ = 'MIT'
 
 
-#date, uppercase, devtome_bounty
+#devtomebounty, later devtomeshare
 def addJoinedTitles(cString, payoutBegin, payoutEnd, words):
 	'Add joined titles to the cString.'
 	words.append('Collated Word Count')
@@ -103,8 +104,7 @@ def getSourceText(address):
 def getTomecountText(authors, payoutBegin, payoutEnd):
 	'Get the tomecount csv text for the authors.'
 	cString = cStringIO.StringIO()
-	words = ['Name','Coin Address']
-	addJoinedTitles(cString, payoutBegin, payoutEnd, words)
+	addJoinedTitles(cString, payoutBegin, payoutEnd, ['Name','Coin Address'])
 	totalTomecount = Tomecount(payoutBegin, payoutEnd)
 	for author in authors:
 		author.addLine(cString)
@@ -116,10 +116,10 @@ def getTomecountText(authors, payoutBegin, payoutEnd):
 		totalTomecount.cumulativePayout += author.tomecount.cumulativePayout
 		for payoutIndex, payout in enumerate(author.tomecount.payouts):
 			totalTomecount.payouts[payoutIndex] += payout
-	words = ['','Totals']
-	addJoinedTitles(cString, payoutBegin, payoutEnd, words)
-	words = ['','']
-	cString.write(totalTomecount.getJoinedWords(words))
+	addJoinedTitles(cString, payoutBegin, payoutEnd, ['','Totals'])
+	cString.write(totalTomecount.getJoinedWords(['','']))
+	cString.write(',Date\n')
+	cString.write(',%s\n' % date.today().isoformat())
 	return cString.getvalue()
 
 def getWordCount(line):
@@ -147,19 +147,17 @@ def writeOutput(arguments):
 	fileName = almoner.getParameter(arguments, 'tomecount.csv', 'input')
 	payoutEnd = int(almoner.getParameter(arguments, '8', 'payout'))
 	payoutBegin = payoutEnd
-	titles = []
 	lines = almoner.getTextLines(almoner.getFileText(fileName))
 	titleLine = lines[0]
-	words = titleLine.split(',')
-	for word in words:
-		title = word.lower()
-		titles.append(title)
-		if title.startswith('payout'):
+	titles = titleLine.split(',')
+	for title in titles:
+		if title.startswith('Payout'):
 			payoutBegin = int(title.split()[1])
 	authors = getAuthors(lines, payoutBegin, payoutEnd, titles)
-	accountText = getTomecountText(authors, payoutBegin, payoutEnd)
+	tomecountText = getTomecountText(authors, payoutBegin, payoutEnd)
 	print(  authors)
-	print(  accountText)
+	print(  tomecountText)
+	almoner.writeFileText(fileName, tomecountText)
 	return
 	suffixNumber = getSuffixNumber(fileName)
 	outputAccountTo = getSuffixedFileName(almoner.getParameter(arguments, 'account.csv', 'output'), str(suffixNumber))
@@ -191,10 +189,10 @@ class Author:
 		for wordIndex, word in enumerate(words):
 			self.parameterDictionary[titles[wordIndex]] = word
 		for payoutIndex in xrange(payoutBegin, payoutEnd):
-			payoutTitle = 'payout %s' % str(payoutIndex)
+			payoutTitle = 'Payout %s' % str(payoutIndex)
 			if payoutTitle in self.parameterDictionary:
 				self.tomecount.payouts[payoutIndex - payoutBegin] = int(self.parameterDictionary[payoutTitle])
-		sourceText = getSourceText('http://devtome.org/wiki/index.php?title=User:%s&action=edit' % self.parameterDictionary['name'])
+		sourceText = getSourceText('http://devtome.org/wiki/index.php?title=User:%s&action=edit' % self.parameterDictionary['Name'])
 		isCollated = False
 		isOriginal = False
 		for line in almoner.getTextLines(sourceText):
@@ -227,7 +225,7 @@ class Author:
 
 	def addLine(self, cString):
 		'Add the author to the tomecount csv cString.'
-		words = [self.parameterDictionary['name'], self.parameterDictionary['coin address']]
+		words = [self.parameterDictionary['Name'], self.parameterDictionary['Coin Address']]
 		cString.write(self.tomecount.getJoinedWords(words))
 
 
