@@ -57,17 +57,27 @@ import sys
 __license__ = 'MIT'
 
 
-def getAuthors(fileName):
+#date, uppercase, devtome_bounty
+def addJoinedTitles(cString, payoutBegin, payoutEnd, words):
+	'Add joined titles to the cString.'
+	words.append('Collated Word Count')
+	words.append('Collated Weighted Word Count')
+	words.append('Original Word Count')
+	words.append('Word Count')
+	words.append('Weighted Word Count')
+	for payoutIndex in xrange(payoutBegin, payoutEnd + 1):
+		words.append('Payout %s' % str(payoutIndex))
+	words.append('Cumulative Payout')
+	cString.write('%s\n' % ','.join(words))
+
+def getAuthors(lines, payoutBegin, payoutEnd, titles):
 	'Determine the suffix number, returning 0 if there is not one.'
 	authors = []
-	titles = []
-	lines = almoner.getTextLines(almoner.getFileText(fileName))
-	titleLine = lines[0]
-	words = titleLine.split(',')
-	for word in words:
-		titles.append(word.lower())
 	for line in lines[1 :]:
-		authors.append(Author(line, titles))
+		words = line.split(',')
+		if len(words) > 0:
+			if len(words[0]) > 0:
+				authors.append(Author(payoutBegin, payoutEnd, titles, words))
 	return authors
 
 def getSourceText(address):
@@ -90,12 +100,44 @@ def getSourceText(address):
 		return ''
 	return text[tagEndIndex + 1 : textAreaEndTagIndex]
 
-def getTomecountText(authors):
+def getTomecountText(authors, payoutBegin, payoutEnd):
 	'Get the tomecount csv text for the authors.'
 	cString = cStringIO.StringIO()
+	words = ['Name','Coin Address']
+	addJoinedTitles(cString, payoutBegin, payoutEnd, words)
+	totalTomecount = Tomecount(payoutBegin, payoutEnd)
 	for author in authors:
 		author.addLine(cString)
+		totalTomecount.collatedWordCount += author.tomecount.collatedWordCount
+		totalTomecount.collatedWeightedWordCount += author.tomecount.collatedWeightedWordCount
+		totalTomecount.originalWordCount += author.tomecount.originalWordCount
+		totalTomecount.wordCount += author.tomecount.wordCount
+		totalTomecount.weightedWordCount += author.tomecount.weightedWordCount
+		totalTomecount.cumulativePayout += author.tomecount.cumulativePayout
+		for payoutIndex, payout in enumerate(author.tomecount.payouts):
+			totalTomecount.payouts[payoutIndex] += payout
+	words = ['','Totals']
+	addJoinedTitles(cString, payoutBegin, payoutEnd, words)
+	words = ['','']
+	cString.write(totalTomecount.getJoinedWords(words))
 	return cString.getvalue()
+
+def getWordCount(line):
+	'Get the word count of the page linked to in the line.'
+	linkStartIndex = line.find('[[')
+	if linkStartIndex == -1:
+		return 0
+	linkStartIndex += len('[[')
+	linkEndIndex = line.find(']]', linkStartIndex)
+	if linkEndIndex == -1:
+		return 0
+	linkString = line[linkStartIndex : linkEndIndex]
+	linkDividerIndex = linkString.find('|')
+	if linkDividerIndex != -1:
+		linkString = linkString[: linkDividerIndex]
+	sourceText = getSourceText('http://devtome.org/wiki/index.php?title=%s&action=edit' % linkString)
+	sourceText = sourceText.replace('.', ' ').replace(',', ' ').replace(';', ' ').replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+	return len(sourceText.split())
 
 def writeOutput(arguments):
 	'Write output.'
@@ -103,8 +145,19 @@ def writeOutput(arguments):
 		print(__doc__)
 		return
 	fileName = almoner.getParameter(arguments, 'tomecount.csv', 'input')
-	authors = getAuthors(fileName)
-	accountText = getTomecountText(authors)
+	payoutEnd = int(almoner.getParameter(arguments, '8', 'payout'))
+	payoutBegin = payoutEnd
+	titles = []
+	lines = almoner.getTextLines(almoner.getFileText(fileName))
+	titleLine = lines[0]
+	words = titleLine.split(',')
+	for word in words:
+		title = word.lower()
+		titles.append(title)
+		if title.startswith('payout'):
+			payoutBegin = int(title.split()[1])
+	authors = getAuthors(lines, payoutBegin, payoutEnd, titles)
+	accountText = getTomecountText(authors, payoutBegin, payoutEnd)
 	print(  authors)
 	print(  accountText)
 	return
@@ -126,35 +179,21 @@ def writeOutput(arguments):
 			almoner.writeFileText(sha256FileName, hashlib.sha256(receiverText).hexdigest())
 			print('The sha256 receiver file has been written to:\n%s\n' % sha256FileName)
 
-def getWordCount(line):
-	'Get the word count of the page linked to in the line.'
-	linkStartIndex = line.find('[[')
-	if linkStartIndex == -1:
-		return 0
-	linkStartIndex += len('[[')
-	linkEndIndex = line.find(']]', linkStartIndex)
-	if linkEndIndex == -1:
-		return 0
-	linkString = line[linkStartIndex : linkEndIndex]
-	linkDividerIndex = linkString.find('|')
-	if linkDividerIndex != -1:
-		linkString = linkString[: linkDividerIndex]
-	sourceText = getSourceText('http://devtome.org/wiki/index.php?title=%s&action=edit' % linkString)
-	sourceText = sourceText.replace('.', ' ').replace(',', ' ').replace(';', ' ').replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
-	return len(sourceText.split())
-
 
 class Author:
 	'A class to handle an author.'
-	def __init__(self, line, titles):
+	def __init__(self, payoutBegin, payoutEnd, titles, words):
 		'Initialize.'
-		words = line.split(',')
+		self.tomecount = Tomecount(payoutBegin, payoutEnd)
 		self.collatedWordCount = 0
 		self.originalWordCount = 0
 		self.parameterDictionary = {}
 		for wordIndex, word in enumerate(words):
 			self.parameterDictionary[titles[wordIndex]] = word
-		print(  self.parameterDictionary)
+		for payoutIndex in xrange(payoutBegin, payoutEnd):
+			payoutTitle = 'payout %s' % str(payoutIndex)
+			if payoutTitle in self.parameterDictionary:
+				self.tomecount.payouts[payoutIndex - payoutBegin] = int(self.parameterDictionary[payoutTitle])
 		sourceText = getSourceText('http://devtome.org/wiki/index.php?title=User:%s&action=edit' % self.parameterDictionary['name'])
 		isCollated = False
 		isOriginal = False
@@ -170,9 +209,17 @@ class Author:
 				elif 'original' in lineStrippedLower:
 					isOriginal = True
 			if isCollated:
-				self.collatedWordCount += getWordCount(lineStripped)
+				self.tomecount.collatedWordCount += getWordCount(lineStripped)
 			if isOriginal:
-				self.originalWordCount += getWordCount(lineStripped)
+				self.tomecount.originalWordCount += getWordCount(lineStripped)
+		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 0 / 10 # later to be 3 / 10
+		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
+		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
+		self.tomecount.cumulativePayout = int(round(float(self.tomecount.weightedWordCount) * 0.001))
+		lastPayout = self.tomecount.cumulativePayout
+		for payout in self.tomecount.payouts[: -1]:
+			lastPayout -= payout
+		self.tomecount.payouts[-1] = max(lastPayout, 0)
 
 	def __repr__(self):
 		'Get the string representation of this class.'
@@ -180,9 +227,37 @@ class Author:
 
 	def addLine(self, cString):
 		'Add the author to the tomecount csv cString.'
-		coinAddress = self.parameterDictionary['coin address']
-		name = self.parameterDictionary['name']
-		cString.write('%s,%s,%s\n' % (name, coinAddress, str(self.originalWordCount)))
+		words = [self.parameterDictionary['name'], self.parameterDictionary['coin address']]
+		cString.write(self.tomecount.getJoinedWords(words))
+
+
+class Tomecount:
+	'A class to handle the tome accounting.'
+	def __init__(self, payoutBegin, payoutEnd):
+		'Initialize.'
+		self.collatedWordCount = 0
+		self.originalWordCount = 0
+		self.collatedWeightedWordCount = 0
+		self.payouts = [0] * (payoutEnd + 1 - payoutBegin)
+		self.wordCount = 0
+		self.weightedWordCount = 0
+		self.cumulativePayout = 0
+
+	def __repr__(self):
+		'Get the string representation of this class.'
+		return self.getJoinedWords([])
+
+	def getJoinedWords(self, words):
+		'Add the variables to the words.'
+		words.append(str(self.collatedWordCount))
+		words.append(str(self.collatedWeightedWordCount))
+		words.append(str(self.originalWordCount))
+		words.append(str(self.wordCount))
+		words.append(str(self.weightedWordCount))
+		for payout in self.payouts:
+			words.append(str(payout))
+		words.append(str(self.cumulativePayout))
+		return '%s\n' % ','.join(words)
 
 
 def main():
