@@ -58,7 +58,6 @@ import sys
 __license__ = 'MIT'
 
 
-#devtomebounty, later devtomeshare
 def addJoinedTitles(cString, payoutBegin, payoutEnd, words):
 	'Add joined titles to the cString.'
 	words.append('Collated Word Count')
@@ -72,7 +71,7 @@ def addJoinedTitles(cString, payoutBegin, payoutEnd, words):
 	cString.write('%s\n' % ','.join(words))
 
 def getAuthors(lines, payoutBegin, payoutEnd, titles):
-	'Determine the suffix number, returning 0 if there is not one.'
+	'Get the authors.'
 	authors = []
 	for line in lines[1 :]:
 		words = line.split(',')
@@ -80,6 +79,22 @@ def getAuthors(lines, payoutBegin, payoutEnd, titles):
 			if len(words[0]) > 0:
 				authors.append(Author(payoutBegin, payoutEnd, titles, words))
 	return authors
+
+def getBountyText(authors):
+	'Get the devtome bounty text.'
+	cString = cStringIO.StringIO()
+	for author in authors:
+		coinAddress = author.parameterDictionary['Coin Address']
+		name = author.parameterDictionary['Name']
+		lastPayoutString = str(author.tomecount.payouts[-1])
+		cString.write('%s-%s,%s-Word Count(%s)' % (coinAddress, name, lastPayoutString, author.sourceAddress))
+		devtomeShareString = ',1-Devtome Share(%s)' % author.sourceAddress
+		if len(author.tomecount.payouts) == 1:
+			cString.write(devtomeShareString)
+		elif author.tomecount.payouts[-1] > 0 and author.tomecount.payouts[-2] > 0:
+			cString.write(devtomeShareString)
+		cString.write('\n')
+	return cString.getvalue()
 
 def getSourceText(address):
 	'Get the devtome source text for the address.'
@@ -150,32 +165,18 @@ def writeOutput(arguments):
 	lines = almoner.getTextLines(almoner.getFileText(fileName))
 	titleLine = lines[0]
 	titles = titleLine.split(',')
-	for title in titles:
+	for title in titles[: : -1]:
 		if title.startswith('Payout'):
 			payoutBegin = int(title.split()[1])
 	authors = getAuthors(lines, payoutBegin, payoutEnd, titles)
 	tomecountText = getTomecountText(authors, payoutBegin, payoutEnd)
-	print(  authors)
-	print(  tomecountText)
+	bountyText = getBountyText(authors)
 	almoner.writeFileText(fileName, tomecountText)
-	return
-	suffixNumber = getSuffixNumber(fileName)
-	outputAccountTo = getSuffixedFileName(almoner.getParameter(arguments, 'account.csv', 'output'), str(suffixNumber))
-	accountLines = getAccountLines(arguments, fileName)
-	peerText = getPeerText(arguments)
-	accountText = getPluribusunumText(accountLines, peerText)
-	if almoner.sendOutputTo(outputAccountTo, accountText):
-		print('The account file has been written to:\n%s\n' % outputAccountTo)
-	outputReceiverTo = getSuffixedFileName(almoner.getParameter(arguments, 'receiver.csv', 'outputreceiver'), str(suffixNumber))
-	receiverLines = getReceiverLines(accountLines, suffixNumber)
-	receiverText = getPluribusunumText(receiverLines, peerText)
-	if almoner.sendOutputTo(outputReceiverTo, receiverText):
-		print('The receiver file has been written to:\n%s\n' % outputReceiverTo)
-		shaOutputPrefix = almoner.getParameter(arguments, '', 'outputsha')
-		if len(shaOutputPrefix) != 0:
-			sha256FileName = getSuffixedFileName(outputReceiverTo, shaOutputPrefix)
-			almoner.writeFileText(sha256FileName, hashlib.sha256(receiverText).hexdigest())
-			print('The sha256 receiver file has been written to:\n%s\n' % sha256FileName)
+	outputBountyTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'devtome_bounty.csv', 'outputbounty'), str(payoutEnd))
+	if almoner.sendOutputTo(outputBountyTo, bountyText):
+		print('The devtome bounty file has been written to:\n%s\n' % outputBountyTo)
+	print(  tomecountText)
+	print(  bountyText)
 
 
 class Author:
@@ -192,7 +193,8 @@ class Author:
 			payoutTitle = 'Payout %s' % str(payoutIndex)
 			if payoutTitle in self.parameterDictionary:
 				self.tomecount.payouts[payoutIndex - payoutBegin] = int(self.parameterDictionary[payoutTitle])
-		sourceText = getSourceText('http://devtome.org/wiki/index.php?title=User:%s&action=edit' % self.parameterDictionary['Name'])
+		self.sourceAddress = 'http://devtome.org/wiki/index.php?title=User:%s&action=edit' % self.parameterDictionary['Name']
+		sourceText = getSourceText(self.sourceAddress)
 		isCollated = False
 		isOriginal = False
 		for line in almoner.getTextLines(sourceText):

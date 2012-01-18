@@ -125,13 +125,6 @@ def getReceiverLines(accountLines, suffixNumber):
 	print('')
 	return receiverLines
 
-def getSuffixedFileName(fileName, suffix=''):
-	'Get the file name with the suffix.'
-	lastDotIndex = fileName.rfind('.')
-	if suffix == '' or lastDotIndex == -1:
-		return fileName
-	return '%s_%s%s' % (fileName[: lastDotIndex], suffix, fileName[lastDotIndex :])
-
 def getSuffixNumber(fileName):
 	'Determine the suffix number, returning 0 if there is not one.'
 	underscoreIndex = fileName.find('_')
@@ -153,20 +146,20 @@ def writeOutput(arguments):
 		return
 	fileName = almoner.getParameter(arguments, 'bounty_6.csv', 'input')
 	suffixNumber = getSuffixNumber(fileName)
-	outputAccountTo = getSuffixedFileName(almoner.getParameter(arguments, 'account.csv', 'output'), str(suffixNumber))
+	outputAccountTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'account.csv', 'output'), str(suffixNumber))
 	accountLines = getAccountLines(arguments, fileName)
 	peerText = getPeerText(arguments)
 	accountText = getPluribusunumText(accountLines, peerText)
 	if almoner.sendOutputTo(outputAccountTo, accountText):
 		print('The account file has been written to:\n%s\n' % outputAccountTo)
-	outputReceiverTo = getSuffixedFileName(almoner.getParameter(arguments, 'receiver.csv', 'outputreceiver'), str(suffixNumber))
+	outputReceiverTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'receiver.csv', 'outputreceiver'), str(suffixNumber))
 	receiverLines = getReceiverLines(accountLines, suffixNumber)
 	receiverText = getPluribusunumText(receiverLines, peerText)
 	if almoner.sendOutputTo(outputReceiverTo, receiverText):
 		print('The receiver file has been written to:\n%s\n' % outputReceiverTo)
 		shaOutputPrefix = almoner.getParameter(arguments, '', 'outputsha')
 		if len(shaOutputPrefix) != 0:
-			sha256FileName = getSuffixedFileName(outputReceiverTo, shaOutputPrefix)
+			sha256FileName = almoner.getSuffixedFileName(outputReceiverTo, shaOutputPrefix)
 			almoner.writeFileText(sha256FileName, hashlib.sha256(receiverText).hexdigest())
 			print('The sha256 receiver file has been written to:\n%s\n' % sha256FileName)
 

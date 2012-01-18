@@ -171,6 +171,13 @@ def getStartsWithWords(text, words):
 			return True
 	return False
 
+def getSuffixedFileName(fileName, suffix=''):
+	'Get the file name with the suffix.'
+	lastDotIndex = fileName.rfind('.')
+	if suffix == '' or lastDotIndex == -1:
+		return fileName
+	return '%s_%s%s' % (fileName[: lastDotIndex], suffix, fileName[lastDotIndex :])
+
 def getTextByLines(lines):
 	'Get the text by lines, each ended with a newline.'
 	text = ''
