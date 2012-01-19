@@ -175,8 +175,6 @@ def writeOutput(arguments):
 	outputBountyTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'devtome_bounty.csv', 'outputbounty'), str(payoutEnd))
 	if almoner.sendOutputTo(outputBountyTo, bountyText):
 		print('The devtome bounty file has been written to:\n%s\n' % outputBountyTo)
-	print(  tomecountText)
-	print(  bountyText)
 
 
 class Author:
@@ -193,7 +191,9 @@ class Author:
 			payoutTitle = 'Payout %s' % str(payoutIndex)
 			if payoutTitle in self.parameterDictionary:
 				self.tomecount.payouts[payoutIndex - payoutBegin] = int(self.parameterDictionary[payoutTitle])
-		self.sourceAddress = 'http://devtome.org/wiki/index.php?title=User:%s&action=edit' % self.parameterDictionary['Name']
+		name = self.parameterDictionary['Name']
+		self.sourceAddress = 'http://devtome.org/wiki/index.php?title=User:%s&action=edit' % name
+		print('Loading articles from %s' % name)
 		sourceText = getSourceText(self.sourceAddress)
 		isCollated = False
 		isOriginal = False

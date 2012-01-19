@@ -82,16 +82,16 @@ def getAddressFractions(lines):
 		addressFractions.append(AddressFraction(line))
 	return addressFractions
 
-def getDenominatorSequences(addressFractions, isDescending):
+def getDenominatorSequences(addressFractions):
 	'Get the DenominatorSequences from the addressFractions.'
 	denominatorSequences = []
 	for addressFraction in addressFractions:
 		for fraction in addressFraction.fractions:
 			if fraction.denominator not in denominatorSequences:
 				denominatorSequences.append(fraction.denominator)
-	denominatorSequences.sort(reverse=isDescending)
+	denominatorSequences.sort()
 	for denominatorSequenceIndex, denominatorSequence in enumerate(denominatorSequences):
-		denominatorSequence = DenominatorSequence(addressFractions, denominatorSequence, isDescending)
+		denominatorSequence = DenominatorSequence(addressFractions, denominatorSequence)
 		denominatorSequences[denominatorSequenceIndex] = denominatorSequence
 	return denominatorSequences
 
@@ -111,8 +111,7 @@ def getPluribusunumText(accountLines, peerText):
 def getReceiverLines(accountLines, suffixNumber):
 	'Get the lines according to the arguments.'
 	addressFractions = getAddressFractions(accountLines)
-	isDescending = suffixNumber % 2 == 1
-	denominatorSequences = getDenominatorSequences(addressFractions, isDescending)
+	denominatorSequences = getDenominatorSequences(addressFractions)
 	receiverLines = []
 	for denominatorSequence in denominatorSequences:
 		receiverLines += denominatorSequence.getReceiverLines()
@@ -123,6 +122,10 @@ def getReceiverLines(accountLines, suffixNumber):
 	print('Minimum devcoins per share: %s' % minimumDevcoinsPerShare)
 	print('Number of receiverLines lines: %s' % len(receiverLines))
 	print('')
+	goldenRatio = math.sqrt(1.25) + 0.5
+	rotation = (float(suffixNumber) * goldenRatio) % 1.0
+	rotationIndex = int(math.floor(rotation * float(len(receiverLines))))
+	receiverLines = receiverLines[rotationIndex :] + receiverLines[: rotationIndex]
 	return receiverLines
 
 def getSuffixNumber(fileName):
@@ -195,7 +198,7 @@ class AddressFraction:
 
 class DenominatorSequence:
 	'A class to handle a DenominatorSequence.'
-	def __init__(self, addressFractions, denominator, isDescending):
+	def __init__(self, addressFractions, denominator):
 		'Initialize.'
 		self.coinAddresses = []
 		self.denominator = denominator
@@ -204,7 +207,7 @@ class DenominatorSequence:
 				if fraction.denominator == denominator:
 					for addressIndex in xrange(fraction.numerator):
 						self.coinAddresses.append(addressFraction.coinAddress)
-		self.coinAddresses.sort(reverse=isDescending)
+		self.coinAddresses.sort()
 
 	def __repr__(self):
 		"Get the string representation of this class."
