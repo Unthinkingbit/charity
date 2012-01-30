@@ -24,7 +24,7 @@ The original is extractive money.  Gold and silver and the most common, but othe
 
 Debt money is the most common today, this includes all major currencies like the USD, Euro, etc..
 
-[[Token currency]] is issued by private issuers and communities and has been used centuries.  It is used more often in depressions when there is [http://www.limunltd.com/numismatica/articles/money-without-government.html a lack of debt money.]  Token currencies include the [http://www.timebanks.org/ Time Bank,] [http://www.utopiskehorisonter.dk/engelsk/comcur.htm Christiania Coin,] [http://www.ithacahours.org/ Ithaca Hours,] and [http://p2pfoundation.net/Worgl_Shillings Worgl Schillings.]
+[[Token Currency|Token currency]] is issued by private issuers and communities and has been used centuries.  It is used more often in depressions when there is [http://www.limunltd.com/numismatica/articles/money-without-government.html a lack of debt money.]  Token currencies include the [http://www.timebanks.org/ Time Bank,] [http://www.utopiskehorisonter.dk/engelsk/comcur.htm Christiania Coin,] [http://www.ithacahours.org/ Ithaca Hours,] and [http://p2pfoundation.net/Worgl_Shillings Worgl Schillings.]
 
 Extractive money has the advantage of having a minimum value.  It has the disadvantage of taking an enormous amount of resources to create.
 
@@ -83,7 +83,7 @@ An administrator can choose to disburse bounties, for which they get a fifth of 
 If an adminstrator is disrupting devcoin or someone thinks an administrator is corrupt; for example there is evidence of a kickback, someone can advance 50 $ to have three other administrators vote on whether there really is corruption.  If the defendant gets 50% or more, the defendant stays; any new accusations within a month require a cumulative doubling of the last advance.  If the advance reaches 200 $, a five member jury is chosen, at 800 $ a seven member jury is chosen, and so on for each quadrupling.  If the defendent gets 40% to 50%, they're out for three months and can apply for a new vote afterwards.  If the defendent gets less than 40%, they're out for a year and can apply for a new vote afterwards.  If the vote is below 50%, the money is returned to the accuser, if the vote is 50% or over, the administrators vote on whether the money should be returned to the accuser or distributed among the active developers.
 
 ==Technical==
-Devcoin is an alternate bitcoin block chain. The devcoin daemon is a fork of the bitcoin daemon and the client is a fork of the bitcoin wxWindows version.  The latest versions are at [http://sourceforge.net/projects/galacticmilieu/files/ Marks's site.] The block explorers are listed on the [[devcoin block explorer]] page.
+Devcoin is an alternate bitcoin block chain. The devcoin daemon is a fork of the bitcoin daemon and the client is a fork of the bitcoin wxWindows version.  The latest versions are at [http://sourceforge.net/projects/galacticmilieu/files/ Marks's site.] The block explorers are listed on the [[Devcoin Block Explorer|devcoin block explorer]] page.
 
 ===Create Block===
 The sending code in CreateBlock looks like the following:
@@ -261,7 +261,7 @@ vector<string> getCoinAddressStrings(const string& dataDirectory, const string& 
 }
 </pre>
 
-Then in CreateBlock, the share per address is calculated by dividing the generation share by the number of coin addresses in the line of addresses.  A subtransaction to create share per address coin value is then added for each coin address to the generation transaction. The transactions from generation can be seen by looking at a [[devcoin block explorer]].
+Then in CreateBlock, the share per address is calculated by dividing the generation share by the number of coin addresses in the line of addresses.  A subtransaction to create share per address coin value is then added for each coin address to the generation transaction. The transactions from generation can be seen by looking at a [[Devcoin Block Explorer|devcoin block explorer]].
 
 ====Generating the Files====
 The file are generated from the [https://raw.github.com/Unthinkingbit/charity/master/bitcoinshare.html list of bitcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/devcoinshare.html list of devcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/peer.csv receiver site prefixes], and the bounty file for that round; for example, the [https://raw.github.com/Unthinkingbit/charity/master/bounty_7.csv round seven bounty file].
