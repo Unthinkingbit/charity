@@ -118,8 +118,8 @@ def getReceiverLines(accountLines, suffixNumber):
 	devcoinBlocksPerShareFloat = 4000.0 / len(receiverLines)
 	maximumDevcoinsPerShare = int(math.ceil(devcoinBlocksPerShareFloat)) * 45000
 	minimumDevcoinsPerShare = int(math.floor(devcoinBlocksPerShareFloat)) * 45000
-	print('Maximum devcoins per share: %s' % maximumDevcoinsPerShare)
 	print('Minimum devcoins per share: %s' % minimumDevcoinsPerShare)
+	print('Maximum devcoins per share: %s' % maximumDevcoinsPerShare)
 	print('Number of receiverLines lines: %s' % len(receiverLines))
 	print('')
 	goldenRatio = math.sqrt(1.25) + 0.5
