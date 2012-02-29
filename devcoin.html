@@ -115,6 +115,8 @@ The sending code in CreateBlock looks like the following:
     txNew.vout[0].nValue = minerValue + nFees;
 </pre>
 
+The generated block gives 5,000 devcoins to the miner and 45,000 devcoins divided among the receivers. An example of a devcoin block is [[Devcoin Block 1|devcoin block 1]].
+
 ===Difficulty===
 Because the devcoin difficulty is lower than the bitcoin difficulty, miners can switch in and out of the chain, which means the block generation rate varies wildly.  To fix this problem, the difficulty is determined with a continous average rather a step function, and it is calculated over one day instead of two weeks.  This leads to greater daily variation than bitcoin because it is being averaged over a small time; but it is a much smaller variation than the current factor of more than two as a miner switches in and out.
 
