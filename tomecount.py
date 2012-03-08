@@ -212,7 +212,7 @@ class Author:
 				self.tomecount.collatedWordCount += getWordCount(lineStripped)
 			if isOriginal:
 				self.tomecount.originalWordCount += getWordCount(lineStripped)
-		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 0 / 10 # later to be 3 / 10
+		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
 		self.tomecount.cumulativePayout = int(round(float(self.tomecount.weightedWordCount) * 0.001))
