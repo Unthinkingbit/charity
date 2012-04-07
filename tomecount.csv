@@ -1,8 +1,8 @@
-Name,Coin Address,Collated Word Count,Collated Weighted Word Count,Original Word Count,Word Count,Weighted Word Count,Payout 8,Payout 9,Cumulative Payout
-Cablepair,1JHZGh6fNdnCRQC9V8F2h9KjpsqEqzg7Vt,0,0,1840,1840,1840,2,0,2
-Knotwork,121Pb2BBrU7C61vBdWCKVuFFmaEZr6xFAX,0,0,7507,7507,7507,6,2,8
-Unthinkingbit,17vec4jQGCzMEsTnivizHPaowE715tu2CB,48457,14537,6300,54757,20837,6,15,21
-,Totals,Collated Word Count,Collated Weighted Word Count,Original Word Count,Word Count,Weighted Word Count,Payout 8,Payout 9,Cumulative Payout
-,,48457,14537,15647,64104,30184,14,17,31
+Name,Coin Address,Collated Word Count,Collated Weighted Word Count,Original Word Count,Word Count,Weighted Word Count,Payout 8,Payout 9,Payout 10,Cumulative Payout
+Cablepair,1JHZGh6fNdnCRQC9V8F2h9KjpsqEqzg7Vt,0,0,1840,1840,1840,2,0,0,2
+Knotwork,121Pb2BBrU7C61vBdWCKVuFFmaEZr6xFAX,0,0,7568,7568,7568,6,2,0,8
+Unthinkingbit,17vec4jQGCzMEsTnivizHPaowE715tu2CB,53755,16126,13497,67252,29623,6,15,9,30
+,Totals,Collated Word Count,Collated Weighted Word Count,Original Word Count,Word Count,Weighted Word Count,Payout 8,Payout 9,Payout 10,Cumulative Payout
+,,53755,16126,22905,76660,39031,14,17,9,40
 ,Date
-,2012-03-07
+,2012-04-07
