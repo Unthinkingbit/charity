@@ -88,11 +88,11 @@ def getBountyText(authors):
 		name = author.parameterDictionary['Name']
 		lastPayoutString = str(author.tomecount.payouts[-1])
 		cString.write('%s-%s,%s-Word Count(%s)' % (coinAddress, name, lastPayoutString, author.sourceAddress))
-		devtomeShareString = ',1-Devtome Share(%s)' % author.sourceAddress
-		if len(author.tomecount.payouts) == 1:
-			cString.write(devtomeShareString)
-		elif author.tomecount.payouts[-1] > 0 and author.tomecount.payouts[-2] > 0:
-			cString.write(devtomeShareString)
+#		devtomeShareString = ',1-Devtome Share(%s)' % author.sourceAddress
+#		if len(author.tomecount.payouts) == 1:
+#			cString.write(devtomeShareString)
+#		elif author.tomecount.payouts[-1] > 0 and author.tomecount.payouts[-2] > 0:
+#			cString.write(devtomeShareString)
 		cString.write('\n')
 	return cString.getvalue()
 
