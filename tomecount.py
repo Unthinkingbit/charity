@@ -62,6 +62,7 @@ def addJoinedTitles(cString, payoutBegin, payoutEnd, words):
 	'Add joined titles to the cString.'
 	words.append('Collated Word Count')
 	words.append('Collated Weighted Word Count')
+	words.append('Image Count')
 	words.append('Original Word Count')
 	words.append('Word Count')
 	words.append('Weighted Word Count')
@@ -88,13 +89,40 @@ def getBountyText(authors):
 		name = author.parameterDictionary['Name']
 		lastPayoutString = str(author.tomecount.payouts[-1])
 		cString.write('%s-%s,%s-Word Count(%s)' % (coinAddress, name, lastPayoutString, author.sourceAddress))
-#		devtomeShareString = ',1-Devtome Share(%s)' % author.sourceAddress
-#		if len(author.tomecount.payouts) == 1:
-#			cString.write(devtomeShareString)
-#		elif author.tomecount.payouts[-1] > 0 and author.tomecount.payouts[-2] > 0:
-#			cString.write(devtomeShareString)
 		cString.write('\n')
 	return cString.getvalue()
+
+def getImageCount(linkText):
+	'Get the image count of the page linked to in the line.'
+	if linkText == '':
+		return 0
+	imageCount = 0
+	lines = linkText.split('[[')
+	for line in lines:
+		lineLower = line.lower()
+		if lineLower.startswith('file:') or lineLower.startswith('image:'):
+			if (']]') in lineLower:
+				lineLower = lineLower[: lineLower.find(']]')].strip()
+			if ('|') in lineLower:
+				lineLower = lineLower[: lineLower.find('|')].strip()
+			if lineLower.endswith('.gif') or lineLower.endswith('.jpg') or lineLower.endswith('.png'):
+				imageCount += 1
+	return imageCount
+
+def getLinkText(line):
+	'Get the text of the page linked to in the line.'
+	linkStartIndex = line.find('[[')
+	if linkStartIndex == -1:
+		return ''
+	linkStartIndex += len('[[')
+	linkEndIndex = line.find(']]', linkStartIndex)
+	if linkEndIndex == -1:
+		return ''
+	linkString = line[linkStartIndex : linkEndIndex]
+	linkDividerIndex = linkString.find('|')
+	if linkDividerIndex != -1:
+		linkString = linkString[: linkDividerIndex]
+	return getSourceText('http://devtome.org/wiki/index.php?title=%s&action=edit' % linkString)
 
 def getSourceText(address):
 	'Get the devtome source text for the address.'
@@ -125,6 +153,7 @@ def getTomecountText(authors, payoutBegin, payoutEnd):
 		author.addLine(cString)
 		totalTomecount.collatedWordCount += author.tomecount.collatedWordCount
 		totalTomecount.collatedWeightedWordCount += author.tomecount.collatedWeightedWordCount
+		totalTomecount.imageCount += author.tomecount.imageCount
 		totalTomecount.originalWordCount += author.tomecount.originalWordCount
 		totalTomecount.wordCount += author.tomecount.wordCount
 		totalTomecount.weightedWordCount += author.tomecount.weightedWordCount
@@ -137,22 +166,12 @@ def getTomecountText(authors, payoutBegin, payoutEnd):
 	cString.write(',%s\n' % date.today().isoformat())
 	return cString.getvalue()
 
-def getWordCount(line):
+def getWordCount(linkText):
 	'Get the word count of the page linked to in the line.'
-	linkStartIndex = line.find('[[')
-	if linkStartIndex == -1:
+	if linkText == '':
 		return 0
-	linkStartIndex += len('[[')
-	linkEndIndex = line.find(']]', linkStartIndex)
-	if linkEndIndex == -1:
-		return 0
-	linkString = line[linkStartIndex : linkEndIndex]
-	linkDividerIndex = linkString.find('|')
-	if linkDividerIndex != -1:
-		linkString = linkString[: linkDividerIndex]
-	sourceText = getSourceText('http://devtome.org/wiki/index.php?title=%s&action=edit' % linkString)
-	sourceText = sourceText.replace('.', ' ').replace(',', ' ').replace(';', ' ').replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
-	return len(sourceText.split())
+	linkText = linkText.replace('.', ' ').replace(',', ' ').replace(';', ' ').replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+	return len(linkText.split())
 
 def writeOutput(arguments):
 	'Write output.'
@@ -182,8 +201,6 @@ class Author:
 	def __init__(self, payoutBegin, payoutEnd, titles, words):
 		'Initialize.'
 		self.tomecount = Tomecount(payoutBegin, payoutEnd)
-		self.collatedWordCount = 0
-		self.originalWordCount = 0
 		self.parameterDictionary = {}
 		for wordIndex, word in enumerate(words):
 			self.parameterDictionary[titles[wordIndex]] = word
@@ -208,13 +225,16 @@ class Author:
 					isCollated = True
 				elif 'original' in lineStrippedLower:
 					isOriginal = True
+			linkText = getLinkText(lineStripped)
 			if isCollated:
-				self.tomecount.collatedWordCount += getWordCount(lineStripped)
+				self.tomecount.collatedWordCount += getWordCount(linkText)
 			if isOriginal:
-				self.tomecount.originalWordCount += getWordCount(lineStripped)
+				self.tomecount.originalWordCount += getWordCount(linkText)
+			self.tomecount.imageCount += getImageCount(linkText)
 		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
+		self.tomecount.weightedWordCount += 10 * self.tomecount.imageCount
 		self.tomecount.cumulativePayout = int(round(float(self.tomecount.weightedWordCount) * 0.001))
 		lastPayout = self.tomecount.cumulativePayout
 		for payout in self.tomecount.payouts[: -1]:
@@ -236,6 +256,7 @@ class Tomecount:
 	def __init__(self, payoutBegin, payoutEnd):
 		'Initialize.'
 		self.collatedWordCount = 0
+		self.imageCount = 0
 		self.originalWordCount = 0
 		self.collatedWeightedWordCount = 0
 		self.payouts = [0] * (payoutEnd + 1 - payoutBegin)
@@ -251,6 +272,7 @@ class Tomecount:
 		'Add the variables to the words.'
 		words.append(str(self.collatedWordCount))
 		words.append(str(self.collatedWeightedWordCount))
+		words.append(str(self.imageCount))
 		words.append(str(self.originalWordCount))
 		words.append(str(self.wordCount))
 		words.append(str(self.weightedWordCount))
