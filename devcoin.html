@@ -275,6 +275,40 @@ python account.py -input bounty_7.csv
 
 This will create the receiver_7.csv file and the account_7.csv file.  The receiver file is then uploaded by all the file administrators to their respective sites.  The account_7.csv file is to help people keep track of where the coins are going, it is not necessary for devcoin to function.
 
+A script to download the bounty, peer and share files and make the receiver and account files follows below:
+<pre>
+#!/bin/bash
+
+round=$1
+if [ "${round}x" == "x" ]; then
+  echo 'USAGE: bountyproc.sh <ROUND>'
+  echo 'where ROUND is the number of the round to process.'
+  exit 1
+fi
+
+# It's time to generate the round 7 receiver file. An example procedure is on the wiki at:
+# http://devtome.org/wiki/index.php?title=Devcoin#Generating_the_Files
+
+# and the procedure for round 7 follows below.
+# First please download the latest version of:
+
+rm -f bitcoinshare.html
+wget https://raw.github.com/Unthinkingbit/charity/master/bitcoinshare.html
+rm -f devcoinshare.html
+wget https://raw.github.com/Unthinkingbit/charity/master/devcoinshare.html
+rm -f peer.csv
+wget https://raw.github.com/Unthinkingbit/charity/master/peer.csv
+rm -f bounty_${round}.csv
+wget https://raw.github.com/Unthinkingbit/charity/master/bounty_${round}.csv
+rm -f account.py
+wget https://raw.github.com/Unthinkingbit/charity/master/account.py
+rm -f almoner.py
+wget https://raw.github.com/Unthinkingbit/charity/master/almoner.py
+
+# Then in that folder open a terminal and type:
+python account.py -input bounty_${round}.csv
+</pre>
+
 ===Renaming Bitcoin to Devcoin===
 The default data directory, irc channel and pchMessageStart was changed to devcoin.
 
