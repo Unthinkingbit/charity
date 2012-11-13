@@ -88,8 +88,9 @@ def getBountyText(authors):
 		coinAddress = author.parameterDictionary['Coin Address']
 		name = author.parameterDictionary['Name']
 		lastPayoutString = str(author.tomecount.payouts[-1])
-		cString.write('%s-%s,%s-Word Count(%s)' % (coinAddress, name, lastPayoutString, author.sourceAddress))
-		cString.write('\n')
+		if lastPayoutString != '0':
+			cString.write('%s-%s,%s-Word Count(%s)' % (coinAddress, name, lastPayoutString, author.sourceAddress))
+			cString.write('\n')
 	return cString.getvalue()
 
 def getImageCount(linkText):
