@@ -308,6 +308,11 @@ vector<string> getCoinAddressStrings(const string& dataDirectory, const string& 
 
 Then in CreateBlock, the share per address is calculated by dividing the generation share by the number of coin addresses in the line of addresses.  A subtransaction to create share per address coin value is then added for each coin address to the generation transaction. The transactions from generation can be seen by looking at a [[Devcoin Block Explorer|devcoin block explorer]].
 
+====Viewing Disbursements====
+To view your own disbursements, the easiest way is to download the [https://github.com/knotwork/old-devcoin-qt devcoin-qt client]. In that client you'll see payments from generation.
+
+If you can not install that on your system, then you can look for disbursements in a [http://devtome.org/wiki/index.php?title=Devcoin_Block_Explorer devcoin block explorer]. For example, to find the payouts to the devcoin address 17vec4jQGCzMEsTnivizHPaowE715tu2CB in the [https://github.com/Unthinkingbit/charity/blob/master/receiver_16.csv round 16 receiver file]. Counting from zero in the receiver file, the address is at line 22. Round 16 starts on block 16 * 4,000 = 64,000. You'll see the generation share in block 64,022 in a block explorer. In [http://glari.ch:2750/chain/Devcoin Icoin's block explorer], you can go the [http://glari.ch:2750/block/33469e22f29222938b307d3cc416aa31f37b86efa57fa1d8215bb81f0b337e1b 64,022 block], and see the payment for 45,000 devcoins in the generation row of that block. Since there are 47 receiver lines in round 16, another payment to that address will be in [http://glari.ch:2750/block/495ae19916f36ab9ea1d5addc8b544de1c545ee26e2d2c1fb114c5a333a66d20 block 64,069]. Other payments to that address will be in block 64,116, block 64,163, etc.. Round 16 lasts until block 67,999.
+
 ====Generating the Files====
 The file are generated from the [https://raw.github.com/Unthinkingbit/charity/master/bitcoinshare.html list of bitcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/devcoinshare.html list of devcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/peer.csv receiver site prefixes], and the bounty file for that round; for example, the [https://raw.github.com/Unthinkingbit/charity/master/bounty_7.csv round seven bounty file].
 
