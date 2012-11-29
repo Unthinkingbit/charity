@@ -729,7 +729,7 @@ string getStepText(const string& dataDirectory, const string& fileName, int heig
 		if (stepFileName == string("receiver_0.csv"))
 		{
 			cout << "Downloading receiver_0.csv base file." << endl;
-			stepText = getInternetText("http://pastebin.com/raw.php?i=DB1dyxuU");
+			stepText = getInternetText("https://raw.github.com/Unthinkingbit/charity/master/receiver_0.csv");
 			writeFileText(stepFileName, stepText);
 		}
 		else
