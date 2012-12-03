@@ -93,7 +93,7 @@ The painters and graphic artists category does not currently include photographe
 The filmmakers category includes people who make movies, shorts, and animation.  Fan films only qualify if the source license also qualifies for devcoins.
 
 ==Developer==
-If you actively develop open source of any kind, you can apply to get a share of devcoin generation by posting in an induction thread, like the [https://forum.bitcoin.org/index.php?topic=18498 Bitcoin Donation Information] thread.
+If you actively develop open source of any kind, you can apply to get a share of devcoin generation by messaging [https://bitcointalk.org/index.php?action=pm;sa=send;u=3722 unthinkingbit] through the bitcoin forum, or by posting in the [https://bitcointalk.org/index.php?topic=34586.0 devcoin thread.
 
 Your candidacy would then be decided on, usually within eight days. If there is consensus that you are a good developer, you'll be in. If there is no consensus, your candidacy would be voted on. Depending on the vote you would either be inducted or you could try again after a certain time.
 
@@ -130,33 +130,33 @@ Devcoin is an alternate bitcoin block chain. The devcoin daemon is a fork of the
 
 ===Create Block===
 The sending code in CreateBlock looks like the following:
-<pre>
+<code>
 	vector<string> coinAddressStrings = getCoinAddressStrings(GetDataDir(), string("receiver.csv"), (int)pindexPrev->nHeight+1);
-    txNew.vout.resize(coinAddressStrings.size() + 1);
-    txNew.vout[0].scriptPubKey &lt;&lt; reservekey.GetReservedKey() &lt;&lt; OP_CHECKSIG;
-    int64 minerValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
+	txNew.vout.resize(coinAddressStrings.size() + 1);
+	txNew.vout[0].scriptPubKey << reservekey.GetReservedKey() << OP_CHECKSIG;
+	int64 minerValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
 	int64 sharePerAddress = 0;
 	if (coinAddressStrings.size() == 0)
 		minerValue -= fallbackReduction;
 	else
 		sharePerAddress = share / (int64)coinAddressStrings.size();
-    for (int i=0; i &lt; coinAddressStrings.size(); i++)
-    {
-        // Create transaction
-        uint160 hash160 = 0;
-        if(!AddressToHash160(coinAddressStrings[i], hash160))
-        {
-            return NULL;
-        }
+	for (int i=0; i < coinAddressStrings.size(); i++)
+	{
+		// Create transaction
+		uint160 hash160 = 0;
+		if(!AddressToHash160(coinAddressStrings[i], hash160))
+		{
+			return NULL;
+		}
 
-        txNew.vout[i + 1].scriptPubKey &lt;&lt; OP_DUP &lt;&lt; OP_HASH160 &lt;&lt; hash160 &lt;&lt; OP_EQUALVERIFY &lt;&lt; OP_CHECKSIG;
-        txNew.vout[i + 1].nValue = sharePerAddress;
-        minerValue -= sharePerAddress
-    }
+		txNew.vout[i + 1].scriptPubKey << OP_DUP << OP_HASH160 << hash160 << OP_EQUALVERIFY << OP_CHECKSIG;
+		txNew.vout[i + 1].nValue = sharePerAddress;
+		minerValue -= sharePerAddress
+	}
 ..
-//    pblock->vtx[0].vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
-    txNew.vout[0].nValue = minerValue + nFees;
-</pre>
+//	pblock->vtx[0].vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
+	txNew.vout[0].nValue = minerValue + nFees;
+</code>
 
 The generated block gives 5,000 devcoins to the miner and 45,000 devcoins divided among the receivers. An example of a devcoin block is [[Devcoin Block 1|devcoin block 1]].
 
@@ -167,106 +167,106 @@ The time difference is determined by sorting the blocks by time stamp, then subt
 
 The first attempt at the continuous average function switched over at [https://bitcointalk.org/index.php?topic=34586.msg527776#msg527776 block 10,700 and was a failure].  The next attempt switched over at [https://bitcointalk.org/index.php?topic=34586.msg539108#msg539108 block 10,800 and was a success].  The successful GetNextWorkRequired function follows below.
 
-<pre>
+<code>
 unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast)
 {
-    const int nSmoothBlock = 10700;
-    const int64 nTargetSpacing = 10 * 60;
-    int64 nTargetTimespan = 24 * 60 * 60; // one day
+	const int nSmoothBlock = 10700;
+	const int64 nTargetSpacing = 10 * 60;
+	int64 nTargetTimespan = 24 * 60 * 60; // one day
 
-    if (pindexLast->nHeight &lt; nSmoothBlock)
-        nTargetTimespan *= 14; // two weeks
+	if (pindexLast->nHeight < nSmoothBlock)
+		nTargetTimespan *= 14; // two weeks
 
-    int64 nInterval = nTargetTimespan / nTargetSpacing;
+	int64 nInterval = nTargetTimespan / nTargetSpacing;
 
-    // Genesis block
-    if (pindexLast == NULL)
-        return bnProofOfWorkLimit.GetCompact();
+	// Genesis block
+	if (pindexLast == NULL)
+		return bnProofOfWorkLimit.GetCompact();
 
-    const int nMedianBlock = 10800;
-    int64 nIntervalMinusOne = nInterval-1;
+	const int nMedianBlock = 10800;
+	int64 nIntervalMinusOne = nInterval-1;
 
-    if (pindexLast->nHeight &lt; 10)
-        return pindexLast->nBits;
+	if (pindexLast->nHeight < 10)
+		return pindexLast->nBits;
 
-    // Change at each block after nSmoothBlock
-    if (pindexLast->nHeight &lt; nSmoothBlock)
-        if ((pindexLast->nHeight+1) % nInterval != 0)
-            return pindexLast->nBits;
+	// Change at each block after nSmoothBlock
+	if (pindexLast->nHeight < nSmoothBlock)
+		if ((pindexLast->nHeight+1) % nInterval != 0)
+			return pindexLast->nBits;
 
-    // Go back by what we want to be one day worth of blocks
-    const CBlockIndex* pindexFirst = pindexLast;
-    vector<int64> blockTimes;
-    CBigNum averageBits;
-    averageBits.SetCompact(0);
+	// Go back by what we want to be one day worth of blocks
+	const CBlockIndex* pindexFirst = pindexLast;
+	vector<int64> blockTimes;
+	CBigNum averageBits;
+	averageBits.SetCompact(0);
 
-    for (int i = 0; pindexFirst && i &lt; nIntervalMinusOne; i++)
-    {
-        averageBits += CBigNum().SetCompact(pindexFirst->nBits);
-        blockTimes.push_back(pindexFirst->GetBlockTime());
-        pindexFirst = pindexFirst->pprev;
-    }
+	for (int i = 0; pindexFirst && i < nIntervalMinusOne; i++)
+	{
+		averageBits += CBigNum().SetCompact(pindexFirst->nBits);
+		blockTimes.push_back(pindexFirst->GetBlockTime());
+		pindexFirst = pindexFirst->pprev;
+	}
 
-    assert(pindexFirst);
-    int blockTimeEndIndex = blockTimes.size() - 6;
-    sort(blockTimes.begin(), blockTimes.end());
-    averageBits /= nIntervalMinusOne;
+	assert(pindexFirst);
+	int blockTimeEndIndex = blockTimes.size() - 6;
+	sort(blockTimes.begin(), blockTimes.end());
+	averageBits /= nIntervalMinusOne;
 
-    // Limit adjustment step
-    int64 nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
-    int64 nMedianTimespan = blockTimes[blockTimeEndIndex] - blockTimes[6];
-    nMedianTimespan *= nIntervalMinusOne / (int64)(blockTimeEndIndex - 6);
+	// Limit adjustment step
+	int64 nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
+	int64 nMedianTimespan = blockTimes[blockTimeEndIndex] - blockTimes[6];
+	nMedianTimespan *= nIntervalMinusOne / (int64)(blockTimeEndIndex - 6);
 
-    // Change nActualTimespan after nMedianBlock
-    if (pindexLast->nHeight > nMedianBlock)
-    {
-        nActualTimespan = nMedianTimespan;
-    }
+	// Change nActualTimespan after nMedianBlock
+	if (pindexLast->nHeight > nMedianBlock)
+	{
+		nActualTimespan = nMedianTimespan;
+	}
 
-    printf("  nActualTimespan = %"PRI64d"  before bounds\n", nActualTimespan);
+	printf("  nActualTimespan = %"PRI64d"  before bounds\n", nActualTimespan);
 
-    if (nActualTimespan &lt; nTargetTimespan/4)
-        nActualTimespan = nTargetTimespan/4;
+	if (nActualTimespan < nTargetTimespan/4)
+		nActualTimespan = nTargetTimespan/4;
 
-    if (nActualTimespan > nTargetTimespan*4)
-        nActualTimespan = nTargetTimespan*4;
+	if (nActualTimespan > nTargetTimespan*4)
+		nActualTimespan = nTargetTimespan*4;
 
-    // Retarget
-    CBigNum bnNew;
-    bnNew.SetCompact(pindexLast->nBits);
+	// Retarget
+	CBigNum bnNew;
+	bnNew.SetCompact(pindexLast->nBits);
 
-    // Change bnNew after nMedianBlock
-    if (pindexLast->nHeight > nMedianBlock)
-        bnNew = averageBits;
+	// Change bnNew after nMedianBlock
+	if (pindexLast->nHeight > nMedianBlock)
+		bnNew = averageBits;
 
-    bnNew *= nActualTimespan;
-    bnNew /= nTargetTimespan;
+	bnNew *= nActualTimespan;
+	bnNew /= nTargetTimespan;
 
-    if (bnNew > bnProofOfWorkLimit)
-        bnNew = bnProofOfWorkLimit;
+	if (bnNew > bnProofOfWorkLimit)
+		bnNew = bnProofOfWorkLimit;
 
-    /// debug print
-    printf("GetNextWorkRequired RETARGET\n");
-    printf("nTargetTimespan = %"PRI64d"    nActualTimespan = %"PRI64d"\n", nTargetTimespan, nActualTimespan);
-    printf("Before: %08x  %s\n", pindexLast->nBits, CBigNum().SetCompact(pindexLast->nBits).getuint256().ToString().c_str());
-    printf("After:  %08x  %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
+	/// debug print
+	printf("GetNextWorkRequired RETARGET\n");
+	printf("nTargetTimespan = %"PRI64d"	nActualTimespan = %"PRI64d"\n", nTargetTimespan, nActualTimespan);
+	printf("Before: %08x  %s\n", pindexLast->nBits, CBigNum().SetCompact(pindexLast->nBits).getuint256().ToString().c_str());
+	printf("After:  %08x  %s\n", bnNew.GetCompact(), bnNew.getuint256().ToString().c_str());
 
-    return bnNew.GetCompact();
+	return bnNew.GetCompact();
 }
-</pre>
+</code>
 
 ===Generation Rate===
 There has been talk about shifting the decimal place in bitcoin, because a maximum of 21,000,000 bitcoins would lead to people having to deal in milliBitcoins if bitcoin gets really popular.  However, once a block chain is made, it is really difficult to change the value of the currency.  So even though people will generally want to move the decimal place, it would be not be done and people would be stuck with an awkward currency unit.  In the [http://forum.bitcoin.org/index.php?topic=9299.0 RFC: SI-type of naming convention for BTC] thread a lot of the problems people have dealing with a large currency unit are discussed.
 
 Since devcoin is a new currency, it is easy to multiply the coins by 1,000.  Also, to make spam unprofitable the transactions fees were increased.  The new constants for the transaction fees and max money follow below.
-<pre>
+<code>
 //static const int64 MIN_TX_FEE = 50000;
 static const int64 MIN_TX_FEE = 500000000;
 //static const int64 MIN_RELAY_TX_FEE = 10000;
 static const int64 MIN_RELAY_TX_FEE = MIN_TX_FEE;
 //static const int64 MAX_MONEY = 21000000 * COIN;
 static const int64 MAX_MONEY = 21000000000 * COIN;
-</pre>
+</code>
 and CENT was replaced by the MIN_TX_FEE wherever the min transaction fee was meant to be used.
 
 The generation is constant at 50,000 coins per block, which is 1,000 times higher than the bitcoin starting rate.  At a typical rate of 144 blocks a day, 1,008 a week, roughly 4,000 a month, that means the 200,000,000 devcoins are generated each month.  Of those, 90% go to the developers, so the developers get 180,000,000 devcoins a month in total.
@@ -285,7 +285,7 @@ Receiver also looks ahead, after it is a random portion between 0.75 and roughly
 ====Disbursing the Share====
 The generation share is 90% of the block, which is 90% * 50,000 devcoins = 45,000 devcoins.  It is disbursed to the devcoin addresses in the receiver file, in round robin order. In each generation round, for a given block height, the index of the line of addresses is the block height above the start of the round, modulo the number of addresses. The code snippet for that follows below.
 
-<pre>
+<code>
 vector<string> getCoinAddressStrings(const string& dataDirectory, const string& fileName, int height, int step)
 {
 ..
@@ -304,7 +304,7 @@ vector<string> getCoinAddressStrings(const string& dataDirectory, const string& 
 
 	return coinList;
 }
-</pre>
+</code>
 
 Then in CreateBlock, the share per address is calculated by dividing the generation share by the number of coin addresses in the line of addresses.  A subtransaction to create share per address coin value is then added for each coin address to the generation transaction. The transactions from generation can be seen by looking at a [[Devcoin Block Explorer|devcoin block explorer]].
 
@@ -317,14 +317,14 @@ If you can not install that on your system, then you can look for disbursements 
 The file are generated from the [https://raw.github.com/Unthinkingbit/charity/master/bitcoinshare.html list of bitcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/devcoinshare.html list of devcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/peer.csv receiver site prefixes], and the bounty file for that round; for example, the [https://raw.github.com/Unthinkingbit/charity/master/bounty_7.csv round seven bounty file].
 
 Then download the python scripts [https://raw.github.com/Unthinkingbit/charity/master/account.py account] and [https://raw.github.com/Unthinkingbit/charity/master/almoner.py almoner] into the same folder as the files.  Then in that folder open a terminal and type:
-<pre>
+<code>
 python account.py -input bounty_7.csv
-</pre>
+</code>
 
 This will create the receiver_7.csv file and the account_7.csv file.  The receiver file is then uploaded by all the file administrators to their respective sites.  The account_7.csv file is to help people keep track of where the coins are going, it is not necessary for devcoin to function.
 
 A script to download the bounty, peer and share files and make the receiver and account files follows below:
-<pre>
+<code>
 #!/bin/bash
 
 round=$1
@@ -355,63 +355,63 @@ wget https://raw.github.com/Unthinkingbit/charity/master/almoner.py
 
 # Then in that folder open a terminal and type:
 python account.py -input bounty_${round}.csv
-</pre>
+</code>
 
 ===Renaming Bitcoin to Devcoin===
 The default data directory, irc channel and pchMessageStart was changed to devcoin.
 
 ====Data Directory====
 The default directory code in GetDefaultDataDir was changed to:
-<pre>
-    // Windows: C:\Documents and Settings\username\Application Data\Devcoin
-    // Mac: ~/Library/Application Support/Devcoin
-    // Unix: ~/.devcoin
+<code>
+	// Windows: C:\Documents and Settings\username\Application Data\Devcoin
+	// Mac: ~/Library/Application Support/Devcoin
+	// Unix: ~/.devcoin
 #ifdef __WXMSW__
-    // Windows
-    return MyGetSpecialFolderPath(CSIDL_APPDATA, true) + "\\Devcoin";
+	// Windows
+	return MyGetSpecialFolderPath(CSIDL_APPDATA, true) + "\\Devcoin";
 #else
-    char* pszHome = getenv("HOME");
-    if (pszHome == NULL || strlen(pszHome) == 0)
-        pszHome = (char*)"/";
-    string strHome = pszHome;
-    if (strHome[strHome.size()-1] != '/')
-        strHome += '/';
+	char* pszHome = getenv("HOME");
+	if (pszHome == NULL || strlen(pszHome) == 0)
+		pszHome = (char*)"/";
+	string strHome = pszHome;
+	if (strHome[strHome.size()-1] != '/')
+		strHome += '/';
 #ifdef __WXMAC_OSX__
-    // Mac
-    strHome += "Library/Application Support/";
-    filesystem::create_directory(strHome.c_str());
-    return strHome + "Devcoin";
+	// Mac
+	strHome += "Library/Application Support/";
+	filesystem::create_directory(strHome.c_str());
+	return strHome + "Devcoin";
 #else
-    // Unix
-    return strHome + ".devcoin";
-</pre>
+	// Unix
+	return strHome + ".devcoin";
+</code>
 
 ====IRC Channel====
 The send code in ThreadIRCSeed2 was changed to:
-<pre>
-            Send(hSocket, "JOIN #devcoinTEST\r");
-            Send(hSocket, "WHO #devcoinTEST\r");
-        } else {
-            // randomly join #bitcoin00-#bitcoin99
-//            int channel_number = GetRandInt(100);
-//            Send(hSocket, strprintf("JOIN #bitcoin%02d\r", channel_number).c_str());
-//            Send(hSocket, strprintf("WHO #bitcoin%02d\r", channel_number).c_str());
-            Send(hSocket, "JOIN #devcoin\r");
-            Send(hSocket, "WHO #devcoin\r");
-</pre>
+<code>
+			Send(hSocket, "JOIN #devcoinTEST\r");
+			Send(hSocket, "WHO #devcoinTEST\r");
+		} else {
+			// randomly join #bitcoin00-#bitcoin99
+//			int channel_number = GetRandInt(100);
+//			Send(hSocket, strprintf("JOIN #bitcoin%02d\r", channel_number).c_str());
+//			Send(hSocket, strprintf("WHO #bitcoin%02d\r", channel_number).c_str());
+			Send(hSocket, "JOIN #devcoin\r");
+			Send(hSocket, "WHO #devcoin\r");
+</code>
 
 ====Message Start====
 The pchMessageStart in LoadBlockIndex was changed to:
-<pre>
-        pchMessageStart[0] = 'd';
-        pchMessageStart[1] = 'e';
-        pchMessageStart[2] = 'v';
-        pchMessageStart[3] = '-';
-</pre>
+<code>
+		pchMessageStart[0] = 'd';
+		pchMessageStart[1] = 'e';
+		pchMessageStart[2] = 'v';
+		pchMessageStart[3] = '-';
+</code>
 The default port was changed to 53333 and the default test net port changed to 63333:
-<pre>
+<code>
 inline unsigned short GetDefaultPort() { return fTestNet ? 63333 : 53333; }
-</pre>
+</code>
 
 ===Spam Proofing===
 To make spam unprofitable, the following changes were made:
@@ -424,38 +424,38 @@ To make spam unprofitable, the following changes were made:
 The MIN_TX_FEE and MIN_RELAY_TX_FEE changes are listed in the Generation Rate section.
 
 To add the extra fee and eliminate free transactions, the following change was made in GetMinFee in main.h:
-<pre>
-//        if (fAllowFree)
-//        {
-//            if (nBlockSize == 1)
-//            {
-//                // Transactions under 10K are free
-//                // (about 4500bc if made of 50bc inputs)
-//                if (nBytes &lt; 10000)
-//                    nMinFee = 0;
-//            }
-//            else
-//            {
-//                // Free transaction area
-//                if (nNewBlockSize &lt; 27000)
-//                    nMinFee = 0;
-//            }
-//        }
+<code>
+//		if (fAllowFree)
+//		{
+//			if (nBlockSize == 1)
+//			{
+//				// Transactions under 10K are free
+//				// (about 4500bc if made of 50bc inputs)
+//				if (nBytes < 10000)
+//					nMinFee = 0;
+//			}
+//			else
+//			{
+//				// Free transaction area
+//				if (nNewBlockSize < 27000)
+//					nMinFee = 0;
+//			}
+//		}
 
-//        // To limit dust spam, require MIN_TX_FEE/MIN_RELAY_TX_FEE if any output is less than 0.01
-//        if (nMinFee &lt; nBaseFee)
-//            BOOST_FOREACH(const CTxOut& txout, vout)
-//                if (txout.nValue &lt; CENT)
-//                    nMinFee = nBaseFee;
+//		// To limit dust spam, require MIN_TX_FEE/MIN_RELAY_TX_FEE if any output is less than 0.01
+//		if (nMinFee < nBaseFee)
+//			BOOST_FOREACH(const CTxOut& txout, vout)
+//				if (txout.nValue < CENT)
+//					nMinFee = nBaseFee;
 
-         // To limit dust spam, require an additional one tenth of MIN_TX_FEE/MIN_RELAY_TX_FEE for each output
-         BOOST_FOREACH(const CTxOut& txout, vout)
-              nMinFee += nBaseFee / 10;
-</pre>
+		 // To limit dust spam, require an additional one tenth of MIN_TX_FEE/MIN_RELAY_TX_FEE for each output
+		BOOST_FOREACH(const CTxOut& txout, vout)
+			nMinFee += nBaseFee / 10;
+</code>
 
 ===Subsidy and Share===
 The constants required for the subsidy are changed and constants for share, and fallback reduction are added.
-<pre>
+<code>
 static const int64 initialSubsidy = 50000 * COIN;
 static const int64 share = initialSubsidy * 9 / 10;
 static const int64 fallbackReduction = (initialSubsidy + share) / 2;
@@ -464,11 +464,11 @@ Code in GetBlockValue is changed:
 
 //int64 nSubsidy = 50 * COIN;
 int64 nSubsidy = initialSubsidy;
-</pre>
+</code>
 
 ===Validate Block===
 The validation code in ConnectBlock needs the addition of:
-<pre>
+<code>
 	//
 	// Check that the required share was sent to each beneficiary
 	//
@@ -477,7 +477,7 @@ The validation code in ConnectBlock needs the addition of:
 		std::vector<std::string> addressStrings;
 		std::vector<int64> amounts;
 
-		for (int i = 1; i &lt; vtx[0].vout.size(); i++)
+		for (int i = 1; i < vtx[0].vout.size(); i++)
 		{
 			if (vtx[0].vout[i].scriptPubKey.GetBitcoinAddressHash160() != 0)
 			{
@@ -489,7 +489,7 @@ The validation code in ConnectBlock needs the addition of:
 		if (!getIsSufficientAmount(addressStrings, amounts, GetDataDir(), string("receiver.csv"), (int)pindex->nHeight, share))
 			return error("ConnectBlock() : Share to beneficiary is insufficient");
 	}
-</pre>
+</code>
 
 ==Concerns==
 The primary concern is that in the long term, most organizations become corrupt, regardless of the intentions of the founders. The single best defense against the corruption of an organization is competition. Devcoin would be the first currency to give part of its generation to developers. However, developers are welcome to fork it in turn, and create say a reformcoin, that also gives generation to developers, but starts with another set of founders. If the reformcoin is less corrupt than devcoin, people will sell the devcoin and buy reformcoins. Even if most people remain with devcoin, just the possibility that people could move to reformcoin would tend to rein in the corruption of the devcoin.  To increase the availability of competition, there will be bounties for software to easily make alternate currencies derived from devcoin, and bounties for easy to use range voting software. This would also make it easier for people to make other coins like town coins and project coins.
