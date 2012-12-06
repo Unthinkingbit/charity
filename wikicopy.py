@@ -62,7 +62,7 @@ def writeZipFile(wikiAddress):
 			quoteIndex = title.find('"')
 			title = title[: quoteIndex]
 			fileName = os.path.join(wikiPath, title)
-			sourceText = tomecount.getSourceText('http://devtome.org/wiki/index.php?title=%s&action=edit' % title)
+			sourceText = tomecount.getSourceText('http://devtome.org/wiki/index.php?title=%s&do=edit' % title)
 			almoner.writeFileText(fileName, sourceText)
 			numberOfFiles += 1
 		if line.replace('"', "'").replace('  ', ' ') == "<ol start='1' class='special'>":

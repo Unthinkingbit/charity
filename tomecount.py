@@ -123,7 +123,7 @@ def getLinkText(line):
 	linkDividerIndex = linkString.find('|')
 	if linkDividerIndex != -1:
 		linkString = linkString[: linkDividerIndex]
-	return getSourceText('http://devtome.org/wiki/index.php?title=%s&action=edit' % linkString)
+	return getSourceText('http://devtome.org/wiki/index.php?title=%s&do=edit' % linkString)
 
 def getSourceText(address):
 	'Get the devtome source text for the address.'
@@ -210,7 +210,7 @@ class Author:
 			if payoutTitle in self.parameterDictionary:
 				self.tomecount.payouts[payoutIndex - payoutBegin] = int(self.parameterDictionary[payoutTitle])
 		name = self.parameterDictionary['Name']
-		self.sourceAddress = 'http://devtome.org/wiki/index.php?title=User:%s&action=edit' % name
+		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % name
 		print('Loading articles from %s' % name)
 		sourceText = getSourceText(self.sourceAddress)
 		isCollated = False
