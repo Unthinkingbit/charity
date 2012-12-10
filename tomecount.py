@@ -123,7 +123,7 @@ def getLinkText(line):
 	linkDividerIndex = linkString.find('|')
 	if linkDividerIndex != -1:
 		linkString = linkString[: linkDividerIndex]
-	return getSourceText('http://devtome.org/wiki/index.php?title=%s&do=edit' % linkString)
+	return getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % linkString)
 
 def getSourceText(address):
 	'Get the devtome source text for the address.'
