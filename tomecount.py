@@ -143,7 +143,7 @@ def getSourceText(address):
 		print('Warning, no textarea end tag found for:')
 		print(address)
 		return ''
-	return text[tagEndIndex + 1 : textAreaEndTagIndex]
+	return text[tagEndIndex + 1 : textAreaEndTagIndex].lstrip()
 
 def getTomecountText(authors, payoutBegin, payoutEnd):
 	'Get the tomecount csv text for the authors.'
