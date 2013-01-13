@@ -1,9 +1,9 @@
-Name,Coin Address,Collated Word Count,Collated Weighted Word Count,Image Count,Original Word Count,Word Count,Weighted Word Count,Payout 8,Payout 9,Payout 10,Payout 11,Payout 12,Payout 13,Payout 14,Payout 15,Payout 16,Payout 17,Payout 18,Cumulative Payout
-Atruk,1x1yenCV3GxoiGPjpE1iykCH9kcmS8fsr,0,0,0,7169,7169,7169,0,0,0,0,0,0,0,0,0,0,7,7
-Knotwork,121Pb2BBrU7C61vBdWCKVuFFmaEZr6xFAX,0,0,5,30910,30910,30960,6,2,0,0,0,3,8,2,2,7,1,31
-Kumala,1Fmz2cba6x2ZZqEdD4DyWPV6hYFuEGe2rW,0,0,0,1959,1959,1959,0,0,0,0,0,0,0,0,0,0,2,2
-Unthinkingbit,17vec4jQGCzMEsTnivizHPaowE715tu2CB,53870,16161,0,94149,148019,110310,6,15,9,11,7,11,13,14,6,10,8,110
-,Totals,Collated Word Count,Collated Weighted Word Count,Image Count,Original Word Count,Word Count,Weighted Word Count,Payout 8,Payout 9,Payout 10,Payout 11,Payout 12,Payout 13,Payout 14,Payout 15,Payout 16,Payout 17,Payout 18,Cumulative Payout
-,,53870,16161,5,134187,188057,150398,12,17,9,11,7,14,21,16,8,17,18,150
+Name,Coin Address,Collated Word Count,Collated Weighted Word Count,Image Count,Original Word Count,Word Count,Weighted Word Count,Payout 8,Payout 9,Payout 10,Payout 11,Payout 12,Payout 13,Payout 14,Payout 15,Payout 16,Payout 17,Payout 18,Payout 19,Cumulative Payout
+Atruk,1x1yenCV3GxoiGPjpE1iykCH9kcmS8fsr,0,0,0,11405,11405,11405,0,0,0,0,0,0,0,0,0,0,7,4,11
+Knotwork,121Pb2BBrU7C61vBdWCKVuFFmaEZr6xFAX,0,0,5,43260,43260,43310,6,2,0,0,0,3,8,2,2,7,1,12,43
+Kumala,1Fmz2cba6x2ZZqEdD4DyWPV6hYFuEGe2rW,0,0,0,2168,2168,2168,0,0,0,0,0,0,0,0,0,0,2,0,2
+Unthinkingbit,17vec4jQGCzMEsTnivizHPaowE715tu2CB,48111,14433,0,101019,149130,115452,6,15,9,11,7,11,13,14,6,10,8,5,115
+,Totals,Collated Word Count,Collated Weighted Word Count,Image Count,Original Word Count,Word Count,Weighted Word Count,Payout 8,Payout 9,Payout 10,Payout 11,Payout 12,Payout 13,Payout 14,Payout 15,Payout 16,Payout 17,Payout 18,Payout 19,Cumulative Payout
+,,48111,14433,5,157852,205963,172335,12,17,9,11,7,14,21,16,8,17,18,21,171
 ,Date
-,2012-12-11
+,2013-01-12
