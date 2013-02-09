@@ -1,0 +1,35 @@
+Format,pluribusunum
+_beginpeers
+http://galaxies.mygamesonline.org/receiver.csv
+https://raw.github.com/Unthinkingbit/charity/master/receiver.csv
+http://devcoinblockexplorer.info/receiver/receiver.csv
+http://devtome.com/files/receiver.csv
+http://devcoin.darkgamex.ch/receiver.csv
+_endpeers
+_begincoins
+1Ahu957fXXwhJ5LqmpxMFHVWwSQ7h4PkXb-Jasinlee,1-General Administrator
+18HfzUZXGA3FZ1BM8abEmjBT9Wg52qQ4Sr-Icoin,1/5-Backup Maintenance(https://bitcointalk.org/index.php?topic=34586.msg889087#msg889087),2/5-Block Explorer Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1084393#msg1084393),3/5-Forgotten Button Text(https://bitcointalk.org/index.php?topic=34586.msg1454048#msg1454048)
+1NGCrVaFXanWib44ijNBR8yBoCAREGpXro-K1773R,2/5-Block Explorer Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1376078#msg1376078),2/5-File Administrator(https://bitcointalk.org/index.php?topic=34586.msg1441172#msg1441172)
+1FCJgGYirQ4w2uA3rcE2zwVnD8LVwm8fbB-Kumala,1/5-Node Maintenance(https://bitcointalk.org/index.php?topic=34586.msg645623#msg645623)
+121Pb2BBrU7C61vBdWCKVuFFmaEZr6xFAX-Markm,1-General Administrator(vote:1, receiver file:2, accountant:1, almoner:2),2/5-Wiki Maintenance(https://bitcointalk.org/index.php?topic=34586.msg654190#msg654190)
+1Fhex5BvBGaChJqK75Z6MPxtK9muSsScKC-Shattienator,2/5-File Administrator,3/5-Maintenance(https://bitcointalk.org/index.php?topic=34586.msg640074#msg640074)
+1M2ZXZMwnq8HWs3kuFnU2qtMdCPdaKTBTH-StanDistortion,3-Mining Cooler(https://bitcointalk.org/index.php?topic=34586.msg1484735#msg1484735)
+17vec4jQGCzMEsTnivizHPaowE715tu2CB-Unthinkingbit,1-General Administrator
+112NRCenwi3VTS9GMuW1kgnAKFGjE9YymR-Xchrix,1/5-Cryptocoincharts Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1385226#msg1385226)
+1x1yenCV3GxoiGPjpE1iykCH9kcmS8fsr-Atruk,6-Word Count(http://devtome.com/doku.php?id=wiki:user:Atruk&do=edit)
+17vec4jQGCzMEsTnivizHPaowE715tu2CB-Unthinkingbit,6-Word Count(http://devtome.com/doku.php?id=wiki:user:Unthinkingbit&do=edit)
+1DbeWKCxnVCt3sRaSAmZLoboqr8pVyFzP1
+1NKKQBSaQ6XMViwC46b4JCxGUiUp6EDZR5
+1NtTPVVjDsUfDWybS4BwvHpG2pdS9RnYyQ
+1HNeqi3pJRNvXybNX4FKzZgYJsdTSqJTbk
+1Ahu957fXXwhJ5LqmpxMFHVWwSQ7h4PkXb
+1B2fZN58SD4JqaTitHmBLcSo89GfUtvWZ3
+1PWC7PNHL1SgvZaN7xEtygenKjWobWsCuf
+1KHAL8bUjnkMRMg9yd2dNrYnJgZGH8Nj6T
+1ABvQwiuCnySQqBzruaAcdrkgYae9LoqWz
+1ARVXWVKGPPYPVVwT1Fmy8UzVDSvNe6anh
+1MbRAfeayy7bYfJ8yBVKTt41nyiGhVAz62
+1JBMattRztKDF2KRS3vhjJXA7h47NEsn2c
+126VZtqifE91nrBsXRkjZRMkTTvSTEMHPC
+17vec4jQGCzMEsTnivizHPaowE715tu2CB
+_endcoins
