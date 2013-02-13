@@ -1,0 +1,38 @@
+<html>
+<head>
+	<title>Devtome Redirect</title>
+</head>
+<body>
+Devtome has been moved to <a href="http://devtome.com/doku.php">devtome.com</a>. You will be redirected in 5 seconds. Please update your bookmarks.
+<noscript>
+<meta http-equiv="Refresh" content="5; url=http://devtome.com/doku.php">
+</noscript>
+<script language="JavaScript">
+function redirect() {
+	questionIndex = window.location.href.indexOf("?")
+	if (questionIndex == -1) {
+		document.write('start')
+		return
+	}
+	title = window.location.href.substring(questionIndex + 7, window.location.href.length)
+	title = title.toLowerCase()
+	title = title.replace("'",'_')
+	title = title.replace('"','_')
+	title = title.replace('-','_')
+	title = title.replace(':','_')
+	title = title.replace('(','_')
+	title = title.replace(')','_')
+	if (title == 'main_page') {
+		title = 'start'
+	}
+	document.write(title)
+}
+
+document.write('<meta http-equiv="Refresh" content="5; url=http://devtome.com/doku.php?id=')
+redirect()
+document.write('">')
+
+//RedirectMatch 301 /wiki/index.php?title=(.*) http://devtome.com/doku.php/doku.php?id=$1
+</script>
+</body>
+</html>
