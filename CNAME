@@ -1,1 +1,0 @@
-RedirectMatch 301 /wiki/index.php?title=(.*) http://devtome.com/doku.php/doku.php?id=$1
