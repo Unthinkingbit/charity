@@ -105,15 +105,43 @@ class Publisher:
 		print('Loading pages from %s' % self.name)
 		sourceText = tomecount.getSourceText(self.sourceAddress)
 		isLink = False
+		isSignature = False
 		for line in almoner.getTextLines(sourceText):
 			lineStrippedLower = line.strip().lower()
 			if '==' in lineStrippedLower:
 				isLink = False
+				isSignature = False
 				if 'link' in lineStrippedLower:
 					isLink = True
+				if 'signature' in lineStrippedLower:
+					isSignature = True
 			if isLink:
-				self.payoutFifth = 1
-#				linkText = getLinkText(lineStrippedLower)
+				self.addLinkPayout(lineStrippedLower)
+			if isSignature:
+				self.addSignaturePayout(lineStrippedLower)
+
+	def addLinkPayout(self, lineStrippedLower):
+		'Add link payout if there is a devtome link.'
+		if not lineStrippedLower.startswith('http'):
+			return
+		if lineStrippedLower.startswith('http://'):
+			lineStrippedLower = lineStrippedLower[len('http://') :]
+		elif lineStrippedLower.startswith('https://'):
+			lineStrippedLower = lineStrippedLower[len('https://') :]
+		if lineStrippedLower.startswith('www.'):
+			lineStrippedLower = lineStrippedLower[len('www.') :]
+		if lineStrippedLower.startswith('vps.'):
+			lineStrippedLower = lineStrippedLower[len('vps.') :]
+		if lineStrippedLower.endswith('/'):
+			lineStrippedLower = lineStrippedLower[: -1]
+		self.payoutFifth += 1
+		if '/' in lineStrippedLower:
+			return
+		self.payoutFifth += 1
+
+	def addSignaturePayout(self, lineStrippedLower):
+		'Add signature payout if there is a devtome link.'
+		return ###
 
 	def write(self, cString):
 		'Initialize.'
