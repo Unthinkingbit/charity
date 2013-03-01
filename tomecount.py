@@ -89,8 +89,7 @@ def getBountyText(authors):
 		name = author.parameterDictionary['Name']
 		lastPayoutString = str(author.tomecount.payouts[-1])
 		if lastPayoutString != '0':
-			cString.write('%s-%s,%s-Word Count(%s)' % (coinAddress, name, lastPayoutString, author.sourceAddress))
-			cString.write('\n')
+			cString.write('%s-%s,%s-Word Count(%s)\n' % (coinAddress, name, lastPayoutString, author.sourceAddress))
 	return cString.getvalue()
 
 def getImageCount(linkText):
@@ -98,15 +97,14 @@ def getImageCount(linkText):
 	if linkText == '':
 		return 0
 	imageCount = 0
-	lines = linkText.split('[[')
+	lines = linkText.lower().split('[[')
 	for line in lines:
-		lineLower = line.lower()
-		if lineLower.startswith('file:') or lineLower.startswith('image:'):
-			if (']]') in lineLower:
-				lineLower = lineLower[: lineLower.find(']]')].strip()
-			if ('|') in lineLower:
-				lineLower = lineLower[: lineLower.find('|')].strip()
-			if lineLower.endswith('.gif') or lineLower.endswith('.jpg') or lineLower.endswith('.png'):
+		if line.startswith('file:') or line.startswith('image:'):
+			if (']]') in line:
+				line = line[: line.find(']]')].strip()
+			if ('|') in line:
+				line = line[: line.find('|')].strip()
+			if line.endswith('.gif') or line.endswith('.jpg') or line.endswith('.png'):
 				imageCount += 1
 	return imageCount
 
@@ -216,22 +214,22 @@ class Author:
 		isCollated = False
 		isOriginal = False
 		for line in almoner.getTextLines(sourceText):
-			lineStripped = line.strip()
-			lineStrippedLower = lineStripped.lower()
-			if lineStripped.startswith('=='):
+			lineStrippedLower = line.strip().lower()
+			if '==' in lineStrippedLower:
 				isCollated = False
 				isOriginal = False
-			if '==' in lineStripped:
 				if 'collated' in lineStrippedLower:
 					isCollated = True
 				elif 'original' in lineStrippedLower:
 					isOriginal = True
-			linkText = getLinkText(lineStripped)
 			if isCollated:
+				linkText = getLinkText(lineStrippedLower)
+				self.tomecount.imageCount += getImageCount(linkText)
 				self.tomecount.collatedWordCount += getWordCount(linkText)
 			if isOriginal:
+				linkText = getLinkText(lineStrippedLower)
+				self.tomecount.imageCount += getImageCount(linkText)
 				self.tomecount.originalWordCount += getWordCount(linkText)
-			self.tomecount.imageCount += getImageCount(linkText)
 		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
