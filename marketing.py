@@ -124,6 +124,10 @@ class Publisher:
 		'Add link payout if there is a devtome link.'
 		if not lineStrippedLower.startswith('http'):
 			return
+		linkText = almoner.getInternetText(lineStrippedLower)
+		if 'devtome.com' not in linkText:
+			return
+		self.payoutFifth += 1
 		if lineStrippedLower.startswith('http://'):
 			lineStrippedLower = lineStrippedLower[len('http://') :]
 		elif lineStrippedLower.startswith('https://'):
@@ -134,14 +138,32 @@ class Publisher:
 			lineStrippedLower = lineStrippedLower[len('vps.') :]
 		if lineStrippedLower.endswith('/'):
 			lineStrippedLower = lineStrippedLower[: -1]
-		self.payoutFifth += 1
 		if '/' in lineStrippedLower:
 			return
 		self.payoutFifth += 1
 
 	def addSignaturePayout(self, lineStrippedLower):
 		'Add signature payout if there is a devtome link.'
-		return ###
+		if not lineStrippedLower.startswith('http'):
+			return
+		linkText = almoner.getInternetText(lineStrippedLower)
+		if 'devtome.com' not in linkText:
+			return
+		self.payoutFifth += 1
+		postString = '<td><b>Posts: </b></td>'
+		postIndex = linkText.find(postString)
+		if postIndex == -1:
+			return
+		postEndIndex = postIndex + len(postString)
+		postNumberEndIndex = linkText.find('</td>', postEndIndex + 1)
+		if postNumberEndIndex == -1:
+			return
+		postNumberString = linkText[postEndIndex : postNumberEndIndex].strip()
+		if '>' in postNumberString:
+			postNumberString = postNumberString[postNumberString.find('>') + 1 :]
+		postNumber = int(postNumberString)
+		if postNumber > 1000:
+			self.payoutFifth += 1
 
 	def write(self, cString):
 		'Initialize.'
