@@ -99,12 +99,16 @@ class Publisher:
 		'Initialize.'
 		splitLine = line.split(',')
 		self.coinAddress = splitLine[1]
+		self.linkPayout = False
 		self.name = splitLine[0]
 		self.payoutFifth = 0
+		self.postPayout = 0
+		self.signaturePayout = False
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
 		print('Loading pages from %s' % self.name)
 		sourceText = tomecount.getSourceText(self.sourceAddress)
 		isLink = False
+		isPost = False
 		isSignature = False
 		for line in almoner.getTextLines(sourceText):
 			lineStrippedLower = line.strip().lower()
@@ -113,10 +117,14 @@ class Publisher:
 				isSignature = False
 				if 'link' in lineStrippedLower:
 					isLink = True
+				if 'post' in lineStrippedLower:
+					isPost = True
 				if 'signature' in lineStrippedLower:
 					isSignature = True
 			if isLink:
 				self.addLinkPayout(lineStrippedLower)
+			if isPost:
+				self.addPostPayout(lineStrippedLower)
 			if isSignature:
 				self.addSignaturePayout(lineStrippedLower)
 
@@ -127,7 +135,10 @@ class Publisher:
 		linkText = almoner.getInternetText(lineStrippedLower)
 		if 'devtome.com' not in linkText:
 			return
+		if self.linkPayout:
+			return
 		self.payoutFifth += 1
+		self.linkPayout = False
 		if lineStrippedLower.startswith('http://'):
 			lineStrippedLower = lineStrippedLower[len('http://') :]
 		elif lineStrippedLower.startswith('https://'):
@@ -142,6 +153,37 @@ class Publisher:
 			return
 		self.payoutFifth += 1
 
+	def addPostPayout(self, lineStrippedLower):
+		'Add post payout if there is a devtome link.'
+		if not lineStrippedLower.startswith('http'):
+			return
+		linkText = almoner.getInternetText(lineStrippedLower)
+		if '#' in lineStrippedLower:
+			lineStrippedLower = lineStrippedLower[: lineStrippedLower.find('#')]
+		if ';' in lineStrippedLower:
+			lineStrippedLower = lineStrippedLower[: lineStrippedLower.find(';')]
+		print(  lineStrippedLower)
+#		'<a class="message_number" style="vertical-align: middle;" href="'
+		return ###
+		if 'devtome.com' not in linkText:
+			return
+		self.payoutFifth += 1
+		self.postPayout += 1
+		postString = '<td><b>Posts: </b></td>'
+		postIndex = linkText.find(postString)
+		if postIndex == -1:
+			return
+		postEndIndex = postIndex + len(postString)
+		postNumberEndIndex = linkText.find('</td>', postEndIndex + 1)
+		if postNumberEndIndex == -1:
+			return
+		postNumberString = linkText[postEndIndex : postNumberEndIndex].strip()
+		if '>' in postNumberString:
+			postNumberString = postNumberString[postNumberString.find('>') + 1 :]
+		postNumber = int(postNumberString)
+		if postNumber > 1000:
+			self.payoutFifth += 1
+
 	def addSignaturePayout(self, lineStrippedLower):
 		'Add signature payout if there is a devtome link.'
 		if not lineStrippedLower.startswith('http'):
@@ -149,7 +191,10 @@ class Publisher:
 		linkText = almoner.getInternetText(lineStrippedLower)
 		if 'devtome.com' not in linkText:
 			return
+		if self.signaturePayout:
+			return
 		self.payoutFifth += 1
+		self.signaturePayout = True
 		postString = '<td><b>Posts: </b></td>'
 		postIndex = linkText.find(postString)
 		if postIndex == -1:
