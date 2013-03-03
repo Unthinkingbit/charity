@@ -85,9 +85,7 @@ def writeOutput(arguments):
 	fileName = almoner.getParameter(arguments, 'publishers.csv', 'input')
 	lines = almoner.getTextLines(almoner.getFileText(fileName))
 	publishers = getPublishers(lines)
-	print(  publishers)
 	marketingEarningsText = getMarketingEarningsText(publishers)
-	print(  marketingEarningsText)
 	outputEarningsTo = almoner.getParameter(arguments, 'marketing_earnings_???.csv', 'outputearnings')
 	if almoner.sendOutputTo(outputEarningsTo, marketingEarningsText):
 		print('The marketing earnings bounty file has been written to:\n%s\n' % outputEarningsTo)
@@ -103,6 +101,7 @@ class Publisher:
 		self.name = splitLine[0]
 		self.payoutFifth = 0
 		self.postPayout = 0
+		self.postWords = 0
 		self.signaturePayout = False
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
 		print('Loading pages from %s' % self.name)
@@ -114,6 +113,7 @@ class Publisher:
 			lineStrippedLower = line.strip().lower()
 			if '==' in lineStrippedLower:
 				isLink = False
+				isPost = False
 				isSignature = False
 				if 'link' in lineStrippedLower:
 					isLink = True
@@ -127,9 +127,15 @@ class Publisher:
 				self.addPostPayout(lineStrippedLower)
 			if isSignature:
 				self.addSignaturePayout(lineStrippedLower)
+		if self.postWords > 500:
+			self.payoutFifth += 1
+			if self.postWords > 5000:
+				self.payoutFifth += 1
 
 	def addLinkPayout(self, lineStrippedLower):
 		'Add link payout if there is a devtome link.'
+		if lineStrippedLower.startswith('*'):
+			lineStrippedLower = lineStrippedLower[1 :]
 		if not lineStrippedLower.startswith('http'):
 			return
 		linkText = almoner.getInternetText(lineStrippedLower)
@@ -155,37 +161,35 @@ class Publisher:
 
 	def addPostPayout(self, lineStrippedLower):
 		'Add post payout if there is a devtome link.'
+		if lineStrippedLower.startswith('*'):
+			lineStrippedLower = lineStrippedLower[1 :]
 		if not lineStrippedLower.startswith('http'):
+			return
+		if self.postPayout > 4:
 			return
 		linkText = almoner.getInternetText(lineStrippedLower)
 		if '#' in lineStrippedLower:
 			lineStrippedLower = lineStrippedLower[: lineStrippedLower.find('#')]
 		if ';' in lineStrippedLower:
 			lineStrippedLower = lineStrippedLower[: lineStrippedLower.find(';')]
-		print(  lineStrippedLower)
-#		'<a class="message_number" style="vertical-align: middle;" href="'
-		return ###
+		messageString = '<a class="message_number" style="vertical-align: middle;" href="' + lineStrippedLower
+		if messageString not in linkText:
+			return
+		postBeginIndex = linkText.find(messageString)
+		postBeginIndex = linkText.find('<div class="post"', postBeginIndex)
+		if postBeginIndex == -1:
+			return
+		postEndIndex = linkText.find('<td valign="bottom"', postBeginIndex + 1)
+		linkText = linkText[postBeginIndex : postEndIndex]
 		if 'devtome.com' not in linkText:
 			return
-		self.payoutFifth += 1
+		self.postWords += len(linkText)
 		self.postPayout += 1
-		postString = '<td><b>Posts: </b></td>'
-		postIndex = linkText.find(postString)
-		if postIndex == -1:
-			return
-		postEndIndex = postIndex + len(postString)
-		postNumberEndIndex = linkText.find('</td>', postEndIndex + 1)
-		if postNumberEndIndex == -1:
-			return
-		postNumberString = linkText[postEndIndex : postNumberEndIndex].strip()
-		if '>' in postNumberString:
-			postNumberString = postNumberString[postNumberString.find('>') + 1 :]
-		postNumber = int(postNumberString)
-		if postNumber > 1000:
-			self.payoutFifth += 1
 
 	def addSignaturePayout(self, lineStrippedLower):
 		'Add signature payout if there is a devtome link.'
+		if lineStrippedLower.startswith('*'):
+			lineStrippedLower = lineStrippedLower[1 :]
 		if not lineStrippedLower.startswith('http'):
 			return
 		linkText = almoner.getInternetText(lineStrippedLower)
