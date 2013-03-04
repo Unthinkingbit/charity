@@ -127,10 +127,16 @@ class Publisher:
 				self.addPostPayout(lineStrippedLower)
 			if isSignature:
 				self.addSignaturePayout(lineStrippedLower)
-		if self.postWords > 500:
-			self.payoutFifth += 1
-			if self.postWords > 5000:
+		if self.postWords > 100:
+			if self.postWords > 1000:
+				self.payoutFifth += 2
+				print('Big post payout.')
+			else:
 				self.payoutFifth += 1
+				print('Small post payout.')
+		if self.payoutFifth > 0:
+			print('Total payout fifths: %s' % self.payoutFifth)
+		print('')
 
 	def addLinkPayout(self, lineStrippedLower):
 		'Add link payout if there is a devtome link.'
@@ -144,7 +150,7 @@ class Publisher:
 		if self.linkPayout:
 			return
 		self.payoutFifth += 1
-		self.linkPayout = False
+		self.linkPayout = True
 		if lineStrippedLower.startswith('http://'):
 			lineStrippedLower = lineStrippedLower[len('http://') :]
 		elif lineStrippedLower.startswith('https://'):
@@ -156,8 +162,21 @@ class Publisher:
 		if lineStrippedLower.endswith('/'):
 			lineStrippedLower = lineStrippedLower[: -1]
 		if '/' in lineStrippedLower:
+			print('Subdomain payout.')
 			return
 		self.payoutFifth += 1
+		print('Domain name payout.')
+		beginIndex = linkText.find('devtome.com')
+		while beginIndex != -1:
+			endIndex = linkText.find('</a>', beginIndex)
+			if endIndex == -1:
+				return
+			linkString = linkText[beginIndex : endIndex]
+			if '<img' in linkString and '728' in linkString and '90' in linkString:
+				self.payoutFifth += 1
+				print('Banner payout.')
+				return
+			beginIndex = linkText.find('devtome.com', endIndex)
 
 	def addPostPayout(self, lineStrippedLower):
 		'Add post payout if there is a devtome link.'
@@ -183,7 +202,7 @@ class Publisher:
 		linkText = linkText[postBeginIndex : postEndIndex]
 		if 'devtome.com' not in linkText:
 			return
-		self.postWords += len(linkText)
+		self.postWords += len(linkText.split())
 		self.postPayout += 1
 
 	def addSignaturePayout(self, lineStrippedLower):
@@ -197,7 +216,6 @@ class Publisher:
 			return
 		if self.signaturePayout:
 			return
-		self.payoutFifth += 1
 		self.signaturePayout = True
 		postString = '<td><b>Posts: </b></td>'
 		postIndex = linkText.find(postString)
@@ -212,7 +230,11 @@ class Publisher:
 			postNumberString = postNumberString[postNumberString.find('>') + 1 :]
 		postNumber = int(postNumberString)
 		if postNumber > 1000:
+			self.payoutFifth += 2
+			print('Big signature payout.')
+		else:
 			self.payoutFifth += 1
+			print('Small signature payout.')
 
 	def write(self, cString):
 		'Initialize.'
