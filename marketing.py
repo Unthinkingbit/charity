@@ -130,10 +130,10 @@ class Publisher:
 		if self.postWords > 100:
 			if self.postWords > 1000:
 				self.payoutFifth += 2
-				print('Big post payout.')
+				print('Big post payout: 2')
 			else:
 				self.payoutFifth += 1
-				print('Small post payout.')
+				print('Small post payout: 1')
 		if self.payoutFifth > 0:
 			print('Total payout fifths: %s' % self.payoutFifth)
 		print('')
@@ -162,21 +162,23 @@ class Publisher:
 		if lineStrippedLower.endswith('/'):
 			lineStrippedLower = lineStrippedLower[: -1]
 		if '/' in lineStrippedLower:
-			print('Subdomain payout.')
+			print('Subdomain payout: 1')
 			return
 		self.payoutFifth += 1
-		print('Domain name payout.')
+		printString = 'Domain name payout: 2'
 		beginIndex = linkText.find('devtome.com')
 		while beginIndex != -1:
 			endIndex = linkText.find('</a>', beginIndex)
 			if endIndex == -1:
+				print(printString)
 				return
 			linkString = linkText[beginIndex : endIndex]
 			if '<img' in linkString and '728' in linkString and '90' in linkString:
 				self.payoutFifth += 1
-				print('Banner payout.')
+				print('Banner payout: 3')
 				return
 			beginIndex = linkText.find('devtome.com', endIndex)
+		print(printString)
 
 	def addPostPayout(self, lineStrippedLower):
 		'Add post payout if there is a devtome link.'
@@ -231,10 +233,10 @@ class Publisher:
 		postNumber = int(postNumberString)
 		if postNumber > 1000:
 			self.payoutFifth += 2
-			print('Big signature payout.')
+			print('Big signature payout: 2')
 		else:
 			self.payoutFifth += 1
-			print('Small signature payout.')
+			print('Small signature payout: 1')
 
 	def write(self, cString):
 		'Initialize.'
