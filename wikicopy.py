@@ -8,10 +8,10 @@ The -h option, the -help option, will print the help, which is this document.  T
 python account.py -h
 
 ===Input===
-Default is http://devtome.org
+Default is http://devtome.com
 
 The -input option sets the input file name.  The example follows:
-python wikicopy.py -input http://devtome.org
+python wikicopy.py -input http://devtome.com
 
 
 ==Install==
@@ -42,7 +42,9 @@ def writeOutput(arguments):
 def writeZipFile(wikiAddress):
 	'Write zip file.'
 	isArticle = False
-	print(  wikiAddress)
+	print('Copying:')
+	print(wikiAddress)
+	print('')
 	popularPageAddress = wikiAddress + '/doku.php?id=start&do=index/'
 	lines = almoner.getTextLines(almoner.getInternetText(popularPageAddress))
 	numberOfFiles = 0
