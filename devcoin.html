@@ -483,16 +483,26 @@ To add the extra fee and eliminate free transactions, the following change was m
 </code>
 
 ===Subsidy and Share===
-The constants required for the subsidy are changed and constants for share, and fallback reduction are added.
+The constants required for the subsidy are changed and constants for share, and fallback reduction are added. In main.cpp, the constants at the beginning are changed:
+
 <code>
 static const int64 initialSubsidy = 50000 * COIN;
 static const int64 share = initialSubsidy * 9 / 10;
 static const int64 fallbackReduction = (initialSubsidy + share) / 2;
+</code>
 
-Code in GetBlockValue is changed:
+and code in GetBlockValue is changed:
 
+<code>
 //int64 nSubsidy = 50 * COIN;
 int64 nSubsidy = initialSubsidy;
+</code>
+
+Also, in the rpc.cpp file, code in AmountFromValue is changed:
+
+<code>
+//if (dAmount <= 0.0 || dAmount > 21000000.0)
+if (dAmount <= 0.0 || dAmount > 21000000000.0)
 </code>
 
 ===Validate Block===
