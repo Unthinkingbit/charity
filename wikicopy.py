@@ -26,6 +26,7 @@ import almoner
 import os
 import shutil
 import sys
+import time
 import tomecount
 
 
@@ -68,6 +69,7 @@ def writeZipFile(wikiAddress):
 			title = title[: quoteIndex]
 			fileName = os.path.join(wikiPath, title)
 			sourceText = tomecount.getSourceText(wikiAddress + '/doku.php?id=%s&do=edit' % title)
+			time.sleep(10)
 			almoner.writeFileText(fileName, sourceText)
 			numberOfFiles += 1
 		if line == '<ul class="idx">':
