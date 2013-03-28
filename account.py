@@ -123,9 +123,14 @@ def getReceiverLines(accountLines, suffixNumber):
 	print('Number of receiverLines lines: %s' % len(receiverLines))
 	print('')
 	goldenRatio = math.sqrt(1.25) + 0.5
+	shuffledLines = []
+	for receiverLine in receiverLines:
+		shuffledLengthFloat = float(len(shuffledLines))
+		index = int(shuffledLengthFloat * ((shuffledLengthFloat * goldenRatio) % 1.0))
+		shuffledLines.insert(min(index, len(shuffledLines) - 1), receiverLine)
 	rotation = (float(suffixNumber) * goldenRatio) % 1.0
 	rotationIndex = int(math.floor(rotation * float(len(receiverLines))))
-	receiverLines = receiverLines[rotationIndex :] + receiverLines[: rotationIndex]
+	receiverLines = shuffledLines[rotationIndex :] + shuffledLines[: rotationIndex]
 	return receiverLines
 
 def getSuffixNumber(fileName):
