@@ -230,16 +230,23 @@ class Author:
 			if isCollated:
 				linkText = getLinkText(lineStrippedLower)
 				self.tomecount.imageCount += getImageCount(linkText)
-				self.tomecount.collatedWordCount += getWordCount(linkText)
+				wordCount = getWordCount(linkText)
+				self.tomecount.collatedWordCount += wordCount
+				if wordCount > 0:
+					print('Collated article: %s, Word Count: %s' % (lineStrippedLower, wordCount))
 			if isOriginal:
 				linkText = getLinkText(lineStrippedLower)
 				self.tomecount.imageCount += getImageCount(linkText)
-				self.tomecount.originalWordCount += getWordCount(linkText)
+				wordCount = getWordCount(linkText)
+				self.tomecount.originalWordCount += wordCount
+				if wordCount > 0:
+					print('Original article: %s, Word Count: %s' % (lineStrippedLower, wordCount))
 		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount += 10 * self.tomecount.imageCount
 		self.tomecount.cumulativePayout = int(round(float(self.tomecount.weightedWordCount) * 0.001))
+		print('Weighted Word Count: %s' % self.tomecount.weightedWordCount)
 		lastPayout = self.tomecount.cumulativePayout
 		for payout in self.tomecount.payouts[: -1]:
 			lastPayout -= payout
