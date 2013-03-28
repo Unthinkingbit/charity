@@ -69,6 +69,7 @@ def addJoinedTitles(cString, payoutBegin, payoutEnd, words):
 	for payoutIndex in xrange(payoutBegin, payoutEnd + 1):
 		words.append('Payout %s' % str(payoutIndex))
 	words.append('Cumulative Payout')
+	words.append('Proportion')
 	cString.write('%s\n' % ','.join(words))
 
 def getAuthors(lines, payoutBegin, payoutEnd, titles):
@@ -148,8 +149,8 @@ def getTomecountText(authors, payoutBegin, payoutEnd):
 	cString = cStringIO.StringIO()
 	addJoinedTitles(cString, payoutBegin, payoutEnd, ['Name','Coin Address'])
 	totalTomecount = Tomecount(payoutBegin, payoutEnd)
+	totalTomecount.proportion = 1.0
 	for author in authors:
-		author.addLine(cString)
 		totalTomecount.collatedWordCount += author.tomecount.collatedWordCount
 		totalTomecount.collatedWeightedWordCount += author.tomecount.collatedWeightedWordCount
 		totalTomecount.imageCount += author.tomecount.imageCount
@@ -159,6 +160,10 @@ def getTomecountText(authors, payoutBegin, payoutEnd):
 		totalTomecount.cumulativePayout += author.tomecount.cumulativePayout
 		for payoutIndex, payout in enumerate(author.tomecount.payouts):
 			totalTomecount.payouts[payoutIndex] += payout
+	weightedWordCountFloat = float(totalTomecount.weightedWordCount)
+	for author in authors:
+		author.tomecount.proportion = float(author.tomecount.weightedWordCount) / weightedWordCountFloat
+		author.addLine(cString)
 	addJoinedTitles(cString, payoutBegin, payoutEnd, ['','Totals'])
 	cString.write(totalTomecount.getJoinedWords(['','']))
 	cString.write(',Date\n')
@@ -259,6 +264,7 @@ class Tomecount:
 		self.originalWordCount = 0
 		self.collatedWeightedWordCount = 0
 		self.payouts = [0] * (payoutEnd + 1 - payoutBegin)
+		self.proportion = 0.0
 		self.wordCount = 0
 		self.weightedWordCount = 0
 		self.cumulativePayout = 0
@@ -278,6 +284,7 @@ class Tomecount:
 		for payout in self.payouts:
 			words.append(str(payout))
 		words.append(str(self.cumulativePayout))
+		words.append(str(self.proportion))
 		return '%s\n' % ','.join(words)
 
 
