@@ -82,8 +82,8 @@ def getAuthors(lines, payoutBegin, payoutEnd, titles):
 				authors.append(Author(payoutBegin, payoutEnd, titles, words))
 	return authors
 
-def getBountyText(authors):
-	'Get the devtome bounty text.'
+def getEarningsText(authors):
+	'Get the devtome earnings text.'
 	cString = cStringIO.StringIO()
 	for author in authors:
 		coinAddress = author.parameterDictionary['Coin Address']
@@ -193,11 +193,11 @@ def writeOutput(arguments):
 			payoutBegin = int(title.split()[1])
 	authors = getAuthors(lines, payoutBegin, payoutEnd, titles)
 	tomecountText = getTomecountText(authors, payoutBegin, payoutEnd)
-	bountyText = getBountyText(authors)
+	earningsText = getEarningsText(authors)
 	almoner.writeFileText(fileName, tomecountText)
-	outputBountyTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'devtome_bounty.csv', 'outputbounty'), str(payoutEnd))
-	if almoner.sendOutputTo(outputBountyTo, bountyText):
-		print('The devtome bounty file has been written to:\n%s\n' % outputBountyTo)
+	outputEarningsTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'devtome_earnings.csv', 'outputearnings'), str(payoutEnd))
+	if almoner.sendOutputTo(outputEarningsTo, earningsText):
+		print('The devtome earnings file has been written to:\n%s\n' % outputEarningsTo)
 
 
 class Author:
