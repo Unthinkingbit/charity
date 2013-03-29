@@ -37,6 +37,7 @@ http://www.python.org/download/
 """
 
 import almoner
+import cStringIO
 import hashlib
 import math
 import sys
@@ -95,18 +96,17 @@ def getDenominatorSequences(addressFractions):
 		denominatorSequences[denominatorSequenceIndex] = denominatorSequence
 	return denominatorSequences
 
-def getPeerText(arguments):
-	'Get the peer text according to the arguments.'
+def getPeerLines(arguments):
+	'Get the inner peer text according to the arguments.'
 	peerFileName = almoner.getParameter(arguments, 'peer.csv', 'inputpeer')
 	peerLines = almoner.getTextLines(almoner.getLocationText(peerFileName))
-	peerText = '_beginpeers\n%s_endpeers\n' % almoner.getTextByLines(peerLines)
 	print('Number of peers: %s' % len(peerLines))
 	print('')
-	return peerText
+	return peerLines
 
-def getPluribusunumText(accountLines, peerText):
+def getPluribusunumText(peerText, receiverLines):
 	'Get the pluribusunum text according to the arguments.'
-	return 'Format,pluribusunum\n%s_begincoins\n%s_endcoins\n' % (peerText, almoner.getTextByLines(accountLines))
+	return 'Format,pluribusunum\n%s_begincoins\n%s_endcoins\n' % (peerText, almoner.getTextByLines(receiverLines))
 
 def getReceiverLines(accountLines, suffixNumber):
 	'Get the lines according to the arguments.'
@@ -147,6 +147,32 @@ def getSuffixNumber(fileName):
 		return 0
 	return int(afterUnderscore)
 
+def getSummaryText(peerLines, receiverLines, suffixNumber):
+	'Get the summary text.'
+	cString = cStringIO.StringIO()
+	suffixNumberPlusOne = suffixNumber + 1
+	numberOfLines = len(receiverLines)
+	cString.write('The round %s receiver files have been uploaded to:\n' % suffixNumber)
+	for peerLine in peerLines:
+		suffixedPeerLine = peerLine[: -len('.csv')] + ('_%s.csv' % suffixNumber)
+		cString.write('%s\n' % suffixedPeerLine)
+	cString.write('\nThe account file is at:\n')
+	cString.write('https://raw.github.com/Unthinkingbit/charity/master/account_%s.csv\n\n' % suffixNumber)
+	devcoins = int(round(180000000.0 / float(numberOfLines)))
+	devcoinString = str(devcoins)
+	commaIndex = len(devcoinString) - 3
+	while commaIndex > 0:
+		devcoinString = devcoinString[: commaIndex] + ',' + devcoinString[commaIndex :]
+		commaIndex -= 3
+	cString.write('There were %s receiver lines, so the average generation share was worth' % numberOfLines)
+	cString.write(' 180,000,000 dvc / %s = %s dvc.\n\n' % (numberOfLines, devcoinString))
+	cString.write('People on that list will start getting those coins in round %s, starting at block %s,000.' % (suffixNumber, 4 * suffixNumber))
+	cString.write(' The procedure for generating the receiver files is at:\n')
+	cString.write('http://devtome.com/doku.php?id=devcoin#generating_the_files\n\n')
+	cString.write('The next bounties will go into round %s:\n' % suffixNumberPlusOne)
+	cString.write('https://raw.github.com/Unthinkingbit/charity/master/bounty_%s.csv\n' % suffixNumberPlusOne)
+	return cString.getvalue()
+
 def writeOutput(arguments):
 	'Write output.'
 	if '-h' in arguments or '-help' in arguments:
@@ -156,13 +182,15 @@ def writeOutput(arguments):
 	suffixNumber = getSuffixNumber(fileName)
 	outputAccountTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'account.csv', 'output'), str(suffixNumber))
 	accountLines = getAccountLines(arguments, fileName)
-	peerText = getPeerText(arguments)
+	peerLines = getPeerLines(arguments)
+	peerText = '_beginpeers\n%s_endpeers\n' % almoner.getTextByLines(peerLines)
 	accountText = getPluribusunumText(accountLines, peerText)
 	if almoner.sendOutputTo(outputAccountTo, accountText):
 		print('The account file has been written to:\n%s\n' % outputAccountTo)
 	outputReceiverTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'receiver.csv', 'outputreceiver'), str(suffixNumber))
+	outputSummaryTo = almoner.getParameter(arguments, 'receiver_summary.txt', 'outputsummary')
 	receiverLines = getReceiverLines(accountLines, suffixNumber)
-	receiverText = getPluribusunumText(receiverLines, peerText)
+	receiverText = getPluribusunumText(peerText, receiverLines)
 	if almoner.sendOutputTo(outputReceiverTo, receiverText):
 		print('The receiver file has been written to:\n%s\n' % outputReceiverTo)
 		shaOutputPrefix = almoner.getParameter(arguments, '', 'outputsha')
@@ -170,6 +198,7 @@ def writeOutput(arguments):
 			sha256FileName = almoner.getSuffixedFileName(outputReceiverTo, shaOutputPrefix)
 			almoner.writeFileText(sha256FileName, hashlib.sha256(receiverText).hexdigest())
 			print('The sha256 receiver file has been written to:\n%s\n' % sha256FileName)
+	almoner.sendOutputTo(outputSummaryTo, getSummaryText(peerLines, receiverLines, suffixNumber))
 
 
 class AddressFraction:
