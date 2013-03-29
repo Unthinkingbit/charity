@@ -164,8 +164,8 @@ def getSummaryText(peerLines, receiverLines, suffixNumber):
 	while commaIndex > 0:
 		devcoinString = devcoinString[: commaIndex] + ',' + devcoinString[commaIndex :]
 		commaIndex -= 3
-	cString.write('There were %s receiver lines, so the average generation share was worth' % numberOfLines)
-	cString.write(' 180,000,000 dvc / %s = %s dvc.\n\n' % (numberOfLines, devcoinString))
+	cString.write('There were %s receiver lines, so the average generation share was worth ' % numberOfLines)
+	cString.write('180,000,000 dvc / %s = %s dvc.\n\n' % (numberOfLines, devcoinString))
 	cString.write('People on that list will start getting those coins in round %s, starting at block %s,000.' % (suffixNumber, 4 * suffixNumber))
 	cString.write(' The procedure for generating the receiver files is at:\n')
 	cString.write('http://devtome.com/doku.php?id=devcoin#generating_the_files\n\n')
@@ -198,7 +198,8 @@ def writeOutput(arguments):
 			sha256FileName = almoner.getSuffixedFileName(outputReceiverTo, shaOutputPrefix)
 			almoner.writeFileText(sha256FileName, hashlib.sha256(receiverText).hexdigest())
 			print('The sha256 receiver file has been written to:\n%s\n' % sha256FileName)
-	almoner.sendOutputTo(outputSummaryTo, getSummaryText(peerLines, receiverLines, suffixNumber))
+	if almoner.sendOutputTo(outputSummaryTo, getSummaryText(peerLines, receiverLines, suffixNumber)):
+		print('The summary file has been written to:\n%s\n' % outputSummaryTo)
 
 
 class AddressFraction:
