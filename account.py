@@ -179,7 +179,7 @@ def writeOutput(arguments):
 	accountLines = getAccountLines(arguments, fileName)
 	peerLines = getPeerLines(arguments)
 	peerText = '_beginpeers\n%s_endpeers\n' % almoner.getTextByLines(peerLines)
-	accountText = getPluribusunumText(accountLines, peerText)
+	accountText = getPluribusunumText(peerText, accountLines)
 	if almoner.sendOutputTo(outputAccountTo, accountText):
 		print('The account file has been written to:\n%s\n' % outputAccountTo)
 	outputReceiverTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'receiver.csv', 'outputreceiver'), str(suffixNumber))
@@ -207,13 +207,11 @@ class AddressFraction:
 		if len(words) < 1:
 			return
 		self.coinAddress = words[0]
-		lastDashIndex = self.coinAddress.rfind('-')
-		if lastDashIndex != -1:
-			self.coinAddress = self.coinAddress[: lastDashIndex]
-		if len(words) == 1:
+		if len(words) < 3:
 			self.fractions.append(Fraction())
 			return
-		for word in words[1 :]:
+		self.coinAddress = words[1]
+		for word in words[2 :]:
 			lastDashIndex = word.rfind('-')
 			if lastDashIndex != -1:
 				word = word[: lastDashIndex]

@@ -103,7 +103,7 @@ def getEarningsText(authors):
 		name = author.parameterDictionary['Name']
 		lastPayoutString = str(author.tomecount.payouts[-1])
 		if lastPayoutString != '0':
-			cString.write('%s-%s,%s-Word Count(%s)\n' % (coinAddress, name, lastPayoutString, author.sourceAddress))
+			cString.write('%s,%s,%s-Word Count(%s)\n' % (name, coinAddress, lastPayoutString, author.sourceAddress))
 	return cString.getvalue()
 
 def getImageCount(linkText):
