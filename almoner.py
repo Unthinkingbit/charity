@@ -74,6 +74,15 @@ def getColonDividedWords(text):
 		return [text]
 	return [text[: colonIndex], text[colonIndex + 1 :]]
 
+def getCommaNumberString(number):
+	'Get the number string with commas.'
+	commaNumberString = str(number)
+	commaIndex = len(commaNumberString) - 3
+	while commaIndex > 0:
+		commaNumberString = commaNumberString[: commaIndex] + ',' + commaNumberString[commaIndex :]
+		commaIndex -= 3
+	return commaNumberString
+
 def getContributors(fileName):
 	'Get the words divided around the colon.'
 	return getContributorsByText(getFileText(fileName))

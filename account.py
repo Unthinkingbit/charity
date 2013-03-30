@@ -159,13 +159,8 @@ def getSummaryText(peerLines, receiverLines, suffixNumber):
 	cString.write('\nThe account file is at:\n')
 	cString.write('https://raw.github.com/Unthinkingbit/charity/master/account_%s.csv\n\n' % suffixNumber)
 	devcoins = int(round(180000000.0 / float(numberOfLines)))
-	devcoinString = str(devcoins)
-	commaIndex = len(devcoinString) - 3
-	while commaIndex > 0:
-		devcoinString = devcoinString[: commaIndex] + ',' + devcoinString[commaIndex :]
-		commaIndex -= 3
 	cString.write('There were %s receiver lines, so the average generation share was worth ' % numberOfLines)
-	cString.write('180,000,000 dvc / %s = %s dvc.\n\n' % (numberOfLines, devcoinString))
+	cString.write('180,000,000 dvc / %s = %s dvc.\n\n' % (numberOfLines, almoner.getCommaNumberString(devcoins)))
 	cString.write('People on that list will start getting those coins in round %s, starting at block %s,000.' % (suffixNumber, 4 * suffixNumber))
 	cString.write(' The procedure for generating the receiver files is at:\n')
 	cString.write('http://devtome.com/doku.php?id=devcoin#generating_the_files\n\n')
