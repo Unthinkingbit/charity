@@ -240,7 +240,7 @@ class Publisher:
 
 	def write(self, cString):
 		'Initialize.'
-		cString.write('%s-%s,%s/5-Marketing(%s)\n' % (self.coinAddress, self.name, self.payoutFifth, self.sourceAddress))
+		cString.write('%s,%s,%s/5-Marketing(%s)\n' % (self.name, self.coinAddress, self.payoutFifth, self.sourceAddress))
 
 
 def main():
