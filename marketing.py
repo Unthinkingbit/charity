@@ -53,6 +53,7 @@ If python 2.x is not on your machine, download the latest python 2.x, which is a
 http://www.python.org/download/
 """
 
+import account
 import almoner
 import cStringIO
 import sys
@@ -70,12 +71,28 @@ def getMarketingEarningsText(publishers):
 			publisher.write(cString)
 	return cString.getvalue()
 
-def getPublishers(lines):
+def getPublishers(lines, workerAddressSet):
 	'Get the publishers.'
 	publishers = []
 	for line in lines:
-		publishers.append(Publisher(line))
+		publisher = Publisher(line)
+		if len(publisher.coinAddressSet.intersection(workerAddressSet)) > 0:
+			publishers.append(publisher)
+		else:
+			print('%s did not work this round.' % publisher.name)
 	return publishers
+
+def getWorkerAddressSet(outputEarningsTo):
+	'Get the worker addresses.'
+	suffixNumber = 22
+	fileName = 'bounty_%s.csv' % suffixNumber
+	accountLines = account.getAccountLines([], fileName)
+	receiverLines = account.getReceiverLines(accountLines, suffixNumber)
+	workerAddresses = []
+	for receiverLine in receiverLines:
+		splitLine = receiverLine.split(',')
+		workerAddresses += splitLine
+	return set(workerAddresses)
 
 def writeOutput(arguments):
 	'Write output.'
@@ -84,9 +101,10 @@ def writeOutput(arguments):
 		return
 	fileName = almoner.getParameter(arguments, 'publishers.csv', 'input')
 	lines = almoner.getTextLines(almoner.getFileText(fileName))
-	publishers = getPublishers(lines)
-	marketingEarningsText = getMarketingEarningsText(publishers)
 	outputEarningsTo = almoner.getParameter(arguments, 'marketing_earnings_???.csv', 'outputearnings')
+	workerAddressSet = getWorkerAddressSet(outputEarningsTo)
+	publishers = getPublishers(lines, workerAddressSet)
+	marketingEarningsText = getMarketingEarningsText(publishers)
 	if almoner.sendOutputTo(outputEarningsTo, marketingEarningsText):
 		print('The marketing earnings bounty file has been written to:\n%s\n' % outputEarningsTo)
 
@@ -97,14 +115,16 @@ class Publisher:
 		'Initialize.'
 		splitLine = line.split(',')
 		self.coinAddress = splitLine[1]
-		self.linkPayout = False
+		self.coinAddressSet = set(splitLine[1 :])
+		self.domainPayout = 0
 		self.name = splitLine[0]
 		self.payoutFifth = 0
 		self.postPayout = 0
 		self.postWords = 0
 		self.signaturePayout = False
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
-		print('Loading pages from %s' % self.name)
+		self.subdomainPayout = 0
+		print('\nLoading pages from %s' % self.name)
 		sourceText = tomecount.getSourceText(self.sourceAddress)
 		isLink = False
 		isPost = False
@@ -127,6 +147,10 @@ class Publisher:
 				self.addPostPayout(lineStrippedLower)
 			if isSignature:
 				self.addSignaturePayout(lineStrippedLower)
+		if self.domainPayout == 0:
+			if self.subdomainPayout == 1:
+				self.payoutFifth += 1
+				print('Subdomain payout: 1')
 		if self.postWords > 100:
 			if self.postWords > 1000:
 				self.payoutFifth += 2
@@ -136,7 +160,6 @@ class Publisher:
 				print('Small post payout: 1')
 		if self.payoutFifth > 0:
 			print('Total payout fifths: %s' % self.payoutFifth)
-		print('')
 
 	def addLinkPayout(self, lineStrippedLower):
 		'Add link payout if there is a devtome link.'
@@ -144,13 +167,9 @@ class Publisher:
 			lineStrippedLower = lineStrippedLower[1 :]
 		if not lineStrippedLower.startswith('http'):
 			return
-		linkText = almoner.getInternetText(lineStrippedLower)
-		if 'devtome.com' not in linkText:
+		if self.domainPayout > 4:
 			return
-		if self.linkPayout:
-			return
-		self.payoutFifth += 1
-		self.linkPayout = True
+		originalLink = lineStrippedLower
 		if lineStrippedLower.startswith('http://'):
 			lineStrippedLower = lineStrippedLower[len('http://') :]
 		elif lineStrippedLower.startswith('https://'):
@@ -162,10 +181,18 @@ class Publisher:
 		if lineStrippedLower.endswith('/'):
 			lineStrippedLower = lineStrippedLower[: -1]
 		if '/' in lineStrippedLower:
-			print('Subdomain payout: 1')
+			if self.subdomainPayout == 0:
+				linkText = almoner.getInternetText(originalLink)
+				if 'devtome.com' not in linkText:
+					return
+				self.subdomainPayout = 1
 			return
-		self.payoutFifth += 1
-		printString = 'Domain name payout: 2'
+		linkText = almoner.getInternetText(originalLink)
+		if 'devtome.com' not in linkText:
+			return
+		self.domainPayout += 1
+		self.payoutFifth += 2
+		printString = 'Domain name payout: 2, Address: %s' % lineStrippedLower
 		beginIndex = linkText.find('devtome.com')
 		while beginIndex != -1:
 			endIndex = linkText.find('</a>', beginIndex)
@@ -173,9 +200,10 @@ class Publisher:
 				print(printString)
 				return
 			linkString = linkText[beginIndex : endIndex]
-			if '<img' in linkString and '728' in linkString and '90' in linkString:
+			if '<img' in linkString:
+#			if '<img' in linkString and '728' in linkString and '90' in linkString:
 				self.payoutFifth += 1
-				print('Banner payout: 3')
+				print('Banner payout: 3, Address: %s' % lineStrippedLower)
 				return
 			beginIndex = linkText.find('devtome.com', endIndex)
 		print(printString)
