@@ -116,8 +116,10 @@ def getReceiverLines(accountLines, suffixNumber):
 	for denominatorSequence in denominatorSequences:
 		receiverLines += denominatorSequence.getReceiverLines()
 	devcoinBlocksPerShareFloat = 4000.0 / len(receiverLines)
+	averageDevcoinsPerShare = int(round(devcoinBlocksPerShareFloat * 45000.0))
 	maximumDevcoinsPerShare = int(math.ceil(devcoinBlocksPerShareFloat)) * 45000
 	minimumDevcoinsPerShare = int(math.floor(devcoinBlocksPerShareFloat)) * 45000
+	print('Average devcoins per share: %s' % averageDevcoinsPerShare)
 	print('Minimum devcoins per share: %s' % minimumDevcoinsPerShare)
 	print('Maximum devcoins per share: %s' % maximumDevcoinsPerShare)
 	print('Number of receiverLines lines: %s' % len(receiverLines))
