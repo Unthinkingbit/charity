@@ -137,7 +137,7 @@ def getReceiverLines(accountLines, suffixNumber):
 
 def getSuffixNumber(fileName):
 	'Determine the suffix number, returning 0 if there is not one.'
-	underscoreIndex = fileName.find('_')
+	underscoreIndex = fileName.rfind('_')
 	if underscoreIndex == -1:
 		return 0
 	afterUnderscore = fileName[underscoreIndex + 1 :]
