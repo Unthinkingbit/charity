@@ -50,12 +50,7 @@ def addReceiverLines(coinAddresses, receiverLines):
 	'Get the receiver format line.'
 	if len(coinAddresses) == 0:
 		return
-	addressQuantityDictionary = {}
-	for coinAddress in coinAddresses:
-		if coinAddress in addressQuantityDictionary:
-			addressQuantityDictionary[coinAddress] += 1
-		else:
-			addressQuantityDictionary[coinAddress] = 1
+	addressQuantityDictionary = getQuantityDictionary(coinAddresses)
 	firstQuantity = addressQuantityDictionary.values()[0]
 	for addressQuantity in addressQuantityDictionary.values():
 		if addressQuantity != firstQuantity:
@@ -108,11 +103,35 @@ def getPluribusunumText(peerText, receiverLines):
 	'Get the pluribusunum text according to the arguments.'
 	return 'Format,pluribusunum\n%s_begincoins\n%s_endcoins\n' % (peerText, almoner.getTextByLines(receiverLines))
 
+def getQuantityDictionary(elements):
+	'Get the quantity dictionary.'
+	quantityDictionary = {}
+	for element in elements:
+		if element in quantityDictionary:
+			quantityDictionary[element] += 1
+		else:
+			quantityDictionary[element] = 1
+	return quantityDictionary
+
 def getReceiverLines(accountLines, suffixNumber):
 	'Get the lines according to the arguments.'
 	addressFractions = getAddressFractions(accountLines)
 	denominatorSequences = getDenominatorSequences(addressFractions)
 	receiverLines = []
+	for denominatorSequenceIndex in xrange(len(denominatorSequences) - 2, -1, -1):
+		denominatorSequence = denominatorSequences[denominatorSequenceIndex]
+		denominatorSequenceBelow = denominatorSequences[denominatorSequenceIndex + 1]
+		denominatorRatio = denominatorSequenceBelow.denominator / denominatorSequence.denominator
+		belowCoinAddressQuantityDictionary = getQuantityDictionary(denominatorSequenceBelow.coinAddresses)
+		for belowCoinAddressKey in belowCoinAddressQuantityDictionary:
+			belowCoinAddressValue = belowCoinAddressQuantityDictionary[belowCoinAddressKey]
+			carry = belowCoinAddressValue / denominatorRatio
+			if carry > 0:
+				belowCoinAddressQuantityDictionary[belowCoinAddressKey] -= carry * denominatorRatio
+				denominatorSequence.coinAddresses += [belowCoinAddressKey] * carry
+		denominatorSequenceBelow.coinAddresses = []
+		for belowCoinAddressKey in belowCoinAddressQuantityDictionary:
+			denominatorSequenceBelow.coinAddresses += [belowCoinAddressKey] * belowCoinAddressQuantityDictionary[belowCoinAddressKey]
 	for denominatorSequence in denominatorSequences:
 		receiverLines += denominatorSequence.getReceiverLines()
 	devcoinBlocksPerShareFloat = 4000.0 / len(receiverLines)
@@ -124,6 +143,10 @@ def getReceiverLines(accountLines, suffixNumber):
 	print('Maximum devcoins per share: %s' % maximumDevcoinsPerShare)
 	print('Number of receiverLines lines: %s' % len(receiverLines))
 	print('')
+	return getShuffledLines(receiverLines, suffixNumber)
+
+def getShuffledLines(receiverLines, suffixNumber):
+	'Get the shuffled lines.'
 	goldenRatio = math.sqrt(1.25) + 0.5
 	shuffledLines = []
 	for receiverLine in receiverLines:
@@ -131,9 +154,11 @@ def getReceiverLines(accountLines, suffixNumber):
 		index = int(shuffledLengthFloat * ((shuffledLengthFloat * goldenRatio) % 1.0))
 		shuffledLines.insert(min(index, len(shuffledLines) - 1), receiverLine)
 	rotation = (float(suffixNumber) * goldenRatio) % 1.0
-	rotationIndex = int(math.floor(rotation * float(len(receiverLines))))
-	receiverLines = shuffledLines[rotationIndex :] + shuffledLines[: rotationIndex]
-	return receiverLines
+	rotationIndex = int(math.floor(rotation * float(len(shuffledLines))))
+	if suffixNumber % 2 == 0:
+		shuffledLines.reverse()
+	shuffledLines = shuffledLines[rotationIndex :] + shuffledLines[: rotationIndex]
+	return shuffledLines
 
 def getSuffixNumber(fileName):
 	'Determine the suffix number, returning 0 if there is not one.'

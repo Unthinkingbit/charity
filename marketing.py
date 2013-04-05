@@ -284,13 +284,7 @@ class Publisher:
 		'Write.'
 		if self.payoutFifth == 0:
 			return
-		payoutInteger = self.payoutFifth / 5
-		payoutFraction = self.payoutFifth - payoutInteger * 5
-		cString.write('%s,%s,' % (self.name, self.coinAddress))
-		if payoutInteger > 0:
-			cString.write('%s-Marketing Integer(%s)\n' % (payoutInteger, self.sourceAddress))
-		if payoutFraction > 0:
-			cString.write('%s/5-Marketing Fraction(%s)\n' % (payoutFraction, self.sourceAddress))
+		cString.write('%s,%s,%s/5-Marketing(%s)\n' % (self.name, self.coinAddress, self.payoutFifth, self.sourceAddress))
 
 
 def main():
