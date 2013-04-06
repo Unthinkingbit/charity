@@ -1,21 +1,21 @@
 """
-Wikicopy is a program to download the articles of a wiki and save them in a zip file.
+Wikicopy is a program to download the articles of a dokuwiki and save them in a zip file.
 
 
 ==Commands==
 ===Help===
-The -h option, the -help option, will print the help, which is this document.  The example follows:
+The -h option, the -help option, will print the help, which is this document. The example follows:
 python account.py -h
 
 ===Input===
 Default is http://devtome.com
 
-The -input option sets the input file name.  The example follows:
+The -input option sets the input file name. The example follows:
 python wikicopy.py -input http://devtome.com
 
 
 ==Install==
-For wikicopy to run, you need Python 2.x, almoner will probably not run with python 3.x.  To check if it is on your machine, in a terminal type:
+For wikicopy to run, you need Python 2.x, wikicopy will probably not run with python 3.x. To check if it is on your machine, in a terminal type:
 python
 
 If python 2.x is not on your machine, download the latest python 2.x, which is available from:
@@ -59,6 +59,7 @@ def writeZipFile(wikiAddress):
 	os.makedirs(wikiPath)
 	prefix = '?id='
 	prefixLength = len(prefix)
+	previousLetter = '0'
 	for line in lines:
 		if line.startswith('</ul>'):
 			isArticle = False
@@ -67,6 +68,11 @@ def writeZipFile(wikiAddress):
 			title = line[prefixIndex :]
 			quoteIndex = title.find('"')
 			title = title[: quoteIndex]
+			if len(title) > 0:
+				letter = title[0]
+				if letter != previousLetter:
+					previousLetter = letter
+					print('Copying articles starting with %s.' % letter.upper())
 			fileName = os.path.join(wikiPath, title)
 			sourceText = tomecount.getSourceText(wikiAddress + '/doku.php?id=%s&do=edit' % title)
 			time.sleep(10)
