@@ -1,0 +1,17 @@
+The round 22 receiver files have been uploaded to:
+http://galaxies.mygamesonline.org/receiver_22.csv
+https://raw.github.com/Unthinkingbit/charity/master/receiver_22.csv
+http://devcoinblockexplorer.info/receiver/receiver_22.csv
+http://devtome.com/files/receiver_22.csv
+http://devcoin.darkgamex.ch/receiver_22.csv
+
+The account file is at:
+https://raw.github.com/Unthinkingbit/charity/master/account_22.csv
+
+There were 125 receiver lines, so the average generation share was worth 180,000,000 dvc / 125 = 1,440,000 dvc.
+
+People on that list will start getting those coins in round 22, starting at block 88,000. The procedure for generating the receiver files is at:
+http://devtome.com/doku.php?id=devcoin#generating_the_files
+
+The next bounties will go into round 23:
+https://raw.github.com/Unthinkingbit/charity/master/bounty_23.csv
