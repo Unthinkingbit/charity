@@ -66,6 +66,7 @@ import almoner
 import cStringIO
 import math
 import sys
+import time
 
 
 __license__ = 'MIT'
@@ -135,6 +136,7 @@ def getLinkText(line):
 	linkDividerIndex = linkString.find('|')
 	if linkDividerIndex != -1:
 		linkString = linkString[: linkDividerIndex]
+	time.sleep(1)
 	return getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % linkString)
 
 def getSourceText(address):
