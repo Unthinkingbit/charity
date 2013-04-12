@@ -6,7 +6,7 @@ http://devtome.com/files/receiver_22.csv
 http://devcoin.darkgamex.ch/receiver_22.csv
 
 The account file is at:
-https://raw.github.com/Unthinkingbit/charity/master/account_22.csv
+http://galaxies.mygamesonline.org/account_22.csv
 
 There were 125 receiver lines, so the average generation share was worth 180,000,000 dvc / 125 = 1,440,000 dvc.
 

@@ -184,7 +184,7 @@ def getSummaryText(peerLines, receiverLines, suffixNumber):
 		suffixedPeerLine = peerLine[: -len('.csv')] + ('_%s.csv' % suffixNumber)
 		cString.write('%s\n' % suffixedPeerLine)
 	cString.write('\nThe account file is at:\n')
-	cString.write('https://raw.github.com/Unthinkingbit/charity/master/account_%s.csv\n\n' % suffixNumber)
+	cString.write('http://galaxies.mygamesonline.org/account_%s.csv\n\n' % suffixNumber)
 	devcoins = int(round(180000000.0 / float(numberOfLines)))
 	cString.write('There were %s receiver lines, so the average generation share was worth ' % numberOfLines)
 	cString.write('180,000,000 dvc / %s = %s dvc.\n\n' % (numberOfLines, almoner.getCommaNumberString(devcoins)))
