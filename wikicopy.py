@@ -75,7 +75,7 @@ def writeZipFile(wikiAddress):
 					print('Copying articles starting with %s.' % letter.upper())
 			fileName = os.path.join(wikiPath, title)
 			sourceText = tomecount.getSourceText(wikiAddress + '/doku.php?id=%s&do=edit' % title)
-			time.sleep(10)
+			time.sleep(2)
 			almoner.writeFileText(fileName, sourceText)
 			numberOfFiles += 1
 		if line == '<ul class="idx">':
