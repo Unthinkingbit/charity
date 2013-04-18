@@ -108,6 +108,13 @@ def getDenominatorSequences(addressFractions):
 		denominatorSequences[denominatorSequenceIndex] = denominatorSequence
 	return denominatorSequences
 
+def getDenominatorSequencesByAccountLines(accountLines):
+	'Get the lines according to the arguments.'
+	addressFractions = getAddressFractions(accountLines)
+	denominatorSequences = getDenominatorSequences(addressFractions)
+	carryCoinAddresses(denominatorSequences)
+	return denominatorSequences
+
 def getGroupedReceiverLines(denominatorMultiplier, denominatorSequences):
 	'Get grouped receiver lines.'
 	print('Receiver lines will be grouped by a factor of %s.' % denominatorMultiplier)
@@ -137,28 +144,24 @@ def getQuantityDictionary(elements):
 			quantityDictionary[element] = 1
 	return quantityDictionary
 
-def getReceiverLines(accountLines, suffixNumber):
+def getReceiverLines(denominatorSequences, originalReceiverLines, suffixNumber):
 	'Get the lines according to the arguments.'
-	addressFractions = getAddressFractions(accountLines)
-	denominatorSequences = getDenominatorSequences(addressFractions)
-	carryCoinAddresses(denominatorSequences)
 	maximumReceivers = 4000
-	receiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
-	originalReceiverLineLength = len(receiverLines)
+	originalReceiverLineLength = len(originalReceiverLines)
 	denominatorMultiplier = 1
-	if len(receiverLines) > maximumReceivers:
-		denominatorMultiplier = (len(receiverLines) + maximumReceivers) / (maximumReceivers + 1 - len(denominatorSequences))
-		receiverLines = getGroupedReceiverLines(denominatorMultiplier, denominatorSequences)
-		if len(receiverLines) > maximumReceivers:
+	if len(originalReceiverLines) > maximumReceivers:
+		denominatorMultiplier = (len(originalReceiverLines) + maximumReceivers) / (maximumReceivers + 1 - len(denominatorSequences))
+		originalReceiverLines = getGroupedReceiverLines(denominatorMultiplier, denominatorSequences)
+		if len(originalReceiverLines) > maximumReceivers:
 			print('Warning, denominatorMultiplier math is wrong, the receiver lines will be grouped by another factor of two.')
-			receiverLines = getGroupedReceiverLines(2, denominatorSequences)
+			originalReceiverLines = getGroupedReceiverLines(2, denominatorSequences)
 	originalDevcoinBlocksPerShareFloat = 4000.0 / originalReceiverLineLength
 	averageDevcoinsPerShare = int(round(originalDevcoinBlocksPerShareFloat * 45000.0))
 	print('Average devcoins per share: %s' % averageDevcoinsPerShare)
 	print('Number of original receiver lines lines: %s' % originalReceiverLineLength)
-	print('Number of receiver lines lines: %s' % len(receiverLines))
+	print('Number of receiver lines lines: %s' % len(originalReceiverLines))
 	print('')
-	return getShuffledLines(receiverLines, suffixNumber)
+	return getShuffledLines(originalReceiverLines, suffixNumber)
 
 def getReceiverLinesByDenominatorSequences(denominatorSequences):
 	'Concatenate the receiver lines from all the denominator sequences.'
@@ -196,11 +199,11 @@ def getSuffixNumber(fileName):
 		return 0
 	return int(afterUnderscore)
 
-def getSummaryText(peerLines, receiverLines, suffixNumber):
+def getSummaryText(originalReceiverLines, peerLines, suffixNumber):
 	'Get the summary text.'
 	cString = cStringIO.StringIO()
 	suffixNumberPlusOne = suffixNumber + 1
-	numberOfLines = len(receiverLines)
+	numberOfLines = len(originalReceiverLines)
 	cString.write('The round %s receiver files have been uploaded to:\n' % suffixNumber)
 	for peerLine in peerLines:
 		suffixedPeerLine = peerLine[: -len('.csv')] + ('_%s.csv' % suffixNumber)
@@ -208,7 +211,7 @@ def getSummaryText(peerLines, receiverLines, suffixNumber):
 	cString.write('\nThe account file is at:\n')
 	cString.write('http://galaxies.mygamesonline.org/account_%s.csv\n\n' % suffixNumber)
 	devcoins = int(round(180000000.0 / float(numberOfLines)))
-	cString.write('There were %s receiver lines, so the average generation share was worth ' % numberOfLines)
+	cString.write('There were %s original receiver lines, so the average generation share was worth ' % numberOfLines)
 	cString.write('180,000,000 dvc / %s = %s dvc.\n\n' % (numberOfLines, almoner.getCommaNumberString(devcoins)))
 	cString.write('People on that list will start getting those coins in round %s, starting at block %s,000.' % (suffixNumber, 4 * suffixNumber))
 	cString.write(' The procedure for generating the receiver files is at:\n')
@@ -233,7 +236,9 @@ def writeOutput(arguments):
 		print('The account file has been written to:\n%s\n' % outputAccountTo)
 	outputReceiverTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'receiver.csv', 'outputreceiver'), str(suffixNumber))
 	outputSummaryTo = almoner.getParameter(arguments, 'receiver_summary.txt', 'outputsummary')
-	receiverLines = getReceiverLines(accountLines, suffixNumber)
+	denominatorSequences = getDenominatorSequencesByAccountLines(accountLines)
+	originalReceiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
+	receiverLines = getReceiverLines(denominatorSequences, originalReceiverLines, suffixNumber)
 	receiverText = getPluribusunumText(peerText, receiverLines)
 	if almoner.sendOutputTo(outputReceiverTo, receiverText):
 		print('The receiver file has been written to:\n%s\n' % outputReceiverTo)
@@ -242,7 +247,7 @@ def writeOutput(arguments):
 			sha256FileName = almoner.getSuffixedFileName(outputReceiverTo, shaOutputPrefix)
 			almoner.writeFileText(sha256FileName, hashlib.sha256(receiverText).hexdigest())
 			print('The sha256 receiver file has been written to:\n%s\n' % sha256FileName)
-	if almoner.sendOutputTo(outputSummaryTo, getSummaryText(peerLines, receiverLines, suffixNumber)):
+	if almoner.sendOutputTo(outputSummaryTo, getSummaryText(originalReceiverLines, peerLines, suffixNumber)):
 		print('The summary file has been written to:\n%s\n' % outputSummaryTo)
 
 
