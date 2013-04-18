@@ -108,6 +108,13 @@ def getDenominatorSequences(addressFractions):
 		denominatorSequences[denominatorSequenceIndex] = denominatorSequence
 	return denominatorSequences
 
+def getGroupedReceiverLines(denominatorMultiplier, denominatorSequences):
+	'Get grouped receiver lines.'
+	print('Receiver lines will be grouped by a factor of %s.' % denominatorMultiplier)
+	for denominatorSequence in denominatorSequences:
+		denominatorSequence.denominator *= denominatorMultiplier
+	return getReceiverLinesByDenominatorSequences(denominatorSequences)
+
 def getPeerLines(arguments):
 	'Get the inner peer text according to the arguments.'
 	peerFileName = almoner.getParameter(arguments, 'peer.csv', 'inputpeer')
@@ -137,22 +144,19 @@ def getReceiverLines(accountLines, suffixNumber):
 	carryCoinAddresses(denominatorSequences)
 	maximumReceivers = 4000
 	receiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
+	originalReceiverLineLength = len(receiverLines)
+	denominatorMultiplier = 1
 	if len(receiverLines) > maximumReceivers:
 		denominatorMultiplier = (len(receiverLines) + maximumReceivers) / (maximumReceivers + 1 - len(denominatorSequences))
-		multiplyDenominatorSequences(denominatorMultiplier, denominatorSequences)
-		receiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
+		receiverLines = getGroupedReceiverLines(denominatorMultiplier, denominatorSequences)
 		if len(receiverLines) > maximumReceivers:
 			print('Warning, denominatorMultiplier math is wrong, the receiver lines will be grouped by another factor of two.')
-			multiplyDenominatorSequences(2, denominatorSequences)
-			receiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
-	devcoinBlocksPerShareFloat = 4000.0 / len(receiverLines)
-	averageDevcoinsPerShare = int(round(devcoinBlocksPerShareFloat * 45000.0))
-	maximumDevcoinsPerShare = int(math.ceil(devcoinBlocksPerShareFloat)) * 45000
-	minimumDevcoinsPerShare = int(math.floor(devcoinBlocksPerShareFloat)) * 45000
+			receiverLines = getGroupedReceiverLines(2, denominatorSequences)
+	originalDevcoinBlocksPerShareFloat = 4000.0 / originalReceiverLineLength
+	averageDevcoinsPerShare = int(round(originalDevcoinBlocksPerShareFloat * 45000.0))
 	print('Average devcoins per share: %s' % averageDevcoinsPerShare)
-	print('Minimum devcoins per share: %s' % minimumDevcoinsPerShare)
-	print('Maximum devcoins per share: %s' % maximumDevcoinsPerShare)
-	print('Number of receiverLines lines: %s' % len(receiverLines))
+	print('Number of original receiver lines lines: %s' % originalReceiverLineLength)
+	print('Number of receiver lines lines: %s' % len(receiverLines))
 	print('')
 	return getShuffledLines(receiverLines, suffixNumber)
 
@@ -212,12 +216,6 @@ def getSummaryText(peerLines, receiverLines, suffixNumber):
 	cString.write('The next bounties will go into round %s:\n' % suffixNumberPlusOne)
 	cString.write('https://raw.github.com/Unthinkingbit/charity/master/bounty_%s.csv\n' % suffixNumberPlusOne)
 	return cString.getvalue()
-
-def multiplyDenominatorSequences(denominatorMultiplier, denominatorSequences):
-	'Multiply the denominator of the denominatorSequences.'
-	print('Receiver lines will be grouped by a factor of %s.' % denominatorMultiplier)
-	for denominatorSequence in denominatorSequences:
-		denominatorSequence.denominator *= denominatorMultiplier
 
 def writeOutput(arguments):
 	'Write output.'
