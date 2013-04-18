@@ -135,14 +135,16 @@ def getReceiverLines(accountLines, suffixNumber):
 	addressFractions = getAddressFractions(accountLines)
 	denominatorSequences = getDenominatorSequences(addressFractions)
 	carryCoinAddresses(denominatorSequences)
-	maximumReceivers = 4000
+	maximumReceivers = 20
 	receiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
 	if len(receiverLines) > maximumReceivers:
-		denominatorMultiplier = (len(receiverLines) + len(denominatorSequences) + maximumReceivers - 1) / maximumReceivers
-		print('Receiver lines will be grouped by a factor of %s.' % denominatorMultiplier)
-		for denominatorSequence in denominatorSequences:
-			denominatorSequence.denominator *= denominatorMultiplier
+		denominatorMultiplier = (len(receiverLines) + maximumReceivers) / (maximumReceivers + 1 - len(denominatorSequences))
+		multiplyDenominatorSequences(denominatorMultiplier, denominatorSequences)
 		receiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
+		if len(receiverLines) > maximumReceivers:
+			print('Warning, denominatorMultiplier math is wrong, the receiver lines will be grouped by another factor of two.')
+			multiplyDenominatorSequences(2, denominatorSequences)
+			receiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
 	devcoinBlocksPerShareFloat = 4000.0 / len(receiverLines)
 	averageDevcoinsPerShare = int(round(devcoinBlocksPerShareFloat * 45000.0))
 	maximumDevcoinsPerShare = int(math.ceil(devcoinBlocksPerShareFloat)) * 45000
@@ -210,6 +212,12 @@ def getSummaryText(peerLines, receiverLines, suffixNumber):
 	cString.write('The next bounties will go into round %s:\n' % suffixNumberPlusOne)
 	cString.write('https://raw.github.com/Unthinkingbit/charity/master/bounty_%s.csv\n' % suffixNumberPlusOne)
 	return cString.getvalue()
+
+def multiplyDenominatorSequences(denominatorMultiplier, denominatorSequences):
+	'Multiply the denominator of the denominatorSequences.'
+	print('Receiver lines will be grouped by a factor of %s.' % denominatorMultiplier)
+	for denominatorSequence in denominatorSequences:
+		denominatorSequence.denominator *= denominatorMultiplier
 
 def writeOutput(arguments):
 	'Write output.'
