@@ -138,7 +138,7 @@ def getReceiverLines(accountLines, suffixNumber):
 	maximumReceivers = 4000
 	receiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
 	if len(receiverLines) > maximumReceivers:
-		denominatorMultiplier = (len(receiverLines) + maximumReceivers - 1) / maximumReceivers
+		denominatorMultiplier = (len(receiverLines) + len(denominatorSequences) + maximumReceivers - 1) / maximumReceivers
 		print('Receiver lines will be grouped by a factor of %s.' % denominatorMultiplier)
 		for denominatorSequence in denominatorSequences:
 			denominatorSequence.denominator *= denominatorMultiplier
