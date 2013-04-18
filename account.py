@@ -58,6 +58,23 @@ def addReceiverLines(coinAddresses, receiverLines):
 			return
 	receiverLines.append(','.join(addressQuantityDictionary.keys()))
 
+def carryCoinAddresses(denominatorSequences):
+	'Carry coin addresses from high denominator sequences to lower denominator sequences.'
+	for denominatorSequenceIndex in xrange(len(denominatorSequences) - 2, -1, -1):
+		denominatorSequence = denominatorSequences[denominatorSequenceIndex]
+		denominatorSequenceBelow = denominatorSequences[denominatorSequenceIndex + 1]
+		denominatorRatio = denominatorSequenceBelow.denominator / denominatorSequence.denominator
+		belowCoinAddressQuantityDictionary = getQuantityDictionary(denominatorSequenceBelow.coinAddresses)
+		for belowCoinAddressKey in belowCoinAddressQuantityDictionary:
+			belowCoinAddressValue = belowCoinAddressQuantityDictionary[belowCoinAddressKey]
+			carry = belowCoinAddressValue / denominatorRatio
+			if carry > 0:
+				belowCoinAddressQuantityDictionary[belowCoinAddressKey] -= carry * denominatorRatio
+				denominatorSequence.coinAddresses += [belowCoinAddressKey] * carry
+		denominatorSequenceBelow.coinAddresses = []
+		for belowCoinAddressKey in belowCoinAddressQuantityDictionary:
+			denominatorSequenceBelow.coinAddresses += [belowCoinAddressKey] * belowCoinAddressQuantityDictionary[belowCoinAddressKey]
+
 def getAccountLines(arguments, fileName):
 	'Get the lines according to the arguments.'
 	bitcoinFileName = almoner.getParameter(arguments, 'bitcoinshare.html', 'inputbitcoin')
@@ -117,23 +134,15 @@ def getReceiverLines(accountLines, suffixNumber):
 	'Get the lines according to the arguments.'
 	addressFractions = getAddressFractions(accountLines)
 	denominatorSequences = getDenominatorSequences(addressFractions)
-	receiverLines = []
-	for denominatorSequenceIndex in xrange(len(denominatorSequences) - 2, -1, -1):
-		denominatorSequence = denominatorSequences[denominatorSequenceIndex]
-		denominatorSequenceBelow = denominatorSequences[denominatorSequenceIndex + 1]
-		denominatorRatio = denominatorSequenceBelow.denominator / denominatorSequence.denominator
-		belowCoinAddressQuantityDictionary = getQuantityDictionary(denominatorSequenceBelow.coinAddresses)
-		for belowCoinAddressKey in belowCoinAddressQuantityDictionary:
-			belowCoinAddressValue = belowCoinAddressQuantityDictionary[belowCoinAddressKey]
-			carry = belowCoinAddressValue / denominatorRatio
-			if carry > 0:
-				belowCoinAddressQuantityDictionary[belowCoinAddressKey] -= carry * denominatorRatio
-				denominatorSequence.coinAddresses += [belowCoinAddressKey] * carry
-		denominatorSequenceBelow.coinAddresses = []
-		for belowCoinAddressKey in belowCoinAddressQuantityDictionary:
-			denominatorSequenceBelow.coinAddresses += [belowCoinAddressKey] * belowCoinAddressQuantityDictionary[belowCoinAddressKey]
-	for denominatorSequence in denominatorSequences:
-		receiverLines += denominatorSequence.getReceiverLines()
+	carryCoinAddresses(denominatorSequences)
+	maximumReceivers = 4000
+	receiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
+	if len(receiverLines) > maximumReceivers:
+		denominatorMultiplier = (len(receiverLines) + maximumReceivers - 1) / maximumReceivers
+		print('Receiver lines will be grouped by a factor of %s.' % denominatorMultiplier)
+		for denominatorSequence in denominatorSequences:
+			denominatorSequence.denominator *= denominatorMultiplier
+		receiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
 	devcoinBlocksPerShareFloat = 4000.0 / len(receiverLines)
 	averageDevcoinsPerShare = int(round(devcoinBlocksPerShareFloat * 45000.0))
 	maximumDevcoinsPerShare = int(math.ceil(devcoinBlocksPerShareFloat)) * 45000
@@ -144,6 +153,13 @@ def getReceiverLines(accountLines, suffixNumber):
 	print('Number of receiverLines lines: %s' % len(receiverLines))
 	print('')
 	return getShuffledLines(receiverLines, suffixNumber)
+
+def getReceiverLinesByDenominatorSequences(denominatorSequences):
+	'Concatenate the receiver lines from all the denominator sequences.'
+	receiverLines = []
+	for denominatorSequence in denominatorSequences:
+		receiverLines += denominatorSequence.getReceiverLines()
+	return receiverLines
 
 def getShuffledLines(receiverLines, suffixNumber):
 	'Get the shuffled lines.'
