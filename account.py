@@ -135,7 +135,7 @@ def getReceiverLines(accountLines, suffixNumber):
 	addressFractions = getAddressFractions(accountLines)
 	denominatorSequences = getDenominatorSequences(addressFractions)
 	carryCoinAddresses(denominatorSequences)
-	maximumReceivers = 20
+	maximumReceivers = 4000
 	receiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
 	if len(receiverLines) > maximumReceivers:
 		denominatorMultiplier = (len(receiverLines) + maximumReceivers) / (maximumReceivers + 1 - len(denominatorSequences))
