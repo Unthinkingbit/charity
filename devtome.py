@@ -214,7 +214,7 @@ def writeOutput(arguments):
 		print(__doc__)
 		return
 	round = int(almoner.getParameter(arguments, '23', 'round'))
-	currentFileName = almoner.getParameter(arguments, 'devtome_%s.csv' % round, 'current')
+	currentFileName = almoner.getParameter(arguments, 'devtome_%s.csv' % round, 'devtome')
 	previousFileName = almoner.getParameter(arguments, 'devtome_%s.csv' % (round - 1), 'previous')
 	lines = almoner.getTextLines(almoner.getFileText(previousFileName))
 	titleLine = lines[0]

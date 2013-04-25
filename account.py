@@ -231,24 +231,24 @@ def writeOutput(arguments):
 	if '-h' in arguments or '-help' in arguments:
 		print(__doc__)
 		return
-	suffixNumberString = almoner.getParameter(arguments, '23', 'input')
+	suffixNumberString = almoner.getParameter(arguments, '23', 'round')
 	suffixNumber = int(suffixNumberString)
-	outputAccountTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'account.csv', 'output'), suffixNumberString)
+	outputAccountTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'account.csv', 'account'), suffixNumberString)
 	accountLines = getAccountLines(arguments, suffixNumberString)
 	peerLines = getPeerLines(arguments)
 	peerText = '_beginpeers\n%s_endpeers\n' % almoner.getTextByLines(peerLines)
 	accountText = getPluribusunumText(peerText, accountLines)
 	if almoner.sendOutputTo(outputAccountTo, accountText):
 		print('The account file has been written to:\n%s\n' % outputAccountTo)
-	outputReceiverTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'receiver.csv', 'outputreceiver'), suffixNumberString)
-	outputSummaryTo = almoner.getParameter(arguments, 'receiver_summary.txt', 'outputsummary')
+	outputReceiverTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'receiver.csv', 'receiver'), suffixNumberString)
+	outputSummaryTo = almoner.getParameter(arguments, 'receiver_summary.txt', 'summary')
 	denominatorSequences = getDenominatorSequencesByAccountLines(accountLines)
 	originalReceiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
 	receiverLines = getReceiverLines(denominatorSequences, originalReceiverLines, suffixNumber)
 	receiverText = getPluribusunumText(peerText, receiverLines)
 	if almoner.sendOutputTo(outputReceiverTo, receiverText):
 		print('The receiver file has been written to:\n%s\n' % outputReceiverTo)
-		shaOutputPrefix = almoner.getParameter(arguments, '', 'outputsha')
+		shaOutputPrefix = almoner.getParameter(arguments, '', 'sha')
 		if len(shaOutputPrefix) != 0:
 			sha256FileName = almoner.getSuffixedFileName(outputReceiverTo, shaOutputPrefix)
 			almoner.writeFileText(sha256FileName, hashlib.sha256(receiverText).hexdigest())
