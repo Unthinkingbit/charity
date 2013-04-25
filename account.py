@@ -77,7 +77,7 @@ def carryCoinAddresses(denominatorSequences):
 
 def getAccountLines(arguments, suffixNumberString):
 	'Get the lines according to the arguments.'
-	linkFileName = almoner.getParameter(arguments, 'account_location.csv', 'inputlocation')
+	linkFileName = almoner.getParameter(arguments, 'account_location.csv', 'location')
 	linkLines = almoner.getTextLines(almoner.getLocationText(linkFileName))[1 :]
 	accountLines = ['']
 	for linkLine in linkLines:

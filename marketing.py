@@ -56,8 +56,8 @@ http://www.python.org/download/
 import account
 import almoner
 import cStringIO
+import devtome
 import sys
-import tomecount
 
 
 __license__ = 'MIT'
@@ -91,15 +91,14 @@ def getSummaryText(earningsText, suffixNumber):
 	cString.write('https://raw.github.com/Unthinkingbit/charity/master/marketing.py\n\n')
 	return cString.getvalue()
 
-def getWorkerAddressSet(outputEarningsTo, suffixNumber):
+def getWorkerAddressSet(suffixNumber):
 	'Get the worker addresses.'
-	fileName = 'bounty_%s.csv' % suffixNumber
-	accountLines = account.getAccountLines([], fileName)
-	receiverLines = account.getReceiverLines(accountLines, suffixNumber)
+	accountLines = account.getAccountLines([], str(suffixNumber))
 	workerAddresses = []
-	for receiverLine in receiverLines:
-		splitLine = receiverLine.split(',')
-		workerAddresses += splitLine
+	for accountLine in accountLines:
+		accountLineSplit = accountLine.split(',')
+		if len(accountLineSplit) > 1:
+			workerAddresses.append(accountLineSplit[1])
 	return set(workerAddresses)
 
 def writeOutput(arguments):
@@ -107,19 +106,17 @@ def writeOutput(arguments):
 	if '-h' in arguments or '-help' in arguments:
 		print(__doc__)
 		return
-	fileName = almoner.getParameter(arguments, 'publishers.csv', 'input')
-	lines = almoner.getTextLines(almoner.getFileText(fileName))
-	outputEarningsTo = almoner.getParameter(arguments, 'marketing_earnings_???.csv', 'outputearnings')
-	outputSummaryTo = almoner.getParameter(arguments, 'marketing_summary.txt', 'outputsummary')
-	print(  outputEarningsTo)
-	suffixNumber = account.getSuffixNumber(outputEarningsTo)
-	print(  suffixNumber)
-	workerAddressSet = getWorkerAddressSet(outputEarningsTo, suffixNumber)
+	publishersFileName = almoner.getParameter(arguments, 'marketing_publishers.csv', 'publishers')
+	round = int(almoner.getParameter(arguments, '23', 'round'))
+	lines = almoner.getTextLines(almoner.getFileText(publishersFileName))
+	outputEarningsTo = almoner.getParameter(arguments, 'marketing_earnings_%s.csv' % round, 'earnings')
+	outputSummaryTo = almoner.getParameter(arguments, 'marketing_summary.txt', 'summary')
+	workerAddressSet = getWorkerAddressSet(round)
 	publishers = getPublishers(lines, workerAddressSet)
 	earningsText = getEarningsText(publishers)
 	if almoner.sendOutputTo(outputEarningsTo, earningsText):
 		print('The marketing earnings bounty file has been written to:\n%s\n' % outputEarningsTo)
-	if almoner.sendOutputTo(outputSummaryTo, getSummaryText(earningsText, suffixNumber)):
+	if almoner.sendOutputTo(outputSummaryTo, getSummaryText(earningsText, round)):
 		print('The summary file has been written to:\n%s\n' % outputSummaryTo)
 
 
@@ -139,7 +136,7 @@ class Publisher:
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
 		self.subdomainPayout = 0
 		print('\nLoading pages from %s' % self.name)
-		sourceText = tomecount.getSourceText(self.sourceAddress)
+		sourceText = devtome.getSourceText(self.sourceAddress)
 		isLink = False
 		isPost = False
 		isSignature = False
@@ -201,7 +198,9 @@ class Publisher:
 					return
 				self.subdomainPayout = 1
 			return
-		linkText = almoner.getInternetText(originalLink)
+		linkText = '<a href="http://www.devtome.com/doku.php?id=earn_devcoins_by_writing"><img width="728" height="90"></a>'
+		if lineStrippedLower != 'bitcoinaddict.com':
+			linkText = almoner.getInternetText(originalLink)
 		if 'devtome.com' not in linkText:
 			return
 		self.domainPayout += 1
@@ -216,8 +215,21 @@ class Publisher:
 			linkString = linkText[beginIndex : endIndex]
 			if '<img' in linkString:
 #			if '<img' in linkString and '728' in linkString and '90' in linkString:
-				self.payoutFifth += 1
-				print('Banner payout: 3, Address: %s' % lineStrippedLower)
+				payoutFifthIncrease = 1
+				alexaLink = 'http://www.alexa.com/siteinfo/%s' % lineStrippedLower
+				alexaText = almoner.getInternetText(alexaLink)
+				isRankedNumberIndex = alexaText.find('is ranked number')
+				if isRankedNumberIndex > 0:
+					alexaText = alexaText[isRankedNumberIndex + len('is ranked number') + 1:]
+					inIndex = alexaText.find('in')
+					if inIndex > 0:
+						alexaText = alexaText[: inIndex].strip().replace(',', '')
+						rank = int(alexaText)
+						if rank > 0:
+							dollarsPerMonth = 120000000 / rank
+							payoutFifthIncrease = max(dollarsPerMonth / 100 - 2, 1) #roundedUp(240 / 5 * 2)
+				self.payoutFifth += payoutFifthIncrease
+				print('Banner payout: %s, Address: %s' % (payoutFifthIncrease + 2, lineStrippedLower))
 				return
 			beginIndex = linkText.find('devtome.com', endIndex)
 		print(printString)
