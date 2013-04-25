@@ -131,18 +131,24 @@ def getSourceText(address):
 	text = almoner.getInternetText(address)
 	textAreaTagIndex = text.find('<textarea')
 	if textAreaTagIndex == -1:
+		print('')
 		print('Warning, no textarea tag found for:')
 		print(address)
+		print('')
 		return ''
 	tagEndIndex = text.find('>', textAreaTagIndex)
 	if tagEndIndex == -1:
+		print('')
 		print('Warning, no tag end found for:')
 		print(address)
+		print('')
 		return ''
 	textAreaEndTagIndex = text.find('</textarea>', tagEndIndex)
 	if textAreaEndTagIndex == -1:
+		print('')
 		print('Warning, no textarea end tag found for:')
 		print(address)
+		print('')
 		return ''
 	return text[tagEndIndex + 1 : textAreaEndTagIndex].lstrip()
 
