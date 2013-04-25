@@ -77,29 +77,20 @@ def carryCoinAddresses(denominatorSequences):
 
 def getAccountLines(arguments, suffixNumberString):
 	'Get the lines according to the arguments.'
-	linkFileName = almoner.getParameter(arguments, 'account_link.csv', 'inputlink')
+	linkFileName = almoner.getParameter(arguments, 'account_location.csv', 'inputlocation')
 	linkLines = almoner.getTextLines(almoner.getLocationText(linkFileName))[1 :]
-	accountLines = []
+	accountLines = ['']
 	for linkLine in linkLines:
 		linkLineSplit = linkLine.split(',')
 		name = linkLineSplit[0]
 		location = linkLineSplit[1]
-		if len(accountLines) > 0:
-			accountLines.append('\n')
-#		accountLines.append(name)
+		accountLines.append(name)
 		if '_???' in location:
 			location = location.replace('_???', '_' + suffixNumberString)
 			accountLines += almoner.getTextLines(almoner.getLocationText(location))
 		else:
-			almoner.getAddressLines(location)
-#	bitcoinFileName = almoner.getParameter(arguments, 'bitcoinshare.html', 'inputbitcoin')
-#	bitcoinLines = almoner.getAddressLines(bitcoinFileName)
-#	bountyLines = almoner.getTextLines(almoner.getLocationText(fileName))
-#	devcoinFileName = almoner.getParameter(arguments, 'devcoinshare.html', 'inputdevcoin')
-#	devcoinLines = almoner.getAddressLines(devcoinFileName)
-#	accountLines = bountyLines + bitcoinLines + devcoinLines
-#	print('Number of bitcoin lines: %s' % len(bitcoinLines))
-#	print('Number of devcoin lines: %s' % len(devcoinLines))
+			accountLines += almoner.getNameAddressLines(location)
+		accountLines.append('')
 	print('')
 	return accountLines
 
@@ -249,7 +240,7 @@ def writeOutput(arguments):
 	accountText = getPluribusunumText(peerText, accountLines)
 	if almoner.sendOutputTo(outputAccountTo, accountText):
 		print('The account file has been written to:\n%s\n' % outputAccountTo)
-	outputReceiverTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'receiver.csv', 'outputreceiver'), str(suffixNumber))
+	outputReceiverTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'receiver.csv', 'outputreceiver'), suffixNumberString)
 	outputSummaryTo = almoner.getParameter(arguments, 'receiver_summary.txt', 'outputsummary')
 	denominatorSequences = getDenominatorSequencesByAccountLines(accountLines)
 	originalReceiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
@@ -273,13 +264,12 @@ class AddressFraction:
 		self.coinAddress = ''
 		self.fractions = []
 		words = line.split(',')
-		if len(words) < 1:
+		if len(words) < 2:
 			return
-		self.coinAddress = words[0]
+		self.coinAddress = words[1]
 		if len(words) < 3:
 			self.fractions.append(Fraction())
 			return
-		self.coinAddress = words[1]
 		for word in words[2 :]:
 			lastDashIndex = word.rfind('-')
 			if lastDashIndex != -1:
