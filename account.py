@@ -75,16 +75,31 @@ def carryCoinAddresses(denominatorSequences):
 		for belowCoinAddressKey in belowCoinAddressQuantityDictionary:
 			denominatorSequenceBelow.coinAddresses += [belowCoinAddressKey] * belowCoinAddressQuantityDictionary[belowCoinAddressKey]
 
-def getAccountLines(arguments, fileName):
+def getAccountLines(arguments, suffixNumberString):
 	'Get the lines according to the arguments.'
-	bitcoinFileName = almoner.getParameter(arguments, 'bitcoinshare.html', 'inputbitcoin')
-	bitcoinLines = almoner.getAddressLines(bitcoinFileName)
-	bountyLines = almoner.getTextLines(almoner.getLocationText(fileName))
-	devcoinFileName = almoner.getParameter(arguments, 'devcoinshare.html', 'inputdevcoin')
-	devcoinLines = almoner.getAddressLines(devcoinFileName)
-	accountLines = bountyLines + bitcoinLines + devcoinLines
-	print('Number of bitcoin lines: %s' % len(bitcoinLines))
-	print('Number of devcoin lines: %s' % len(devcoinLines))
+	linkFileName = almoner.getParameter(arguments, 'account_link.csv', 'inputlink')
+	linkLines = almoner.getTextLines(almoner.getLocationText(linkFileName))[1 :]
+	accountLines = []
+	for linkLine in linkLines:
+		linkLineSplit = linkLine.split(',')
+		name = linkLineSplit[0]
+		location = linkLineSplit[1]
+		if len(accountLines) > 0:
+			accountLines.append('\n')
+#		accountLines.append(name)
+		if '_???' in location:
+			location = location.replace('_???', '_' + suffixNumberString)
+			accountLines += almoner.getTextLines(almoner.getLocationText(location))
+		else:
+			almoner.getAddressLines(location)
+#	bitcoinFileName = almoner.getParameter(arguments, 'bitcoinshare.html', 'inputbitcoin')
+#	bitcoinLines = almoner.getAddressLines(bitcoinFileName)
+#	bountyLines = almoner.getTextLines(almoner.getLocationText(fileName))
+#	devcoinFileName = almoner.getParameter(arguments, 'devcoinshare.html', 'inputdevcoin')
+#	devcoinLines = almoner.getAddressLines(devcoinFileName)
+#	accountLines = bountyLines + bitcoinLines + devcoinLines
+#	print('Number of bitcoin lines: %s' % len(bitcoinLines))
+#	print('Number of devcoin lines: %s' % len(devcoinLines))
 	print('')
 	return accountLines
 
@@ -225,10 +240,10 @@ def writeOutput(arguments):
 	if '-h' in arguments or '-help' in arguments:
 		print(__doc__)
 		return
-	fileName = almoner.getParameter(arguments, 'bounty_6.csv', 'input')
-	suffixNumber = getSuffixNumber(fileName)
-	outputAccountTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'account.csv', 'output'), str(suffixNumber))
-	accountLines = getAccountLines(arguments, fileName)
+	suffixNumberString = almoner.getParameter(arguments, '23', 'input')
+	suffixNumber = int(suffixNumberString)
+	outputAccountTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'account.csv', 'output'), suffixNumberString)
+	accountLines = getAccountLines(arguments, suffixNumberString)
 	peerLines = getPeerLines(arguments)
 	peerText = '_beginpeers\n%s_endpeers\n' % almoner.getTextByLines(peerLines)
 	accountText = getPluribusunumText(peerText, accountLines)
