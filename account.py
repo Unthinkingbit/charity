@@ -231,7 +231,7 @@ def writeOutput(arguments):
 	if '-h' in arguments or '-help' in arguments:
 		print(__doc__)
 		return
-	suffixNumberString = almoner.getParameter(arguments, '23', 'round')
+	suffixNumberString = almoner.getParameter(arguments, '24', 'round')
 	suffixNumber = int(suffixNumberString)
 	outputAccountTo = almoner.getSuffixedFileName(almoner.getParameter(arguments, 'account.csv', 'account'), suffixNumberString)
 	accountLines = getAccountLines(arguments, suffixNumberString)
