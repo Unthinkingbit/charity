@@ -85,8 +85,8 @@ def getAccountLines(arguments, suffixNumberString):
 		name = linkLineSplit[0]
 		location = linkLineSplit[1]
 		accountLines.append(name)
-		if '_???' in location:
-			location = location.replace('_???', '_' + suffixNumberString)
+		if '_xx' in location:
+			location = location.replace('_xx', '_' + suffixNumberString)
 			accountLines += almoner.getTextLines(almoner.getLocationText(location))
 		else:
 			accountLines += almoner.getNameAddressLines(location)
