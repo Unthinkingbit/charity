@@ -340,16 +340,37 @@ To view your own disbursements, the easiest way is to download the [https://gith
 If you can not install that on your system, then you can look for disbursements in a [[devcoin block explorer]]. For example, to find the payouts to the devcoin address 17vec4jQGCzMEsTnivizHPaowE715tu2CB in the [https://github.com/Unthinkingbit/charity/blob/master/receiver_16.csv round 16 receiver file]. Counting from zero in the receiver file, the address is at line 22. Round 16 starts on block 16 * 4,000 = 64,000. You'll see the generation share in block 64,022 in a block explorer. In [http://glari.ch:2750/chain/Devcoin Icoin's block explorer], you can go the [http://glari.ch:2750/block/33469e22f29222938b307d3cc416aa31f37b86efa57fa1d8215bb81f0b337e1b 64,022 block], and see the payment for 45,000 devcoins in the generation row of that block. Since there are 47 receiver lines in round 16, another payment to that address will be in [http://glari.ch:2750/block/495ae19916f36ab9ea1d5addc8b544de1c545ee26e2d2c1fb114c5a333a66d20 block 64,069]. Other payments to that address will be in block 64,116, block 64,163, etc.. Round 16 lasts until block 67,999.
 
 ====Generating the Files====
-The file are generated from the [https://raw.github.com/Unthinkingbit/charity/master/bitcoinshare.html list of bitcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/devcoinshare.html list of devcoin developers], the [https://raw.github.com/Unthinkingbit/charity/master/peer.csv receiver site prefixes], and the bounty file for that round; for example, the [https://raw.github.com/Unthinkingbit/charity/master/bounty_7.csv round seven bounty file].
+To generate a file, download the [https://github.com/Unthinkingbit/charity github charity repository]. Then generate the devtome earnings file, then the marketing earnings file (which requires devtome earnings), then the receiver file (which requires devtome earnings and marketing earnings).
 
-Then download the python scripts [https://raw.github.com/Unthinkingbit/charity/master/account.py account] and [https://raw.github.com/Unthinkingbit/charity/master/almoner.py almoner] into the same folder as the files.  Then in that folder open a terminal and type:
+To generate files for round 23, starting with the devtome earnings, in that folder open a terminal and type:
 <code>
-python account.py -input bounty_7.csv
+python devtome.py -round 23
 </code>
 
-This will create the receiver_7.csv file and the account_7.csv file.  The receiver file is then uploaded by all the file administrators to their respective sites.  The account_7.csv file is to help people keep track of where the coins are going, it is not necessary for devcoin to function.
+Generating the marketing file requires the devtome earnings file, the command is:
+<code>
+python marketing.py -round 23
+</code>
 
-A script to download the bounty, peer and share files and make the receiver and account files follows below:
+Generating the receiver file requires the locations in the account_location.csv file, which currently has:
+<code>
+Bitcoin Share List,bitcoinshare.html
+Bounty,bounty_xx.csv
+Devcoin Share List,devcoinshare.html
+Devtome Earnings,devtome_earnings_xx.csv
+Marketing Earnings,marketing_earnings_xx.csv
+</code>
+
+For example, in round 23 those files are the [https://raw.github.com/Unthinkingbit/charity/master/bitcoinshare.html list of bitcoin developers], [https://raw.github.com/Unthinkingbit/charity/master/bounty_23.csv round 23 bounty file], [https://raw.github.com/Unthinkingbit/charity/master/devcoinshare.html list of non bitcoin developers], [https://raw.github.com/Unthinkingbit/charity/master/devtome_earnings_23.csv round 23 devtome earnings file], and [https://raw.github.com/Unthinkingbit/charity/master/marketing_earnings_23.csv round 23 marketing earnings file].
+
+Once all those files are in the folder, the command to finally make the receiver file is:
+<code>
+python account.py -round 23
+</code>
+
+This will create the receiver_23.csv file and the account_23.csv file.  The receiver file is then uploaded by all the file administrators to their respective sites.  The account_23.csv file is to help people keep track of where the coins are going, it is not necessary for devcoin to function.
+
+A script to download the bounty, earnings, peer and share files and make the receiver and account files follows below:
 <code>
 #!/bin/bash
 
@@ -360,10 +381,10 @@ if [ "${round}x" == "x" ]; then
   exit 1
 fi
 
-# It's time to generate the round 7 receiver file. An example procedure is on the wiki at:
+# It's time to generate the round 23 receiver file. An example procedure is on the wiki at:
 # http://www.devtome.com/doku.php?id=devcoin#generating_the_files
 
-# and the procedure for round 7 follows below.
+# and the procedure for round 23 follows below.
 # First please download the latest version of:
 
 rm -f bitcoinshare.html
@@ -374,13 +395,19 @@ rm -f peer.csv
 wget https://raw.github.com/Unthinkingbit/charity/master/peer.csv
 rm -f bounty_${round}.csv
 wget https://raw.github.com/Unthinkingbit/charity/master/bounty_${round}.csv
+rm -f devtome_earnings_${round}.csv
+wget https://raw.github.com/Unthinkingbit/charity/master/devtome_earnings_${round}.csv
+rm -f marketing_earnings_${round}.csv
+wget https://raw.github.com/Unthinkingbit/charity/master/marketing_earnings_${round}.csv
 rm -f account.py
 wget https://raw.github.com/Unthinkingbit/charity/master/account.py
+rm -f account_location.csv
+wget https://raw.github.com/Unthinkingbit/charity/master/account_location.csv
 rm -f almoner.py
 wget https://raw.github.com/Unthinkingbit/charity/master/almoner.py
 
 # Then in that folder open a terminal and type:
-python account.py -input bounty_${round}.csv
+python account.py -round round
 </code>
 
 ===Renaming Bitcoin to Devcoin===
