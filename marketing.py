@@ -70,6 +70,24 @@ def getEarningsText(publishers):
 		publisher.write(cString)
 	return cString.getvalue()
 
+def getExtraPayoutFifth(lineStrippedLower):
+	'Get extra payout fifth according to alexa ranking.'
+	alexaLink = 'http://www.alexa.com/siteinfo/%s' % lineStrippedLower
+	alexaText = almoner.getInternetText(alexaLink)
+	isRankedNumberIndex = alexaText.find('is ranked number')
+	if isRankedNumberIndex < 0:
+		return 1
+	alexaText = alexaText[isRankedNumberIndex + len('is ranked number') + 1:]
+	inIndex = alexaText.find('in')
+	if inIndex < 0:
+		return 1
+	alexaText = alexaText[: inIndex].strip().replace(',', '')
+	rank = int(alexaText)
+	if rank < 0:
+		return 1
+	dollarsPerMonth = 120000000 / rank
+	return max(dollarsPerMonth / 100 - 2, 1) # roundedUp(240 / 5 * 2)
+
 def getPublishers(lines, workerAddressSet):
 	'Get the publishers.'
 	publishers = []
@@ -215,21 +233,9 @@ class Publisher:
 			linkString = linkText[beginIndex : endIndex]
 			if '<img' in linkString:
 #			if '<img' in linkString and '728' in linkString and '90' in linkString:
-				payoutFifthIncrease = 1
-				alexaLink = 'http://www.alexa.com/siteinfo/%s' % lineStrippedLower
-				alexaText = almoner.getInternetText(alexaLink)
-				isRankedNumberIndex = alexaText.find('is ranked number')
-				if isRankedNumberIndex > 0:
-					alexaText = alexaText[isRankedNumberIndex + len('is ranked number') + 1:]
-					inIndex = alexaText.find('in')
-					if inIndex > 0:
-						alexaText = alexaText[: inIndex].strip().replace(',', '')
-						rank = int(alexaText)
-						if rank > 0:
-							dollarsPerMonth = 120000000 / rank
-							payoutFifthIncrease = max(dollarsPerMonth / 100 - 2, 1) #roundedUp(240 / 5 * 2)
-				self.payoutFifth += payoutFifthIncrease
-				print('Banner payout: %s, Address: %s' % (payoutFifthIncrease + 2, lineStrippedLower))
+				extraPayoutFifth = getExtraPayoutFifth(lineStrippedLower)
+				self.payoutFifth += extraPayoutFifth
+				print('Banner payout: %s, Address: %s' % (extraPayoutFifth + 2, lineStrippedLower))
 				return
 			beginIndex = linkText.find('devtome.com', endIndex)
 		print(printString)
