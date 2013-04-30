@@ -260,7 +260,6 @@ class Author:
 		name = self.parameterDictionary['Name']
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % name
 		print('Loading articles from %s' % name)
-		print('backupFolder: %s' % backupFolder)
 		sourceText = getSourceText(self.sourceAddress)
 		almoner.writeFileText(os.path.join(backupFolder, 'wiki:user:' + name), sourceText)
 		isCollated = False
