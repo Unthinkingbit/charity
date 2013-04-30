@@ -34,6 +34,8 @@ http://www.python.org/download/
 
 import cStringIO
 import math
+import os
+import shutil
 import sys
 import urllib
 
@@ -281,6 +283,20 @@ def writeTitleValue(cString, title, value):
 	'Write the title and value line, if the value is not empty.'
 	if value != '':
 		cString.write('%s: %s\n' % (title, value))
+
+def writeZipFileByFolder(backupFolder):
+	'Write zip file from a folder and remove that folder.'
+	zipNameExtension = backupFolder + '.zip'
+	if zipNameExtension in os.listdir(os.getcwd()):
+		os.remove(zipNameExtension)
+	shellCommand = 'zip -r %s %s' % (zipNameExtension, backupFolder)
+	if os.system(shellCommand) != 0:
+		print('Failed to execute the following command in writeZipFileByFolder in almoner.')
+		print(shellCommand)
+	else:
+		print('The zip file has been written to:\n%s\n' % zipNameExtension)
+	if os.path.isdir(backupFolder):
+		shutil.rmtree(backupFolder)
 
 
 class Contributor:

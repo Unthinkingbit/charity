@@ -23,11 +23,11 @@ http://www.python.org/download/
 """
 
 import almoner
+import devtome
 import os
 import shutil
 import sys
 import time
-import tomecount
 
 
 __license__ = 'MIT'
@@ -73,25 +73,15 @@ def writeZipFile(wikiAddress):
 				if letter != previousLetter:
 					previousLetter = letter
 					print('Copying articles starting with %s.' % letter.upper())
-			fileName = os.path.join(wikiPath, title)
-			sourceText = tomecount.getSourceText(wikiAddress + '/doku.php?id=%s&do=edit' % title)
+			sourceText = devtome.getSourceText(wikiAddress + '/doku.php?id=%s&do=edit' % title)
 			time.sleep(2)
+			fileName = os.path.join(wikiPath, title)
 			almoner.writeFileText(fileName, sourceText)
 			numberOfFiles += 1
 		if line == '<ul class="idx">':
 			isArticle = True
 	print('There were %s files in the wiki.\n' % numberOfFiles)
-	zipNameExtension = wikiPath + '.zip'
-	if zipNameExtension in os.listdir(os.getcwd()):
-		os.remove(zipNameExtension)
-	shellCommand = 'zip -r %s %s' % (zipNameExtension, wikiPath)
-	if os.system(shellCommand) != 0:
-		print('Failed to execute the following command in removeZip in wikicopy.')
-		print(shellCommand)
-	else:
-		print('The wiki zip file has been written to:\n%s\n' % zipNameExtension)
-	if os.path.isdir(wikiPath):
-		shutil.rmtree(wikiPath)
+	almoner.writeZipFileByFolder(wikiPath)
 
 
 def main():

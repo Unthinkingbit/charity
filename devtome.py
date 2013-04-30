@@ -52,6 +52,8 @@ from datetime import date
 import almoner
 import cStringIO
 import math
+import os
+import shutil
 import sys
 import time
 
@@ -73,14 +75,18 @@ def addJoinedTitles(cString, words):
 	words.append('Payout')
 	cString.write('%s\n' % ','.join(words))
 
-def getAuthors(lines, titles):
+def getAuthors(backupFolder, lines, titles):
 	'Get the authors.'
 	authors = []
+	if os.path.isdir(backupFolder):
+		shutil.rmtree(backupFolder)
+	os.makedirs(backupFolder)
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 0:
 			if len(words[0]) > 0:
-				authors.append(Author(titles, words))
+				authors.append(Author(backupFolder, titles, words))
+	almoner.writeZipFileByFolder(backupFolder)
 	return authors
 
 def getEarningsText(authors):
@@ -110,8 +116,8 @@ def getImageCount(linkText):
 				imageCount += 1
 	return imageCount
 
-def getLinkText(line):
-	'Get the text of the page linked to in the line.'
+def getLinkName(line):
+	'Get the name of the article in the line.'
 	linkStartIndex = line.find('[[')
 	if linkStartIndex == -1:
 		return ''
@@ -123,6 +129,13 @@ def getLinkText(line):
 	linkDividerIndex = linkString.find('|')
 	if linkDividerIndex != -1:
 		linkString = linkString[: linkDividerIndex]
+	return linkString
+
+def getLinkText(line):
+	'Get the text of the page linked to in the line.'
+	linkString = getLinkName(line)
+	if linkString == '':
+		return ''
 	time.sleep(1)
 	return getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % linkString)
 
@@ -214,12 +227,14 @@ def writeOutput(arguments):
 		print(__doc__)
 		return
 	round = int(almoner.getParameter(arguments, '23', 'round'))
-	currentFileName = almoner.getParameter(arguments, 'devtome_%s.csv' % round, 'devtome')
-	previousFileName = almoner.getParameter(arguments, 'devtome_%s.csv' % (round - 1), 'previous')
+	rootFileName = almoner.getParameter(arguments, 'devtome', 'wiki')
+	currentFileName = almoner.getParameter(arguments, rootFileName + '_%s.csv' % round, 'current')
+	previousFileName = almoner.getParameter(arguments, rootFileName + '_%s.csv' % (round - 1), 'previous')
 	lines = almoner.getTextLines(almoner.getFileText(previousFileName))
 	titleLine = lines[0]
 	titles = titleLine.split(',')
-	authors = getAuthors(lines, titles)
+	backupFolder = rootFileName + '_backup'
+	authors = getAuthors(backupFolder, lines, titles)
 	totalTomecount = getTotalTomecount(authors)
 	tomecountText = getTomecountText(authors, totalTomecount)
 	earningsText = getEarningsText(authors)
@@ -234,7 +249,7 @@ def writeOutput(arguments):
 
 class Author:
 	'A class to handle an author.'
-	def __init__(self, titles, words):
+	def __init__(self, backupFolder, titles, words):
 		'Initialize.'
 		self.tomecount = Tomecount()
 		self.parameterDictionary = {}
@@ -245,7 +260,9 @@ class Author:
 		name = self.parameterDictionary['Name']
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % name
 		print('Loading articles from %s' % name)
+		print('backupFolder: %s' % backupFolder)
 		sourceText = getSourceText(self.sourceAddress)
+		almoner.writeFileText(os.path.join(backupFolder, 'wiki:user:' + name), sourceText)
 		isCollated = False
 		isOriginal = False
 		for line in almoner.getTextLines(sourceText):
@@ -264,6 +281,7 @@ class Author:
 				self.tomecount.collatedWordCount += wordCount
 				if wordCount > 0:
 					print('Collated article: %s, Word Count: %s' % (lineStrippedLower, wordCount))
+					almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)[1 :]), linkText)
 			if isOriginal:
 				linkText = getLinkText(lineStrippedLower)
 				self.tomecount.imageCount += getImageCount(linkText)
@@ -271,6 +289,7 @@ class Author:
 				self.tomecount.originalWordCount += wordCount
 				if wordCount > 0:
 					print('Original article: %s, Word Count: %s' % (lineStrippedLower, wordCount))
+					almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)[1 :]), linkText)
 		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
