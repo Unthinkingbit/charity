@@ -233,7 +233,7 @@ def writeOutput(arguments):
 	lines = almoner.getTextLines(almoner.getFileText(previousFileName))
 	titleLine = lines[0]
 	titles = titleLine.split(',')
-	backupFolder = rootFileName + '_backup'
+	backupFolder = rootFileName + '_articles'
 	authors = getAuthors(backupFolder, lines, titles)
 	totalTomecount = getTotalTomecount(authors)
 	tomecountText = getTomecountText(authors, totalTomecount)
