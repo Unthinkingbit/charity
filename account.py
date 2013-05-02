@@ -177,7 +177,15 @@ def getReceiverLinesByDenominatorSequences(denominatorSequences):
 	return receiverLines
 
 def getShuffledLines(receiverLines, suffixNumber):
-	'Get the shuffled lines.'
+	"""
+	Because the number of lines is usually not perfectly divisible into 4,000, the lines of each developer are spread out, so that in each round
+	the amount that the developer receives is close to the average. This is done by inserting them at an index within the shuffledLines	list
+	which is increased by the golden ratio, then modulo is used to keep it within the list bounds.
+
+	Also, the lines are cut at a different part of the list, so	that a developer whose name starts with A does not get more on average over
+	multiple rounds than a developer whose name starts with Z. This is done by cutting the list at an index which is the golden ratio times the
+	round number, then modulo is used to keep it within the list bounds.
+	"""
 	goldenRatio = math.sqrt(1.25) + 0.5
 	shuffledLines = []
 	for receiverLine in receiverLines:
