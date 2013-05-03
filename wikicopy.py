@@ -33,55 +33,64 @@ import time
 __license__ = 'MIT'
 
 
+def getTitles(wikiAddress):
+	'Write zip file.'
+	indexDepth = 0
+	popularPageAddress = wikiAddress + '/doku.php?id=start&idx=wiki%3Auser'
+	lines = almoner.getTextLines(almoner.getInternetText(popularPageAddress))
+	prefix = '?id='
+	prefixLength = len(prefix)
+	titles = []
+	for line in lines:
+		if line.startswith('</ul>'):
+			if indexDepth > 0:
+				indexDepth -= 1
+		if indexDepth > 0 and 'class="wikilink1"' in line:
+			prefixIndex = line.find(prefix) + prefixLength
+			title = line[prefixIndex :]
+			quoteIndex = title.find('"')
+			if len(title) > 0:
+				titles.append(title[: quoteIndex])
+		if line == '<ul class="idx">':
+			indexDepth += 1
+	return titles
+
 def writeOutput(arguments):
 	'Write output.'
 	if '-h' in arguments or '-help' in arguments:
 		print(__doc__)
 		return
-	writeZipFile(almoner.getParameter(arguments, 'http://devtome.com', 'input'))
+	wikiAddress = almoner.getParameter(arguments, 'http://devtome.com', 'wiki')
+	fileNameRoot = wikiAddress
+	if 'http://' in fileNameRoot:
+		fileNameRoot = fileNameRoot[len('http://') :]
+	if '.' in fileNameRoot:
+		fileNameRoot = fileNameRoot[: fileNameRoot.find('.')]
+	fileNameRoot = almoner.getParameter(arguments, fileNameRoot, 'output')
+	writeZipFile(fileNameRoot, wikiAddress)
 
-def writeZipFile(wikiAddress):
+def writeZipFile(fileNameRoot, wikiAddress):
 	'Write zip file.'
-	isArticle = False
 	print('Copying:')
 	print(wikiAddress)
 	print('')
-	popularPageAddress = wikiAddress + '/doku.php?id=start&do=index/'
-	lines = almoner.getTextLines(almoner.getInternetText(popularPageAddress))
-	numberOfFiles = 0
-	wikiPath = wikiAddress
-	if 'http://' in wikiPath:
-		wikiPath = wikiPath[len('http://') :]
-	if '.' in wikiPath:
-		wikiPath = wikiPath[: wikiPath.find('.')]
-	if os.path.isdir(wikiPath):
-		shutil.rmtree(wikiPath)
-	os.makedirs(wikiPath)
-	prefix = '?id='
-	prefixLength = len(prefix)
+	if os.path.isdir(fileNameRoot):
+		shutil.rmtree(fileNameRoot)
+	os.makedirs(fileNameRoot)
 	previousLetter = '0'
-	for line in lines:
-		if line.startswith('</ul>'):
-			isArticle = False
-		if isArticle and '&amp;' not in line:
-			prefixIndex = line.find(prefix) + prefixLength
-			title = line[prefixIndex :]
-			quoteIndex = title.find('"')
-			title = title[: quoteIndex]
-			if len(title) > 0:
-				letter = title[0]
-				if letter != previousLetter:
-					previousLetter = letter
-					print('Copying articles starting with %s.' % letter.upper())
-			sourceText = devtome.getSourceText(wikiAddress + '/doku.php?id=%s&do=edit' % title)
-			time.sleep(2)
-			fileName = os.path.join(wikiPath, title)
-			almoner.writeFileText(fileName, sourceText)
-			numberOfFiles += 1
-		if line == '<ul class="idx">':
-			isArticle = True
-	print('There were %s files in the wiki.\n' % numberOfFiles)
-	almoner.writeZipFileByFolder(wikiPath)
+	titles = getTitles(wikiAddress)
+#	titles = titles[:2]
+	for title in titles:
+		letter = title[0]
+		if letter != previousLetter:
+			previousLetter = letter
+			print('Copying articles starting with %s.' % letter.upper())
+		sourceText = devtome.getSourceText(wikiAddress + '/doku.php?id=%s&do=edit' % title)
+		time.sleep(2)
+		fileName = os.path.join(fileNameRoot, title)
+		almoner.writeFileText(fileName, sourceText)
+	print('There were %s files in the wiki.\n' % len(titles))
+	almoner.writeZipFileByFolder(fileNameRoot)
 
 
 def main():
