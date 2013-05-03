@@ -46,6 +46,9 @@ import sys
 __license__ = 'MIT'
 
 
+globalGoldenRatio = math.sqrt(1.25) + 0.5
+
+
 def addReceiverLines(coinAddresses, receiverLines):
 	'Get the receiver format line.'
 	if len(coinAddresses) == 0:
@@ -101,17 +104,33 @@ def getAddressFractions(lines):
 		addressFractions.append(AddressFraction(line))
 	return addressFractions
 
+def getCutLines(cutLines, suffixNumber):
+	"""
+	The lines are cut at a different part of the list, so that a developer whose key starts with 1A does not get more on average over multiple
+	rounds than a developer whose key starts with 1Z. This is done by cutting the list at an index which is the golden ratio times the round
+	number, then modulo is used to keep it within the list bounds. It also reverses the list at every even suffix number, in case cutting is
+	not enough to average pay over multiple rounds.
+	"""
+	rotation = (float(suffixNumber) * globalGoldenRatio) % 1.0
+	rotationIndex = int(math.floor(rotation * float(len(cutLines))))
+	if suffixNumber % 2 == 0:
+		cutLines.reverse()
+	cutLines = cutLines[rotationIndex :] + cutLines[: rotationIndex]
+	return cutLines
+
 def getDenominatorSequences(addressFractions):
 	'Get the DenominatorSequences from the addressFractions.'
-	denominatorSequences = []
+	denominators = []
 	for addressFraction in addressFractions:
 		for fraction in addressFraction.fractions:
-			if fraction.denominator not in denominatorSequences:
-				denominatorSequences.append(fraction.denominator)
-	denominatorSequences.sort()
-	for denominatorSequenceIndex, denominatorSequence in enumerate(denominatorSequences):
-		denominatorSequence = DenominatorSequence(addressFractions, denominatorSequence)
-		denominatorSequences[denominatorSequenceIndex] = denominatorSequence
+			if fraction.denominator not in denominators:
+				denominators.append(fraction.denominator)
+	denominators.sort()
+	denominatorSequences = []
+	for denominator in denominators:
+		denominatorSequence = DenominatorSequence(addressFractions, denominator)
+		denominatorSequence.coinAddresses = getShuffledElements(denominatorSequence.coinAddresses)
+		denominatorSequences.append(denominatorSequence)
 	return denominatorSequences
 
 def getDenominatorSequencesByAccountLines(accountLines):
@@ -127,6 +146,25 @@ def getGroupedReceiverLines(denominatorMultiplier, denominatorSequences):
 	for denominatorSequence in denominatorSequences:
 		denominatorSequence.denominator *= denominatorMultiplier
 	return getReceiverLinesByDenominatorSequences(denominatorSequences)
+
+def getPackedReceiverLines(denominatorSequences, originalReceiverLines, suffixNumber):
+	'Get the lines according to the arguments.'
+	maximumReceivers = 4000
+	originalReceiverLineLength = len(originalReceiverLines)
+	denominatorMultiplier = 1
+	if len(originalReceiverLines) > maximumReceivers:
+		denominatorMultiplier = (len(originalReceiverLines) + maximumReceivers) / (maximumReceivers + 1 - len(denominatorSequences))
+		originalReceiverLines = getGroupedReceiverLines(denominatorMultiplier, denominatorSequences)
+		if len(originalReceiverLines) > maximumReceivers:
+			print('Warning, denominatorMultiplier math is wrong, the receiver lines will be grouped by another factor of two.')
+			originalReceiverLines = getGroupedReceiverLines(2, denominatorSequences)
+	originalDevcoinBlocksPerShareFloat = 4000.0 / originalReceiverLineLength
+	averageDevcoinsPerShare = int(round(originalDevcoinBlocksPerShareFloat * 45000.0))
+	print('Average devcoins per share: %s' % averageDevcoinsPerShare)
+	print('Number of original receiver lines lines: %s' % originalReceiverLineLength)
+	print('Number of receiver lines lines: %s' % len(originalReceiverLines))
+	print('')
+	return getCutLines(originalReceiverLines, suffixNumber)
 
 def getPeerLines(arguments):
 	'Get the inner peer text according to the arguments.'
@@ -150,25 +188,6 @@ def getQuantityDictionary(elements):
 			quantityDictionary[element] = 1
 	return quantityDictionary
 
-def getReceiverLines(denominatorSequences, originalReceiverLines, suffixNumber):
-	'Get the lines according to the arguments.'
-	maximumReceivers = 4000
-	originalReceiverLineLength = len(originalReceiverLines)
-	denominatorMultiplier = 1
-	if len(originalReceiverLines) > maximumReceivers:
-		denominatorMultiplier = (len(originalReceiverLines) + maximumReceivers) / (maximumReceivers + 1 - len(denominatorSequences))
-		originalReceiverLines = getGroupedReceiverLines(denominatorMultiplier, denominatorSequences)
-		if len(originalReceiverLines) > maximumReceivers:
-			print('Warning, denominatorMultiplier math is wrong, the receiver lines will be grouped by another factor of two.')
-			originalReceiverLines = getGroupedReceiverLines(2, denominatorSequences)
-	originalDevcoinBlocksPerShareFloat = 4000.0 / originalReceiverLineLength
-	averageDevcoinsPerShare = int(round(originalDevcoinBlocksPerShareFloat * 45000.0))
-	print('Average devcoins per share: %s' % averageDevcoinsPerShare)
-	print('Number of original receiver lines lines: %s' % originalReceiverLineLength)
-	print('Number of receiver lines lines: %s' % len(originalReceiverLines))
-	print('')
-	return getShuffledLines(originalReceiverLines, suffixNumber)
-
 def getReceiverLinesByDenominatorSequences(denominatorSequences):
 	'Concatenate the receiver lines from all the denominator sequences.'
 	receiverLines = []
@@ -176,28 +195,18 @@ def getReceiverLinesByDenominatorSequences(denominatorSequences):
 		receiverLines += denominatorSequence.getReceiverLines()
 	return receiverLines
 
-def getShuffledLines(receiverLines, suffixNumber):
+def getShuffledElements(elements):
 	"""
-	Because the number of lines is usually not perfectly divisible into 4,000, the lines of each developer are spread out, so that in each round
-	the amount that the developer receives is close to the average. This is done by inserting them at an index within the shuffledLines	list
-	which is increased by the golden ratio, then modulo is used to keep it within the list bounds.
-
-	Also, the lines are cut at a different part of the list, so	that a developer whose name starts with A does not get more on average over
-	multiple rounds than a developer whose name starts with Z. This is done by cutting the list at an index which is the golden ratio times the
-	round number, then modulo is used to keep it within the list bounds.
+	Because the number of lines is usually not perfectly divisible into 4,000, the addresses of each developer are spread out, so that in each
+	round the amount that the developer receives is close to the average. This is done by inserting them at an index within the shuffledLines
+	list which is increased by the golden ratio, then modulo is used to keep it within the list bounds.
 	"""
-	goldenRatio = math.sqrt(1.25) + 0.5
-	shuffledLines = []
-	for receiverLine in receiverLines:
-		shuffledLengthFloat = float(len(shuffledLines))
-		index = int(shuffledLengthFloat * ((shuffledLengthFloat * goldenRatio) % 1.0))
-		shuffledLines.insert(min(index, len(shuffledLines) - 1), receiverLine)
-	rotation = (float(suffixNumber) * goldenRatio) % 1.0
-	rotationIndex = int(math.floor(rotation * float(len(shuffledLines))))
-	if suffixNumber % 2 == 0:
-		shuffledLines.reverse()
-	shuffledLines = shuffledLines[rotationIndex :] + shuffledLines[: rotationIndex]
-	return shuffledLines
+	shuffledElements = []
+	for element in elements:
+		shuffledLengthFloat = float(len(shuffledElements))
+		index = int(shuffledLengthFloat * ((shuffledLengthFloat * globalGoldenRatio) % 1.0))
+		shuffledElements.insert(min(index, len(shuffledElements) - 1), element)
+	return shuffledElements
 
 def getSuffixNumber(fileName):
 	'Determine the suffix number, returning 0 if there is not one.'
@@ -252,7 +261,7 @@ def writeOutput(arguments):
 	outputSummaryTo = almoner.getParameter(arguments, 'receiver_summary.txt', 'summary')
 	denominatorSequences = getDenominatorSequencesByAccountLines(accountLines)
 	originalReceiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
-	receiverLines = getReceiverLines(denominatorSequences, originalReceiverLines, suffixNumber)
+	receiverLines = getPackedReceiverLines(denominatorSequences, originalReceiverLines, suffixNumber)
 	receiverText = getPluribusunumText(peerText, receiverLines)
 	if almoner.sendOutputTo(outputReceiverTo, receiverText):
 		print('The receiver file has been written to:\n%s\n' % outputReceiverTo)
