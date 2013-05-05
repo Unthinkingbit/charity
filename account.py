@@ -62,21 +62,38 @@ def addReceiverLines(coinAddresses, receiverLines):
 	receiverLines.append(','.join(addressQuantityDictionary.keys()))
 
 def carryCoinAddresses(denominatorSequences):
-	'Carry coin addresses from high denominator sequences to lower denominator sequences.'
+	"""
+	Sometimes there number of identical coin addresses in the denominator sequence is as high as the denominator. To condense the receiver file,
+	if the number of copies of the coin address is as high as the denominator, coin addresses are carried to the sequence with the smaller
+	denominator.
+	
+	To do this, the sequences to be carried into, which are sorted in ascending value of the denominator, are iterated downward from
+	the length minus two, to zero. The quantity of each coin address in the sequence with the big denominator is entered into a
+	dictionary. For	each coin address, the carry is calculated by dividing quantity of the coin address by the denominator ratio between the
+	sequence with the big denominator and the denominator of the sequence to be carried into. The carry is then added to the sequence to be
+	carried into, and the carry times the denominator ratio is subtracted from the sequence with the big denominator. For example, if the
+	sequence has six copies of a coin address, and the denominator is five, and the sequence to be carried into has a denominator of one, the
+	denominator ratio is five, and the carry integer is int(6 / 5) = 1. So one coin address is added to the list of coin addresses in the
+	sequence to be carried into, and 1 * 5 = 5 is subtracted from the quantity of the coin address in the sequence with the big	denominator.
+
+	After the quantities of each coin address are modified, the coin address lists in the sequence with the big denominator are generated from
+	the quantity dictionary.
+	"""
 	for denominatorSequenceIndex in xrange(len(denominatorSequences) - 2, -1, -1):
 		denominatorSequence = denominatorSequences[denominatorSequenceIndex]
-		denominatorSequenceBelow = denominatorSequences[denominatorSequenceIndex + 1]
-		denominatorRatio = denominatorSequenceBelow.denominator / denominatorSequence.denominator
-		belowCoinAddressQuantityDictionary = getQuantityDictionary(denominatorSequenceBelow.coinAddresses)
-		for belowCoinAddressKey in belowCoinAddressQuantityDictionary:
-			belowCoinAddressValue = belowCoinAddressQuantityDictionary[belowCoinAddressKey]
-			carry = belowCoinAddressValue / denominatorRatio
+		denominatorSequenceBigDenominator = denominatorSequences[denominatorSequenceIndex + 1]
+		denominatorRatio = denominatorSequenceBigDenominator.denominator / denominatorSequence.denominator
+		bigDenominatorAddressDictionary = getQuantityDictionary(denominatorSequenceBigDenominator.coinAddresses)
+		for bigDenominatorAddressKey in bigDenominatorAddressDictionary:
+			bigDenominatorAddressValue = bigDenominatorAddressDictionary[bigDenominatorAddressKey]
+			carry = bigDenominatorAddressValue / denominatorRatio
 			if carry > 0:
-				belowCoinAddressQuantityDictionary[belowCoinAddressKey] -= carry * denominatorRatio
-				denominatorSequence.coinAddresses += [belowCoinAddressKey] * carry
-		denominatorSequenceBelow.coinAddresses = []
-		for belowCoinAddressKey in belowCoinAddressQuantityDictionary:
-			denominatorSequenceBelow.coinAddresses += [belowCoinAddressKey] * belowCoinAddressQuantityDictionary[belowCoinAddressKey]
+				bigDenominatorAddressDictionary[bigDenominatorAddressKey] -= carry * denominatorRatio
+				denominatorSequence.coinAddresses += [bigDenominatorAddressKey] * carry
+		denominatorSequenceBigDenominator.coinAddresses = []
+		for bigDenominatorAddressKey in bigDenominatorAddressDictionary:
+			bigDenominatorAddressValue = bigDenominatorAddressDictionary[bigDenominatorAddressKey]
+			denominatorSequenceBigDenominator.coinAddresses += [bigDenominatorAddressKey] * bigDenominatorAddressValue
 
 def getAccountLines(arguments, suffixNumberString):
 	'Get the lines according to the arguments.'
