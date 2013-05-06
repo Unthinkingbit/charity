@@ -56,11 +56,14 @@ def writeFolder(folderName, peerRootAddress, round):
 	print('')
 	peerText = almoner.getLocationText(peerAddress)
 	peerTextUntilCoins = peerText[: peerText.find('_begincoins')]
+	unthinkingbitString = 'https://raw.github.com/Unthinkingbit/charity/master/receiver.csv'
+	fuzzyString = 'http://devcoinpool.btc-music.com/receiver/receiver.csv'
+	peerTextUntilCoins = peerTextUntilCoins.replace(unthinkingbitString, fuzzyString)
 	print('Peer text until coins:')
 	print(peerTextUntilCoins)
 	print('')
 	print('Writing widened files:')
-	for widenRound in xrange(round):
+	for widenRound in xrange(round + 1):
 		writeWidenedFile(folderName, peerRootAddress, peerTextUntilCoins, widenRound)
 	print('')
 
