@@ -80,7 +80,6 @@ def getExtraPayoutFifth(lineStrippedLower):
 	Because two fifths have already been added in addLinkPayout, two fifths are subtracted from the payout fifth, to a minimum of one, to
 	determine the extra payout fifths.
 	"""
-	'Get extra payout fifth according to alexa ranking.'
 	alexaLink = 'http://www.alexa.com/siteinfo/%s' % lineStrippedLower
 	alexaText = almoner.getInternetText(alexaLink)
 	isRankedNumberIndex = alexaText.find('is ranked number')
