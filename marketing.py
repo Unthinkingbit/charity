@@ -71,6 +71,15 @@ def getEarningsText(publishers):
 	return cString.getvalue()
 
 def getExtraPayoutFifth(lineStrippedLower):
+	"""
+	The extra payout is calculated from the Alexa page rank of the site. This is used rather than the Alexa page views because the page view
+	information is only available to javascript interpreters, a read() command from urllib will only get the page rank. The lower the page rank,
+	the higher the page views, so the reciprocal of the page rank is used to get the approximate number of dollars per month in proportion to
+	page views.
+
+	Because two fifths have already been added in addLinkPayout, two fifths are subtracted from the payout fifth, to a minimum of one, to
+	determine the extra payout fifths.
+	"""
 	'Get extra payout fifth according to alexa ranking.'
 	alexaLink = 'http://www.alexa.com/siteinfo/%s' % lineStrippedLower
 	alexaText = almoner.getInternetText(alexaLink)
@@ -85,8 +94,10 @@ def getExtraPayoutFifth(lineStrippedLower):
 	rank = int(alexaText)
 	if rank < 0:
 		return 1
-	dollarsPerMonth = 120000000 / rank
-	return max(dollarsPerMonth / 100 - 2, 1) # roundedUp(240 / 5 * 2)
+	dollarsPerMonth = 60000000 / rank
+	if lineStrippedLower == 'bitcoinaddict.com':
+		dollarsPerMonth = dollarsPerMonth * 8 / 10
+	return max(dollarsPerMonth / 40 - 2, 1) # roundedUp(240 / 5 * 2)
 
 def getPublishers(lines, workerNameSet):
 	publishers = []
