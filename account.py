@@ -58,22 +58,18 @@ def addAdministratorBonus(accountLines):
 	for accountLine in accountLines:
 		if 'Administrator' in accountLine:
 			administrators.append(Administrator(accountLine))
-	administratorCompensation = 0.0
+	administratorPay = 0.0
 	generalAdministrators = []
 	for administrator in administrators:
-		administratorCompensation += administrator.compensation
+		administratorPay += administrator.pay
 		if administrator.isGeneralAdministrator:
 			generalAdministrators.append(administrator)
 	for bonusMultiplier in xrange(3, 1, -1):
-		bonusCompensation = bonusMultiplier * float(len(generalAdministrators))
-		totalAdministratorCompensation = bonusCompensation + administratorCompensation
-		totalShares = originalNumberOfLinesFloat + bonusCompensation
-		percentCompensation = 0.1 * round(1000.0 * totalAdministratorCompensation / totalShares)
-		if percentCompensation < 7.0:
-			print('Administrator Compensation')
-			print(totalAdministratorCompensation)
-			print(totalShares)
-			print(percentCompensation)
+		bonusPay = bonusMultiplier * float(len(generalAdministrators))
+		totalAdministratorPay = bonusPay + administratorPay
+		totalShares = originalNumberOfLinesFloat + bonusPay
+		percentPay = 0.1 * round(1000.0 * totalAdministratorPay / totalShares)
+		if percentPay < 7.0:
 			accountLines.append('Administrator Bonus')
 			for generalAdministrator in generalAdministrators:
 				accountLines.append(generalAdministrator.getAccountLine(bonusMultiplier))
@@ -280,18 +276,19 @@ def getSuffixNumber(fileName):
 		return 0
 	return int(afterUnderscore)
 
-def getSummaryText(originalReceiverLines, peerLines, suffixNumber):
+def getSummaryText(accountLines, originalReceiverLines, peerLines, suffixNumber):
 	'Get the summary text.'
 	cString = cStringIO.StringIO()
 	suffixNumberPlusOne = suffixNumber + 1
 	numberOfLines = len(originalReceiverLines)
+	numberOfLinesFloat = float(numberOfLines)
 	cString.write('The round %s receiver files have been uploaded to:\n' % suffixNumber)
 	for peerLine in peerLines:
 		suffixedPeerLine = peerLine[: -len('.csv')] + ('_%s.csv' % suffixNumber)
 		cString.write('%s\n' % suffixedPeerLine)
 	cString.write('\nThe account file is at:\n')
 	cString.write('http://galaxies.mygamesonline.org/account_%s.csv\n\n' % suffixNumber)
-	devcoins = int(round(180000000.0 / float(numberOfLines)))
+	devcoins = int(round(180000000.0 / numberOfLinesFloat))
 	cString.write('There were %s original receiver lines, so the average generation share was worth ' % numberOfLines)
 	cString.write('180,000,000 dvc / %s = %s dvc.\n\n' % (numberOfLines, almoner.getCommaNumberString(devcoins)))
 	cString.write('People on that list will start getting those coins in round %s, starting at block %s,000.' % (suffixNumber, 4 * suffixNumber))
@@ -299,6 +296,12 @@ def getSummaryText(originalReceiverLines, peerLines, suffixNumber):
 	cString.write('http://devtome.com/doku.php?id=devcoin#generating_the_files\n\n')
 	cString.write('The next bounties will go into round %s:\n' % suffixNumberPlusOne)
 	cString.write('https://raw.github.com/Unthinkingbit/charity/master/bounty_%s.csv\n' % suffixNumberPlusOne)
+	administratorPay = 0.0
+	for accountLine in accountLines:
+		if 'Administrator' in accountLine:
+			administratorPay += Administrator(accountLine).pay
+	percentPay = 0.1 * round(1000.0 * administratorPay / numberOfLinesFloat)
+	cString.write('\nAdministrator pay is %s shares, %s percent of the total.\n' % (administratorPay, percentPay))
 	return cString.getvalue()
 
 def writeOutput(arguments):
@@ -328,7 +331,7 @@ def writeOutput(arguments):
 			sha256FileName = almoner.getSuffixedFileName(outputReceiverTo, shaOutputPrefix)
 			almoner.writeFileText(sha256FileName, hashlib.sha256(receiverText).hexdigest())
 			print('The sha256 receiver file has been written to:\n%s\n' % sha256FileName)
-	if almoner.sendOutputTo(outputSummaryTo, getSummaryText(originalReceiverLines, peerLines, suffixNumber)):
+	if almoner.sendOutputTo(outputSummaryTo, getSummaryText(accountLines, originalReceiverLines, peerLines, suffixNumber)):
 		print('The summary file has been written to:\n%s\n' % outputSummaryTo)
 
 
@@ -362,9 +365,9 @@ class Administrator:
 	'A class to handle an administrator.'
 	def __init__(self, line):
 		'Initialize.'
-		self.compensation = 0.0
 		self.isFileAdministrator = False
 		self.isGeneralAdministrator = False
+		self.pay = 0.0
 		lineSplit = line.split(',')
 		if len(lineSplit) < 3:
 			return
@@ -377,11 +380,11 @@ class Administrator:
 				wordUntilBracket = word[: bracketIndex]
 			if wordUntilBracket == '2/5-File Administrator':
 				self.isFileAdministrator = True
-				self.compensation += 0.4
+				self.pay += 0.4
 			elif 'Administrator' in wordUntilBracket:
 				dashIndex = wordUntilBracket.find('-')
 				if dashIndex != -1:
-					self.compensation += float(wordUntilBracket[: dashIndex])
+					self.pay += float(wordUntilBracket[: dashIndex])
 					self.isGeneralAdministrator = True
 					self.description = word[dashIndex + 1 :]
 

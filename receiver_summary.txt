@@ -15,3 +15,5 @@ http://devtome.com/doku.php?id=devcoin#generating_the_files
 
 The next bounties will go into round 24:
 https://raw.github.com/Unthinkingbit/charity/master/bounty_24.csv
+
+Administrator pay is 26.0 shares, 6.3 percent of the total.
