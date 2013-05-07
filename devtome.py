@@ -293,9 +293,15 @@ class Author:
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount += 10 * self.tomecount.imageCount
-		self.tomecount.cumulativePayout = int(round(float(self.tomecount.weightedWordCount) * 0.001))
+		weightedCountOverThousandFloat = float(self.tomecount.weightedWordCount) * 0.001
+		if weightedCountOverThousandFloat > 0.5:
+			self.tomecount.cumulativePayout = int(round(weightedCountOverThousandFloat))
 		print('Weighted Word Count: %s' % self.tomecount.weightedWordCount)
 		self.tomecount.payout = max(self.tomecount.cumulativePayout - self.tomecount.previousPayout, 0)
+		maximumPayout = 80
+		if self.tomecount.payout > maximumPayout:
+			self.tomecount.payout = maximumPayout
+			self.tomecount.cumulativePayout = self.tomecount.previousPayout + maximumPayout
 
 	def __repr__(self):
 		'Get the string representation of this class.'

@@ -49,6 +49,37 @@ __license__ = 'MIT'
 globalGoldenRatio = math.sqrt(1.25) + 0.5
 
 
+def addAdministratorBonus(accountLines):
+	'Add the administrator bonus, up to a maximum of 7%.'
+	denominatorSequences = getDenominatorSequencesByAccountLines(accountLines)
+	originalReceiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
+	originalNumberOfLinesFloat = float(len(originalReceiverLines))
+	administrators = []
+	for accountLine in accountLines:
+		if 'Administrator' in accountLine:
+			administrators.append(Administrator(accountLine))
+	administratorCompensation = 0.0
+	generalAdministrators = []
+	for administrator in administrators:
+		administratorCompensation += administrator.compensation
+		if administrator.isGeneralAdministrator:
+			generalAdministrators.append(administrator)
+	for bonusMultiplier in xrange(3, 1, -1):
+		bonusCompensation = bonusMultiplier * float(len(generalAdministrators))
+		totalAdministratorCompensation = bonusCompensation + administratorCompensation
+		totalShares = originalNumberOfLinesFloat + bonusCompensation
+		percentCompensation = 0.1 * round(1000.0 * totalAdministratorCompensation / totalShares)
+		if percentCompensation < 7.0:
+			print('Administrator Compensation')
+			print(totalAdministratorCompensation)
+			print(totalShares)
+			print(percentCompensation)
+			accountLines.append('Administrator Bonus')
+			for generalAdministrator in generalAdministrators:
+				accountLines.append(generalAdministrator.getAccountLine(bonusMultiplier))
+			accountLines.append('')
+			return
+
 def addReceiverLines(coinAddresses, receiverLines):
 	'Get the receiver format line.'
 	if len(coinAddresses) == 0:
@@ -111,7 +142,7 @@ def getAccountLines(arguments, suffixNumberString):
 		else:
 			accountLines += almoner.getNameAddressLines(location)
 		accountLines.append('')
-	print('')
+	addAdministratorBonus(accountLines)
 	return accountLines
 
 def getAddressFractions(lines):
@@ -315,9 +346,9 @@ class AddressFraction:
 			self.fractions.append(Fraction())
 			return
 		for word in words[2 :]:
-			lastDashIndex = word.rfind('-')
-			if lastDashIndex != -1:
-				word = word[: lastDashIndex]
+			dashIndex = word.find('-')
+			if dashIndex != -1:
+				word = word[: dashIndex]
 			wordStripped = word.replace('/', '').strip()
 			if wordStripped.isdigit() or len(wordStripped) == 0:
 				self.fractions.append(Fraction(word))
@@ -325,6 +356,38 @@ class AddressFraction:
 	def __repr__(self):
 		"Get the string representation of this class."
 		return '%s, %s' % (self.coinAddress, self.fractions)
+
+
+class Administrator:
+	'A class to handle an administrator.'
+	def __init__(self, line):
+		'Initialize.'
+		self.compensation = 0.0
+		self.isFileAdministrator = False
+		self.isGeneralAdministrator = False
+		lineSplit = line.split(',')
+		if len(lineSplit) < 3:
+			return
+		self.name = lineSplit[0].strip()
+		self.coinAddress = lineSplit[1].strip()
+		for word in lineSplit:
+			wordUntilBracket = word
+			bracketIndex = word.find('(')
+			if bracketIndex > -1:
+				wordUntilBracket = word[: bracketIndex]
+			if wordUntilBracket == '2/5-File Administrator':
+				self.isFileAdministrator = True
+				self.compensation += 0.4
+			elif 'Administrator' in wordUntilBracket:
+				dashIndex = wordUntilBracket.find('-')
+				if dashIndex != -1:
+					self.compensation += float(wordUntilBracket[: dashIndex])
+					self.isGeneralAdministrator = True
+					self.description = word[dashIndex + 1 :]
+
+	def getAccountLine(self, bonusMultiplier):
+		'Get account line.'
+		return '%s,%s,%s-%s' % (self.name, self.coinAddress, bonusMultiplier, self.description)
 
 
 class DenominatorSequence:
