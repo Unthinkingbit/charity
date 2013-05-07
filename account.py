@@ -287,20 +287,20 @@ def getSummaryText(accountLines, originalReceiverLines, peerLines, suffixNumber)
 		suffixedPeerLine = peerLine[: -len('.csv')] + ('_%s.csv' % suffixNumber)
 		cString.write('%s\n' % suffixedPeerLine)
 	cString.write('\nThe account file is at:\n')
-	cString.write('http://galaxies.mygamesonline.org/account_%s.csv\n\n' % suffixNumber)
+	cString.write('http://galaxies.mygamesonline.org/account_%s.csv\n' % suffixNumber)
 	devcoins = int(round(180000000.0 / numberOfLinesFloat))
-	cString.write('There were %s original receiver lines, so the average generation share was worth ' % numberOfLines)
-	cString.write('180,000,000 dvc / %s = %s dvc.\n\n' % (numberOfLines, almoner.getCommaNumberString(devcoins)))
-	cString.write('People on that list will start getting those coins in round %s, starting at block %s,000.' % (suffixNumber, 4 * suffixNumber))
+	cString.write('\nThere were %s original receiver lines, so the average generation share was worth ' % numberOfLines)
+	cString.write('180,000,000 dvc / %s = %s dvc.\n' % (numberOfLines, almoner.getCommaNumberString(devcoins)))
+	cString.write('\nPeople on that list will start getting those coins in round %s, starting at block %s,000.' % (suffixNumber, 4 * suffixNumber))
 	cString.write(' The procedure for generating the receiver files is at:\n')
-	cString.write('http://devtome.com/doku.php?id=devcoin#generating_the_files\n\n')
-	cString.write('The next bounties will go into round %s:\n' % suffixNumberPlusOne)
+	cString.write('http://devtome.com/doku.php?id=devcoin#generating_the_files\n')
 	administratorPay = 0.0
 	for accountLine in accountLines:
 		if 'Administrator' in accountLine:
 			administratorPay += Administrator(accountLine).pay
 	percentPay = 0.1 * round(1000.0 * administratorPay / numberOfLinesFloat)
 	cString.write('\nAdministrator pay is %s shares, %s percent of the total.\n' % (administratorPay, percentPay))
+	cString.write('\nThe next bounties will go into round %s:\n' % suffixNumberPlusOne)
 	cString.write('\nhttps://raw.github.com/Unthinkingbit/charity/master/bounty_%s.csv\n' % suffixNumberPlusOne)
 	return cString.getvalue()
 

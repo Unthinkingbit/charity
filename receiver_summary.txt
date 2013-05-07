@@ -13,8 +13,8 @@ There were 411 original receiver lines, so the average generation share was wort
 People on that list will start getting those coins in round 23, starting at block 92,000. The procedure for generating the receiver files is at:
 http://devtome.com/doku.php?id=devcoin#generating_the_files
 
-The next bounties will go into round 24:
-
 Administrator pay is 26.0 shares, 6.3 percent of the total.
+
+The next bounties will go into round 24:
 
 https://raw.github.com/Unthinkingbit/charity/master/bounty_24.csv
