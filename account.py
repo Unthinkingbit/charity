@@ -301,7 +301,7 @@ def getSummaryText(accountLines, originalReceiverLines, peerLines, suffixNumber)
 	percentPay = 0.1 * round(1000.0 * administratorPay / numberOfLinesFloat)
 	cString.write('\nAdministrator pay is %s shares, %s percent of the total.\n' % (administratorPay, percentPay))
 	cString.write('\nThe next bounties will go into round %s:\n' % suffixNumberPlusOne)
-	cString.write('\nhttps://raw.github.com/Unthinkingbit/charity/master/bounty_%s.csv\n' % suffixNumberPlusOne)
+	cString.write('https://raw.github.com/Unthinkingbit/charity/master/bounty_%s.csv\n' % suffixNumberPlusOne)
 	return cString.getvalue()
 
 def writeOutput(arguments):
