@@ -295,13 +295,13 @@ def getSummaryText(accountLines, originalReceiverLines, peerLines, suffixNumber)
 	cString.write(' The procedure for generating the receiver files is at:\n')
 	cString.write('http://devtome.com/doku.php?id=devcoin#generating_the_files\n\n')
 	cString.write('The next bounties will go into round %s:\n' % suffixNumberPlusOne)
-	cString.write('https://raw.github.com/Unthinkingbit/charity/master/bounty_%s.csv\n' % suffixNumberPlusOne)
 	administratorPay = 0.0
 	for accountLine in accountLines:
 		if 'Administrator' in accountLine:
 			administratorPay += Administrator(accountLine).pay
 	percentPay = 0.1 * round(1000.0 * administratorPay / numberOfLinesFloat)
 	cString.write('\nAdministrator pay is %s shares, %s percent of the total.\n' % (administratorPay, percentPay))
+	cString.write('\nhttps://raw.github.com/Unthinkingbit/charity/master/bounty_%s.csv\n' % suffixNumberPlusOne)
 	return cString.getvalue()
 
 def writeOutput(arguments):
