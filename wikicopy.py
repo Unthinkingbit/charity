@@ -29,13 +29,29 @@ import os
 import shutil
 import sys
 import time
+import zipfile
 
 
 __license__ = 'MIT'
 
 
+globalDateTimeFormat = '%y/%m/%d %H:%M'
+
+
+def getRecentTitles(fileNameRoot, wikiAddress):
+	'Get all titles of the dokuwiki.'
+	zipArchive = zipfile.ZipFile(fileNameRoot + '.zip', 'r')
+	zipArchive.extractall(fileNameRoot)
+	zipArchive.close()
+	lastModifiedText = almoner.getFileText(os.path.join(fileNameRoot, 'last_modified.txt'))
+	print(  lastModifiedText)
+	lastModifiedDatetime = datetime.datetime.strptime(lastModifiedText, globalDateTimeFormat)
+	print(  lastModifiedDatetime)
+	almoner.makeDirectory(fileNameRoot)
+	return getTitles(wikiAddress)
+
 def getTitles(wikiAddress):
-	'Write zip file.'
+	'Get all titles of the dokuwiki.'
 	indexDepth = 0
 	popularPageAddress = wikiAddress + '/doku.php?id=start&idx=wiki%3Auser'
 	lines = almoner.getTextLines(almoner.getInternetText(popularPageAddress))
@@ -75,14 +91,11 @@ def writeZipFile(fileNameRoot, wikiAddress):
 	print('Copying:')
 	print(wikiAddress)
 	print('')
-	if os.path.isdir(fileNameRoot):
-		shutil.rmtree(fileNameRoot)
-	os.makedirs(fileNameRoot)
+	almoner.makeDirectory(fileNameRoot)
 	previousLetter = '0'
-	titles = getTitles(wikiAddress)
-#	titles = titles[:2] ###
-	dateTimeFormat = '%y/%m/%d %H:%M'
-	lastModifiedText = datetime.datetime.today().strftime(dateTimeFormat)
+	lastModifiedText = datetime.datetime.today().strftime(globalDateTimeFormat)
+	titles = getRecentTitles(fileNameRoot, wikiAddress)###
+	titles = titles[:2] ###
 	almoner.writeFileText(os.path.join(fileNameRoot, 'last_modified.txt'), lastModifiedText)
 	for title in titles:
 		letter = title[0]

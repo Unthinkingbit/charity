@@ -78,9 +78,7 @@ def addJoinedTitles(cString, words):
 def getAuthors(backupFolder, lines, titles):
 	'Get the authors.'
 	authors = []
-	if os.path.isdir(backupFolder):
-		shutil.rmtree(backupFolder)
-	os.makedirs(backupFolder)
+	almoner.makeDirectory(backupFolder)
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 0:
@@ -293,9 +291,8 @@ class Author:
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount += 10 * self.tomecount.imageCount
-		weightedCountOverThousandFloat = float(self.tomecount.weightedWordCount) * 0.001
-		if weightedCountOverThousandFloat > 0.5:
-			self.tomecount.cumulativePayout = int(round(weightedCountOverThousandFloat))
+		if self.tomecount.weightedWordCount >= 1000:
+			self.tomecount.cumulativePayout = int(round(float(self.tomecount.weightedWordCount) * 0.001))
 		print('Weighted Word Count: %s' % self.tomecount.weightedWordCount)
 		self.tomecount.payout = max(self.tomecount.cumulativePayout - self.tomecount.previousPayout, 0)
 		maximumPayout = 80
@@ -310,6 +307,9 @@ class Author:
 	def addLine(self, cString):
 		'Add the author to the tomecount csv cString.'
 		words = [self.parameterDictionary['Name'], self.parameterDictionary['Coin Address']]
+		if self.tomecount.weightedWordCount == 0 and self.tomecount.previousPayout == 0:
+			cString.write('%s\n' % ','.join(words))
+			return 
 		cString.write(self.tomecount.getJoinedWords(words))
 
 

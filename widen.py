@@ -47,9 +47,7 @@ def writeFolder(folderName, peerRootAddress, round):
 	print('Making directory:')
 	print(folderName)
 	print('')
-	if os.path.isdir(folderName):
-		shutil.rmtree(folderName)
-	os.makedirs(folderName)
+	almoner.makeDirectory(folderName)
 	peerAddress = almoner.getSuffixedFileName(peerRootAddress, str(round))
 	print('Getting peer:')
 	print(peerAddress)

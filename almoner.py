@@ -38,6 +38,7 @@ import os
 import shutil
 import sys
 import urllib
+import zipfile
 
 
 __license__ = 'MIT'
@@ -222,6 +223,12 @@ def getTextLines(text):
 			textLines.append(originalLineStripped)
 	return textLines
 
+def makeDirectory(folderName):
+	'Delete the existing directory, if it exists, and make an empty directory.'
+	if os.path.isdir(folderName):
+		shutil.rmtree(folderName)
+	os.makedirs(folderName)
+
 def sendOutputTo(outputTo, text):
 	'Send output to a file or a standard output.'
 	if outputTo == '':
@@ -289,12 +296,12 @@ def writeZipFileByFolder(backupFolder):
 	zipNameExtension = backupFolder + '.zip'
 	if zipNameExtension in os.listdir(os.getcwd()):
 		os.remove(zipNameExtension)
-	shellCommand = 'zip -r %s %s' % (zipNameExtension, backupFolder)
-	if os.system(shellCommand) != 0:
-		print('Failed to execute the following command in writeZipFileByFolder in almoner.')
-		print(shellCommand)
-	else:
-		print('The zip file has been written to:\n%s\n' % zipNameExtension)
+	zipArchive = zipfile.ZipFile(zipNameExtension, 'w', compression=zipfile.ZIP_DEFLATED)
+	backupFileNames = os.listdir(backupFolder)
+	for backupFileName in backupFileNames:
+		zipArchive.write(os.path.join(backupFolder, backupFileName), backupFileName)
+	zipArchive.close()
+	print('The zip file has been written to:\n%s\n' % zipNameExtension)
 	if os.path.isdir(backupFolder):
 		shutil.rmtree(backupFolder)
 
