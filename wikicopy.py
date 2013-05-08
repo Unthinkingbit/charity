@@ -80,7 +80,7 @@ def writeZipFile(fileNameRoot, wikiAddress):
 	os.makedirs(fileNameRoot)
 	previousLetter = '0'
 	titles = getTitles(wikiAddress)
-	titles = titles[:2] ###
+#	titles = titles[:2] ###
 	dateTimeFormat = '%y/%m/%d %H:%M'
 	lastModifiedText = datetime.datetime.today().strftime(dateTimeFormat)
 	almoner.writeFileText(os.path.join(fileNameRoot, 'last_modified.txt'), lastModifiedText)
