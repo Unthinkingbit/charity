@@ -103,16 +103,16 @@ def getPublishers(lines, workerNameSet):
 	for line in lines[1 :]:
 		splitLine = line.split(',')
 		if len(splitLine) > 1:
-			coinAddress = splitLine[1].strip()
 			name = splitLine[0].strip()
 			if name != '':
+				coinAddress = splitLine[1].strip()
 				publisher = Publisher(coinAddress, name)
 				if publisher.name in workerNameSet:
 					publishers.append(publisher)
 				else:
 					print('%s did not work this round.' % publisher.name)
 	return publishers
-	
+
 def getSummaryText(earningsText, publishers, suffixNumber):
 	'Get the summary text.'
 	totalPayoutFifth = 0

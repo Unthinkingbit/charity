@@ -252,7 +252,7 @@ def getReceiverLinesByDenominatorSequences(denominatorSequences):
 def getRecipientDictionary(round):
 	'Get the recipent dictionary.'
 	accountLines = getAccountLines([], str(round))
-	recipentDictionary = []
+	recipentDictionary = {}
 	for accountLine in accountLines:
 		accountLineSplit = accountLine.split(',')
 		if len(accountLineSplit) > 1:
