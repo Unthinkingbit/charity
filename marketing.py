@@ -128,18 +128,6 @@ def getSummaryText(earningsText, publishers, suffixNumber):
 	cString.write('https://raw.github.com/Unthinkingbit/charity/master/marketing.py\n\n')
 	return cString.getvalue()
 
-def getWorkerNameSet(round):
-	'Get the worker names.'
-	accountLines = account.getAccountLines([], str(round))
-	workerNames = []
-	for accountLine in accountLines:
-		accountLineSplit = accountLine.split(',')
-		if len(accountLineSplit) > 1:
-			name = accountLineSplit[0]
-			if name != '':
-				workerNames.append(name)
-	return set(workerNames)
-
 def writeOutput(arguments):
 	'Write output.'
 	if '-h' in arguments or '-help' in arguments:
@@ -150,7 +138,7 @@ def writeOutput(arguments):
 	lines = almoner.getTextLines(almoner.getFileText(publishersFileName))
 	outputEarningsTo = almoner.getParameter(arguments, 'marketing_earnings_%s.csv' % round, 'earnings')
 	outputSummaryTo = almoner.getParameter(arguments, 'marketing_summary.txt', 'summary')
-	workerNameSet = getWorkerNameSet(round)
+	workerNameSet = set(account.getRecipientDictionary(round).keys())
 	publishers = getPublishers(lines, workerNameSet)
 	earningsText = getEarningsText(publishers)
 	if almoner.sendOutputTo(outputEarningsTo, earningsText):

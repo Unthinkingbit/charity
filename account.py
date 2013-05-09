@@ -249,6 +249,18 @@ def getReceiverLinesByDenominatorSequences(denominatorSequences):
 		receiverLines += denominatorSequence.getReceiverLines()
 	return receiverLines
 
+def getRecipientDictionary(round):
+	'Get the recipent dictionary.'
+	accountLines = getAccountLines([], str(round))
+	recipentDictionary = []
+	for accountLine in accountLines:
+		accountLineSplit = accountLine.split(',')
+		if len(accountLineSplit) > 1:
+			name = accountLineSplit[0]
+			if name != '':
+				recipentDictionary[name] = accountLineSplit[1]
+	return recipentDictionary
+
 def getShuffledElements(elements):
 	"""
 	Because the number of lines is usually not perfectly divisible into 4,000, the addresses of each developer are spread out, so that in each
