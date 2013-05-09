@@ -38,16 +38,56 @@ __license__ = 'MIT'
 globalDateTimeFormat = '%y/%m/%d %H:%M'
 
 
+def getSeconds(timedelta):
+	'Get the total number of seconds.'
+	return timedelta.days * 86400 + timedelta.seconds
+
 def getRecentTitles(fileNameRoot, wikiAddress):
 	'Get all titles of the dokuwiki.'
-	zipArchive = zipfile.ZipFile(fileNameRoot + '.zip', 'r')
+	zipFileName = fileNameRoot + '.zip'
+	if not os.path.exists(zipFileName):
+		return getTitles(wikiAddress)
+	zipArchive = zipfile.ZipFile(zipFileName, 'r')
 	zipArchive.extractall(fileNameRoot)
 	zipArchive.close()
 	lastModifiedText = almoner.getFileText(os.path.join(fileNameRoot, 'last_modified.txt'))
-	print(  lastModifiedText)
 	lastModifiedDatetime = datetime.datetime.strptime(lastModifiedText, globalDateTimeFormat)
-	print(  lastModifiedDatetime)
+	print('Last modified: %s' % lastModifiedDatetime)
+	nowDatetime = datetime.datetime.today()
+	nowMinusLast = nowDatetime - lastModifiedDatetime
+	print('Now minus last: %s' % nowMinusLast)
+	twentySixHours = 26 * 3600
+	if getSeconds(nowMinusLast) > (24 * 5 + 22) * 3600:
+		return getTitles(wikiAddress)
 	almoner.makeDirectory(fileNameRoot)
+	recentPageAddress = wikiAddress + '/doku.php?do=recent&id=start&show_changes=pages&first[0]'
+	lines = almoner.getTextLines(almoner.getInternetText(recentPageAddress))
+	lineDatetime = None
+	dateTitle = 'class="date">'
+	linkTitle = 'class="wikilink1" title="'
+	start = 0
+	titleSet = set([])
+	while True:
+		for lineIndex, line in enumerate(lines):
+			if dateTitle in line:
+				dateLine = lines[lineIndex + 1]
+				dateString = dateLine[: dateLine.find('<')]
+				if dateString.startswith('20'):
+					dateString = dateString[2 :]
+				lineDatetime = datetime.datetime.strptime(dateString, globalDateTimeFormat)
+			if linkTitle in line:
+				line = line[line.find(linkTitle) + len(linkTitle) :]
+				title = line[: line.find('"')]
+				if title != 'start':
+					lastMinusLine = lastModifiedDatetime - lineDatetime
+					if title in titleSet or getSeconds(lastMinusLine) > twentySixHours:
+						titles = list(titleSet)
+						titles.sort()
+						return titles
+					titleSet.add(title)
+		start += 40
+		recentPageAddress = wikiAddress + '/doku.php?do=recent&id=start&show_changes=pages&first[%s]' % start
+		lines = almoner.getTextLines(almoner.getInternetText(recentPageAddress))
 	return getTitles(wikiAddress)
 
 def getTitles(wikiAddress):
@@ -94,8 +134,8 @@ def writeZipFile(fileNameRoot, wikiAddress):
 	almoner.makeDirectory(fileNameRoot)
 	previousLetter = '0'
 	lastModifiedText = datetime.datetime.today().strftime(globalDateTimeFormat)
-	titles = getRecentTitles(fileNameRoot, wikiAddress)###
-	titles = titles[:2] ###
+	titles = getRecentTitles(fileNameRoot, wikiAddress)
+	print('Number of titles: %s' % len(titles))
 	almoner.writeFileText(os.path.join(fileNameRoot, 'last_modified.txt'), lastModifiedText)
 	for title in titles:
 		letter = title[0]
