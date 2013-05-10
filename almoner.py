@@ -97,7 +97,7 @@ def getContributorsByText(text):
 	for line in getTextLines(text):
 		words = getColonDividedWords(line)
 		if len(words) > 1:
-			firstLowerSpaceless = words[0].lower().replace(' ', '')
+			firstLowerSpaceless = getWithoutLeadingStar(words[0].lower().replace(' ', ''))
 			if len(firstLowerSpaceless) > 0:
 				if firstLowerSpaceless == 'contributor':
 					contributor = Contributor()
@@ -162,13 +162,19 @@ def getNameAddressLines(fileName):
 	addressLines = []
 	for contributor in getContributors(fileName):
 		name = contributor.contributor
-		greaterThanIndex = name.find('>')
-		if greaterThanIndex >= 0:
-			name = name[greaterThanIndex + 1 :]
-		lessThanIndex = name.find('<')
-		if lessThanIndex >= 0:
-			name = name[: lessThanIndex]
-		addressLines.append(name + ',' + contributor.bitcoinAddress)
+		leftBracketIndex = name.find('[')
+		if leftBracketIndex >= 0:
+			name = name[leftBracketIndex + 1 :]
+			spaceIndex = name.find(' ')
+			if spaceIndex >= 0:
+				name = name[spaceIndex + 1 :]
+		rightBracketIndex = name.find(']')
+		if rightBracketIndex >= 0:
+			name = name[: rightBracketIndex]
+		dotIndex = name.find('.')
+		if dotIndex > 0:
+			name = name[: dotIndex]
+		addressLines.append(name.replace(' ', '_') + ',' + contributor.bitcoinAddress)
 	return addressLines
 
 def getOutput(arguments):
@@ -222,6 +228,14 @@ def getTextLines(text):
 		if originalLineStripped != '':
 			textLines.append(originalLineStripped)
 	return textLines
+
+def getWithoutLeadingStar(word):
+	'Get the word without the leading star, if any.'
+	if len(word) == 0:
+		return word
+	if word[0] == '*':
+		return word[1 :]
+	return word
 
 def makeDirectory(folderName):
 	'Delete the existing directory, if it exists, and make an empty directory.'
@@ -334,7 +348,7 @@ class Contributor:
 		words = getColonDividedWords(line)
 		if len(words) < 2:
 			return
-		firstLowerSpaceless = words[0].lower().replace(' ', '')
+		firstLowerSpaceless = getWithoutLeadingStar(words[0].lower().replace(' ', ''))
 		if len(firstLowerSpaceless) < 1:
 			return
 		secondWord = words[1].lstrip()

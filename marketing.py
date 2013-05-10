@@ -199,8 +199,7 @@ class Publisher:
 
 	def addLinkPayout(self, lineStrippedLower):
 		'Add link payout if there is a devtome link.'
-		if lineStrippedLower.startswith('*'):
-			lineStrippedLower = lineStrippedLower[1 :]
+		lineStrippedLower = almoner.getWithoutLeadingStar(lineStrippedLower)
 		if not lineStrippedLower.startswith('http'):
 			return
 		if self.domainPayout > 4:
@@ -249,8 +248,7 @@ class Publisher:
 
 	def addPostPayout(self, lineStrippedLower):
 		'Add post payout if there is a devtome link.'
-		if lineStrippedLower.startswith('*'):
-			lineStrippedLower = lineStrippedLower[1 :]
+		lineStrippedLower = almoner.getWithoutLeadingStar(lineStrippedLower)
 		if not lineStrippedLower.startswith('http'):
 			return
 		if self.postPayout > 4:
@@ -276,8 +274,7 @@ class Publisher:
 
 	def addSignaturePayout(self, lineStrippedLower):
 		'Add signature payout if there is a devtome link.'
-		if lineStrippedLower.startswith('*'):
-			lineStrippedLower = lineStrippedLower[1 :]
+		lineStrippedLower = almoner.getWithoutLeadingStar(lineStrippedLower)
 		if not lineStrippedLower.startswith('http'):
 			return
 		linkText = almoner.getInternetText(lineStrippedLower)
