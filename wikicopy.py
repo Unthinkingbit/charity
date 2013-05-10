@@ -65,6 +65,7 @@ def getRecentTitles(fileNameRoot, wikiAddress):
 	lineDatetime = None
 	dateTitle = 'class="date">'
 	linkTitle = 'class="wikilink1" title="'
+	nameTitle = 'name="'
 	start = 0
 	titleSet = set([])
 	while True:
@@ -85,8 +86,10 @@ def getRecentTitles(fileNameRoot, wikiAddress):
 						titles.sort()
 						return titles
 					titleSet.add(title)
-		start += 40
-		recentPageAddress = wikiAddress + '/doku.php?do=recent&id=start&show_changes=pages&first[%s]' % start
+			if line.startswith('<input') and 'value="less recent' in line and nameTitle in line:
+				line = line[line.find(nameTitle) + len(nameTitle) :]
+				name = line[: line.find('"')]
+				recentPageAddress = wikiAddress + '/doku.php?do=recent&id=start&show_changes=pages&' + name
 		lines = almoner.getTextLines(almoner.getInternetText(recentPageAddress))
 	return getTitles(wikiAddress)
 
