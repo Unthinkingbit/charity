@@ -56,16 +56,28 @@ http://www.python.org/download/
 import account
 import almoner
 import cStringIO
-import devtome
 import sys
 
 
 __license__ = 'MIT'
 
 
-def getPreviousRecipentDictionary(accountRootName, round, start):
-	'Get the dictionary of the previous recipients.'
-	previousRecipentDictionary = {}
+def getNewbieText(previousRecipentSet, round, shouldAddName):
+	'Get the list of newbie keys, and optionally also names.'
+	cString = cStringIO.StringIO()
+	recipientDictionary = account.getRecipientDictionary(round)
+	recipientKeys = recipientDictionary.keys()
+	recipientKeys.sort()
+	for recipientKey in recipientKeys:
+		if recipientKey not in previousRecipentSet:
+			if shouldAddName:
+				cString.write('%s,' % recipientKey)
+			cString.write('%s\n' % recipientDictionary[recipientKey])
+	return cString.getvalue()
+
+def getPreviousRecipentSet(accountRootName, round, start):
+	'Get the set of the previous recipient names.'
+	previousRecipentSet = set([])
 	for accountIndex in xrange(start, round):
 		accountFileName = accountRootName + '_%s.csv' % accountIndex
 		lines = almoner.getTextLines(almoner.getFileText(accountFileName))
@@ -74,19 +86,8 @@ def getPreviousRecipentDictionary(accountRootName, round, start):
 			if len(splitLine) > 1:
 				name = splitLine[0].strip()
 				if name != '':
-					previousRecipentDictionary[name] = ''
-	return previousRecipentDictionary
-
-def getNewbieText(previousRecipentDictionary, round, shouldAddName):
-	'Get the list of newbie keys, and optionally also names.'
-	cString = cStringIO.StringIO()
-	recipientDictionary = account.getRecipientDictionary(round)
-	for recipientKey in recipientDictionary.keys():
-		if recipientKey not in previousRecipentDictionary:
-			if shouldAddName:
-				cString.write('%s,' % recipientKey)
-			cString.write('%s\n' % recipientDictionary[recipientKey])
-	return cString.getvalue()
+					previousRecipentSet.add(name)
+	return previousRecipentSet
 
 def writeOutput(arguments):
 	'Write output.'
@@ -100,11 +101,11 @@ def writeOutput(arguments):
 		shouldAddName = True
 	round = int(almoner.getParameter(arguments, '23', 'round'))
 	start = int(almoner.getParameter(arguments, '22', 'start'))
-	outputNewbieTo = almoner.getParameter(arguments, 'newbie_%s.csv' % round, 'output')
-	previousRecipentDictionary = getPreviousRecipentDictionary(accountRootName, round, start)
-	newbieText = getNewbieText(previousRecipentDictionary, round, shouldAddName)
+	outputNewbieTo = almoner.getParameter(arguments, 'newbies.csv', 'output')
+	previousRecipentSet = getPreviousRecipentSet(accountRootName, round, start)
+	newbieText = getNewbieText(previousRecipentSet, round, shouldAddName)
 	if almoner.sendOutputTo(outputNewbieTo, newbieText):
-		print('The marketing earnings bounty file has been written to:\n%s\n' % outputNewbieTo)
+		print('The newbies file has been written to:\n%s\n' % outputNewbieTo)
 
 
 def main():
