@@ -1,7 +1,7 @@
 Format,pluribusunum
 _beginpeers
 http://galaxies.mygamesonline.org/receiver.csv
-https://raw.github.com/Unthinkingbit/charity/master/receiver.csv
+http://devcoinpool.btc-music.com/receiver/receiver.csv
 http://devcoinblockexplorer.info/receiver/receiver.csv
 http://devtome.com/files/receiver.csv
 http://devcoin.darkgamex.ch/receiver.csv
@@ -28,8 +28,9 @@ Bounty
 Balthozar,1kFhM8vtEzbZ43Z5wcadPvNrb4xFXbgze,2-Signing Bonus(https://bitcointalk.org/index.php?topic=34586.msg1916251#msg1916251)
 CaramelSunshine,132Vg16UPkm21iqjRnPSwgZQvNbBxJG6WL,3-Signing Bonus(https://bitcointalk.org/index.php?topic=34586.msg1892055#msg1892055)
 CryptoAddicto,1DKhy7jj8oB53iGZYrWzDSfcVoKHjsuxaa,1-Advertising Administrator(https://bitcointalk.org/index.php?topic=34586.msg1888348#msg1888348)
-Emfox,1Emfox1WswYcd2YucUskRzqfRWKkcm1Jut,1/5-Node Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1938014#msg1938014),2/5-Block Explorer Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1943155#msg1943155),2-Block Explorer(https://bitcointalk.org/index.php?topic=34586.msg1943155#msg1943155),2-Signing Bonus(https://bitcointalk.org/index.php?topic=34586.msg2051099#msg2051099)
-Fheenix,1JvdsgxiJQYAJSE4Tjs3BWbXZk6Kw9mxnB,2-Signing Bonus(https://bitcointalk.org/index.php?topic=34586.msg1992454#msg1992454)
+Emfox,1Emfox1WswYcd2YucUskRzqfRWKkcm1Jut,1/5-Node Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1938014#msg1938014),2/5-Block Explorer Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1943155#msg1943155),2-Block Explorer(https://bitcointalk.org/index.php?topic=34586.msg1943155#msg1943155),2-Signing Bonus(https://bitcointalk.org/index.php?topic=34586.msg2051099#msg2051099),2/5-Faucet Maintenance(https://bitcointalk.org/index.php?topic=34586.msg2028378#msg2028378)
+Faucet,1EpJKJbpeoXnYGtoB8F6re78FMAtvNRWMf,2/5-Faucet Donation
+Fheenix,1JvdsgxiJQYAJSE4Tjs3BWbXZk6Kw9mxnB,2-Signing Bonus(https://bitcointalk.org/index.php?topic=34586.msg1992454#msg1992454),2/5-Button(https://bitcointalk.org/index.php?topic=34586.msg2095859#msg2095859)
 FinShaggy,1YF39YTmbUD2RnYQpoA656FhVB4r2ftpR,3-Signing Bonus(https://bitcointalk.org/index.php?topic=34586.msg1892010#msg1892010)
 FuzzyBear,18xskifRMWUtMzbHSzQi7rEWF5upmktgF2,1-Signing Administrator(https://bitcointalk.org/index.php?topic=34586.msg1888348#msg1888348),2/5-File Administrator,3-Mining Business Split(https://bitcointalk.org/index.php?topic=34586.msg2093428#msg2093428)
 Gabcab,14JoB7XgPE57yZ4G57YrEFSurf35TGBE8t,2-Signing Bonus(https://bitcointalk.org/index.php?topic=34586.msg2026910#msg2026910)
