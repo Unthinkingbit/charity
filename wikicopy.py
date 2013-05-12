@@ -127,9 +127,10 @@ def writeOutput(arguments):
 	if '.' in fileNameRoot:
 		fileNameRoot = fileNameRoot[: fileNameRoot.find('.')]
 	fileNameRoot = almoner.getParameter(arguments, fileNameRoot, 'output')
-	writeZipFile(fileNameRoot, wikiAddress)
+	shouldMakeSnapshot = almoner.getBoolean(arguments, 'false', 'snapshot')
+	writeZipFile(fileNameRoot, shouldMakeSnapshot, wikiAddress)
 
-def writeZipFile(fileNameRoot, wikiAddress):
+def writeZipFile(fileNameRoot, shouldMakeSnapshot, wikiAddress):
 	'Write zip file.'
 	print('Copying:')
 	print(wikiAddress)
@@ -150,7 +151,13 @@ def writeZipFile(fileNameRoot, wikiAddress):
 		fileName = os.path.join(fileNameRoot, title)
 		almoner.writeFileText(fileName, sourceText)
 	print('There were %s files in the wiki.\n' % len(titles))
-	almoner.writeZipFileByFolder(fileNameRoot)
+	zipFileName = almoner.writeZipFileByFolder(fileNameRoot)
+	if shouldMakeSnapshot:
+		snapshotSuffix = datetime.datetime.today().strftime('_%y-%m-%d_%H')
+		destination = fileNameRoot + snapshotSuffix + '.zip'
+		shutil.copyfile(zipFileName, destination)
+		print('The snapshot zip file has been written to:\n%s\n' % destination)
+		
 
 
 def main():

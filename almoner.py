@@ -70,6 +70,13 @@ def getAlmonerText(contributors, hasName):
 		almonerText += ',%s\n' % contributor.share
 	return almonerText
 
+def getBoolean(arguments, defaultValue, name):
+	'Get the boolean parameter of the given name from the arguments.'
+	parameter = getParameter(arguments, defaultValue, name).lower()
+	if parameter.startswith('1') or parameter.startswith('t') or parameter.startswith('y'):
+		return True
+	return False
+
 def getColonDividedWords(text):
 	'Get the words divided around the colon.'
 	colonIndex = text.find(':')
@@ -318,6 +325,7 @@ def writeZipFileByFolder(backupFolder):
 	print('The zip file has been written to:\n%s\n' % zipNameExtension)
 	if os.path.isdir(backupFolder):
 		shutil.rmtree(backupFolder)
+	return zipNameExtension
 
 
 class Contributor:

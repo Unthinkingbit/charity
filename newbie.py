@@ -95,10 +95,7 @@ def writeOutput(arguments):
 		print(__doc__)
 		return
 	accountRootName = almoner.getParameter(arguments, 'account', 'input')
-	nameStartLower = almoner.getParameter(arguments, 'False', 'name').lower()
-	shouldAddName = False
-	if nameStartLower.startswith('1') or nameStartLower.startswith('t') or nameStartLower.startswith('y'):
-		shouldAddName = True
+	shouldAddName = almoner.getBoolean(arguments, 'false', 'name')
 	round = int(almoner.getParameter(arguments, '23', 'round'))
 	start = int(almoner.getParameter(arguments, '22', 'start'))
 	outputNewbieTo = almoner.getParameter(arguments, 'newbies.csv', 'output')
