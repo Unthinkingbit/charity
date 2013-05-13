@@ -94,8 +94,8 @@ def getExtraPayoutFifth(lineStrippedLower):
 	if rank < 0:
 		return 1
 	dollarsPerMonth = 60000000 / rank
-	if lineStrippedLower == 'bitcoinaddict.com':
-		dollarsPerMonth = dollarsPerMonth * 8 / 10
+#	if lineStrippedLower == 'bitcoinaddict.com':
+#		dollarsPerMonth = dollarsPerMonth * 8 / 10
 	return max(dollarsPerMonth / 40 - 2, 1) # roundedUp(240 / 5 * 2)
 
 def getPublishers(lines, workerNameSet):
