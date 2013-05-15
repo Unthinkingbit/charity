@@ -42,9 +42,9 @@ def getSeconds(timedelta):
 	'Get the total number of seconds.'
 	return timedelta.days * 86400 + timedelta.seconds
 
-def getRecentTitles(fileNameRoot, wikiAddress):
+def getRecentTitles(archiveType, fileNameRoot, wikiAddress):
 	'Get all titles of the dokuwiki.'
-	zipFileName = fileNameRoot + '.zip'
+	zipFileName = fileNameRoot + '.' + archiveType
 	if not os.path.exists(zipFileName):
 		return getTitles(wikiAddress)
 	zipArchive = zipfile.ZipFile(zipFileName, 'r')
@@ -59,7 +59,7 @@ def getRecentTitles(fileNameRoot, wikiAddress):
 	twentySixHours = 26 * 3600
 	if getSeconds(nowMinusLast) > (24 * 5 + 22) * 3600:
 		return getTitles(wikiAddress)
-	almoner.makeDirectory(fileNameRoot)
+#	almoner.makeDirectory(fileNameRoot)
 	recentPageAddress = wikiAddress + '/doku.php?do=recent&id=start&show_changes=pages&first[0]'
 	lines = almoner.getTextLines(almoner.getInternetText(recentPageAddress))
 	lineDatetime = None
@@ -126,11 +126,17 @@ def writeOutput(arguments):
 		fileNameRoot = fileNameRoot[len('http://') :]
 	if '.' in fileNameRoot:
 		fileNameRoot = fileNameRoot[: fileNameRoot.find('.')]
+	archiveType = 'zip'
+	archiveString = almoner.getParameter(arguments, 'zip', 'archive').lower()
+	if archiveString.startswith('t'):
+		archiveType = 'tar'
+	elif archiveString.startswith('b'):
+		archiveType = 'bz2'
 	fileNameRoot = almoner.getParameter(arguments, fileNameRoot, 'output')
 	shouldMakeSnapshot = almoner.getBoolean(arguments, 'false', 'snapshot')
-	writeZipFile(fileNameRoot, shouldMakeSnapshot, wikiAddress)
+	writeZipFile(archiveType, fileNameRoot, shouldMakeSnapshot, wikiAddress)
 
-def writeZipFile(fileNameRoot, shouldMakeSnapshot, wikiAddress):
+def writeZipFile(archiveType, fileNameRoot, shouldMakeSnapshot, wikiAddress):
 	'Write zip file.'
 	print('Copying:')
 	print(wikiAddress)
@@ -138,7 +144,7 @@ def writeZipFile(fileNameRoot, shouldMakeSnapshot, wikiAddress):
 	almoner.makeDirectory(fileNameRoot)
 	previousLetter = '0'
 	lastModifiedText = datetime.datetime.today().strftime(globalDateTimeFormat)
-	titles = getRecentTitles(fileNameRoot, wikiAddress)
+	titles = getRecentTitles(archiveType, fileNameRoot, wikiAddress)
 	print('Number of titles: %s' % len(titles))
 	almoner.writeFileText(os.path.join(fileNameRoot, 'last_modified.txt'), lastModifiedText)
 	for title in titles:
@@ -154,7 +160,7 @@ def writeZipFile(fileNameRoot, shouldMakeSnapshot, wikiAddress):
 	zipFileName = almoner.writeZipFileByFolder(fileNameRoot)
 	if shouldMakeSnapshot:
 		snapshotSuffix = datetime.datetime.today().strftime('_%y-%m-%d_%H')
-		destination = fileNameRoot + snapshotSuffix + '.zip'
+		destination = fileNameRoot + snapshotSuffix + '.' + archiveType
 		shutil.copyfile(zipFileName, destination)
 		print('The snapshot zip file has been written to:\n%s\n' % destination)
 		
