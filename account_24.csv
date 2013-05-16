@@ -1,0 +1,55 @@
+Format,pluribusunum
+_beginpeers
+http://galaxies.mygamesonline.org/receiver.csv
+http://devcoinpool.btc-music.com/receiver/receiver.csv
+http://devcoinblockexplorer.info/receiver/receiver.csv
+http://devtome.com/files/receiver.csv
+http://devcoin.darkgamex.ch/receiver.csv
+_endpeers
+_begincoins
+
+Bitcoin Share List
+DiabloD3,1DbeWKCxnVCt3sRaSAmZLoboqr8pVyFzP1
+Emery,1NKKQBSaQ6XMViwC46b4JCxGUiUp6EDZR5
+FellowTraveler,1NtTPVVjDsUfDWybS4BwvHpG2pdS9RnYyQ
+Forrestv,1HNeqi3pJRNvXybNX4FKzZgYJsdTSqJTbk
+Gweedo,15MZRa1cPUVChs6XpzyAfGox5nvPVpSvok
+John_Smith,1B2fZN58SD4JqaTitHmBLcSo89GfUtvWZ3
+John_Tobey,1PWC7PNHL1SgvZaN7xEtygenKjWobWsCuf
+Khal,1KHAL8bUjnkMRMg9yd2dNrYnJgZGH8Nj6T
+Luke-Jr,1ABvQwiuCnySQqBzruaAcdrkgYae9LoqWz
+Marcus_of_Augustus,1ARVXWVKGPPYPVVwT1Fmy8UzVDSvNe6anh
+Markm,1MbRAfeayy7bYfJ8yBVKTt41nyiGhVAz62
+Matt_Corallo,1JBMattRztKDF2KRS3vhjJXA7h47NEsn2c
+M0mchil,126VZtqifE91nrBsXRkjZRMkTTvSTEMHPC
+Ssm2017,1MKEmEkcJ1STcYCUoDwzhREqt2CjUJwre2
+Twobits,13A2e3wX9MVMtP1JMxGFcbd2ZuSeVLe8uZ
+Unthinkingbit,17vec4jQGCzMEsTnivizHPaowE715tu2CB
+
+Bounty
+Balthozar,1kFhM8vtEzbZ43Z5wcadPvNrb4xFXbgze,2/5-Button(https://bitcointalk.org/index.php?topic=34586.msg2133874#msg2133874)
+CryptoAddicto,1DKhy7jj8oB53iGZYrWzDSfcVoKHjsuxaa,1-Advertising Administrator(https://bitcointalk.org/index.php?topic=34586.msg1888348#msg1888348)
+DeadSea33,1A9qwtctYmYrCKSegy7RrNCUJxuohwFQmD
+Emfox,1Emfox1WswYcd2YucUskRzqfRWKkcm1Jut,1/5-Node Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1938014#msg1938014),2/5-Block Explorer Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1943155#msg1943155),2/5-Faucet Maintenance(https://bitcointalk.org/index.php?topic=34586.msg2028378#msg2028378)
+Faucet,1EpJKJbpeoXnYGtoB8F6re78FMAtvNRWMf,2/5-Faucet Donation
+FuzzyBear,18xskifRMWUtMzbHSzQi7rEWF5upmktgF2,1-Signing Administrator(https://bitcointalk.org/index.php?topic=34586.msg1888348#msg1888348),2/5-File Administrator
+Gweedo,15MZRa1cPUVChs6XpzyAfGox5nvPVpSvok,1/5-Ticker Maintenance(https://bitcointalk.org/index.php?topic=34586.msg2001047#msg2001047)
+Icoin,18HfzUZXGA3FZ1BM8abEmjBT9Wg52qQ4Sr,1/5-Backup Maintenance(https://bitcointalk.org/index.php?topic=34586.msg889087#msg889087),2/5-Block Explorer Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1084393#msg1084393)
+Jasinlee,1Ahu957fXXwhJ5LqmpxMFHVWwSQ7h4PkXb,1-Devtome Administrator,2/5-File Administrator,1/5-Node Maintenance(https://bitcointalk.org/index.php?topic=34586.msg2128556#msg2128556)
+K1773R,1NGCrVaFXanWib44ijNBR8yBoCAREGpXro,2/5-File Administrator,2/5-Block Explorer Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1376078#msg1376078),1-Windows Administrator(https://bitcointalk.org/index.php?topic=34586.msg1791709#msg1791709)
+Markm,121Pb2BBrU7C61vBdWCKVuFFmaEZr6xFAX,1-Source Administrator(https://bitcointalk.org/index.php?topic=34586.msg2002555#msg2002555),2/5-File Administrator,2/5-Wiki Maintenance(https://bitcointalk.org/index.php?topic=34586.msg654190#msg654190),1/5-Node Maintenance(https://bitcointalk.org/index.php?topic=34586.msg2128556#msg2128556)
+Metazilla,1CJSRunQtPQsiZRK7vznyeCfyDTb2kxGA8,1/5-Ticker Maintenance(https://bitcointalk.org/index.php?topic=34586.msg2001047#msg2001047)
+Shattienator,1Fhex5BvBGaChJqK75Z6MPxtK9muSsScKC,2/5-File Administrator,1/5-Maintenance(https://bitcointalk.org/index.php?topic=34586.msg640074#msg640074)
+Twobits,13A2e3wX9MVMtP1JMxGFcbd2ZuSeVLe8uZ,1/5-Node Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1936478#msg1936478)
+Unthinkingbit,17vec4jQGCzMEsTnivizHPaowE715tu2CB,1-Founder Administrator
+Veruminnumeris,1KZZaLCMPTh9tiNZ7JDXeZUjr6yPYYwtGD,1-Signing Bonus(https://bitcointalk.org/index.php?topic=34586.msg2164078#msg2164078)
+Xchrix,112NRCenwi3VTS9GMuW1kgnAKFGjE9YymR,1/5-Cryptocoincharts Maintenance(https://bitcointalk.org/index.php?topic=34586.msg1385226#msg1385226)
+
+Devcoin Share List
+Emfox,1Emfox1WswYcd2YucUskRzqfRWKkcm1Jut
+
+Devtome Earnings
+
+Marketing Earnings
+
+_endcoins

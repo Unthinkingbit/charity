@@ -51,8 +51,7 @@ globalGoldenRatio = math.sqrt(1.25) + 0.5
 
 def addAdministratorBonus(accountLines):
 	'Add the administrator bonus, up to a maximum of 7%.'
-	denominatorSequences = getDenominatorSequencesByAccountLines(accountLines)
-	originalReceiverLines = getReceiverLinesByDenominatorSequences(denominatorSequences)
+	originalReceiverLines = getReceiverLinesByAccountLines(accountLines)
 	originalNumberOfLinesFloat = float(len(originalReceiverLines))
 	administrators = []
 	for accountLine in accountLines:
@@ -74,6 +73,8 @@ def addAdministratorBonus(accountLines):
 			for generalAdministrator in generalAdministrators:
 				accountLines.append(generalAdministrator.getAccountLine(bonusMultiplier))
 			accountLines.append('')
+			bonusShares = bonusMultiplier * len(generalAdministrators)
+			print('Name: Administrator Bonus, Shares: %s' % bonusShares)
 			return
 
 def addReceiverLines(coinAddresses, receiverLines):
@@ -132,13 +133,17 @@ def getAccountLines(arguments, suffixNumberString):
 		name = linkLineSplit[0]
 		location = linkLineSplit[1]
 		accountLines.append(name)
+		extraLines = []
 		if '_xx' in location:
 			location = location.replace('_xx', '_' + suffixNumberString)
-			accountLines += almoner.getTextLines(almoner.getLocationText(location))
+			extraLines = almoner.getTextLines(almoner.getLocationText(location))
 		else:
-			accountLines += almoner.getNameAddressLines(location)
+			extraLines = almoner.getNameAddressLines(location)
+		print('Name: %s, Location: %s, Shares: %s' % (name, location, len(getReceiverLinesByAccountLines(extraLines))))
+		accountLines += extraLines
 		accountLines.append('')
 	addAdministratorBonus(accountLines)
+	print('')
 	return accountLines
 
 def getAddressFractions(lines):
@@ -214,7 +219,7 @@ def getPackedReceiverLines(denominatorSequences, originalReceiverLines, suffixNu
 			originalReceiverLines = getGroupedReceiverLines(2, denominatorSequences)
 	originalDevcoinBlocksPerShareFloat = float(maximumReceivers) / originalReceiverLineLength
 	averageDevcoinsPerShare = int(round(originalDevcoinBlocksPerShareFloat * 45000.0))
-	print('Average devcoins per share: %s' % averageDevcoinsPerShare)
+	print('Average devcoins per share: %s' % almoner.getCommaNumberString(averageDevcoinsPerShare))
 	print('Number of original receiver lines lines: %s' % originalReceiverLineLength)
 	print('Number of receiver lines lines: %s' % len(originalReceiverLines))
 	print('')
@@ -241,6 +246,11 @@ def getQuantityDictionary(elements):
 		else:
 			quantityDictionary[element] = 1
 	return quantityDictionary
+
+def getReceiverLinesByAccountLines(accountLines):
+	'Write output.'
+	denominatorSequences = getDenominatorSequencesByAccountLines(accountLines)
+	return getReceiverLinesByDenominatorSequences(denominatorSequences)
 
 def getReceiverLinesByDenominatorSequences(denominatorSequences):
 	'Concatenate the receiver lines from all the denominator sequences.'

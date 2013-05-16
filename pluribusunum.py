@@ -258,7 +258,6 @@ def writeNextIfValueHigher(directoryPath, fileName, step, stepText, value):
 
 def writeOutput(arguments):
 	'Write output.'
-	print(  arguments)
 	directoryName = getParameter(arguments, '', 'directory')
 	fileName = getParameter(arguments, '', 'input')
 	outputTo = getParameter(arguments, 'stdout', 'output')

@@ -277,7 +277,7 @@ class Author:
 				wordCount = getWordCount(linkText)
 				self.tomecount.collatedWordCount += wordCount
 				if wordCount > 0:
-					print('Collated article: %s, Word Count: %s' % (lineStrippedLower, wordCount))
+					print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 					almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)[1 :]), linkText)
 			if isOriginal:
 				linkText = getLinkText(lineStrippedLower)
@@ -285,7 +285,7 @@ class Author:
 				wordCount = getWordCount(linkText)
 				self.tomecount.originalWordCount += wordCount
 				if wordCount > 0:
-					print('Original article: %s, Word Count: %s' % (lineStrippedLower, wordCount))
+					print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 					almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)[1 :]), linkText)
 		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
@@ -293,7 +293,7 @@ class Author:
 		self.tomecount.weightedWordCount += 10 * self.tomecount.imageCount
 		if self.tomecount.weightedWordCount >= 1000:
 			self.tomecount.cumulativePayout = int(round(float(self.tomecount.weightedWordCount) * 0.001))
-		print('Weighted Word Count: %s' % self.tomecount.weightedWordCount)
+		print('Weighted Word Count: %s' % almoner.getCommaNumberString(self.tomecount.weightedWordCount))
 		self.tomecount.payout = max(self.tomecount.cumulativePayout - self.tomecount.previousPayout, 0)
 		maximumPayout = 80
 		if self.tomecount.payout > maximumPayout:
