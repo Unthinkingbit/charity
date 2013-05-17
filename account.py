@@ -69,11 +69,11 @@ def addAdministratorBonus(accountLines):
 		totalShares = originalNumberOfLinesFloat + bonusPay
 		percentPay = 0.1 * round(1000.0 * totalAdministratorPay / totalShares)
 		if percentPay < 7.0:
-			accountLines.append('Administrator Bonus')
+			bonusShares = bonusMultiplier * len(generalAdministrators)
+			accountLines.append('Administrator Bonus' + ': %s Shares' % bonusShares)
 			for generalAdministrator in generalAdministrators:
 				accountLines.append(generalAdministrator.getAccountLine(bonusMultiplier))
 			accountLines.append('')
-			bonusShares = bonusMultiplier * len(generalAdministrators)
 			print('Name: Administrator Bonus, Shares: %s' % bonusShares)
 			return
 
@@ -132,14 +132,15 @@ def getAccountLines(arguments, suffixNumberString):
 		linkLineSplit = linkLine.split(',')
 		name = linkLineSplit[0]
 		location = linkLineSplit[1]
-		accountLines.append(name)
 		extraLines = []
 		if '_xx' in location:
 			location = location.replace('_xx', '_' + suffixNumberString)
 			extraLines = almoner.getTextLines(almoner.getLocationText(location))
 		else:
 			extraLines = almoner.getNameAddressLines(location)
-		print('Name: %s, Location: %s, Shares: %s' % (name, location, len(getReceiverLinesByAccountLines(extraLines))))
+		numberOfShares = len(getReceiverLinesByAccountLines(extraLines))
+		print('Name: %s, Location: %s, Shares: %s' % (name, location, numberOfShares))
+		accountLines.append(name + ': %s Shares' % numberOfShares)
 		accountLines += extraLines
 		accountLines.append('')
 	addAdministratorBonus(accountLines)
