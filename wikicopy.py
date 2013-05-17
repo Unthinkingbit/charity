@@ -39,10 +39,6 @@ __license__ = 'MIT'
 globalDateTimeFormat = '%y/%m/%d %H:%M'
 
 
-def getSeconds(timedelta):
-	'Get the total number of seconds.'
-	return timedelta.days * 86400 + timedelta.seconds
-
 def getRecentTitles(archiveType, fileNameRoot, wikiAddress):
 	'Get all titles of the dokuwiki.'
 	archiveFileName = fileNameRoot + '.' + archiveType
@@ -68,7 +64,6 @@ def getRecentTitles(archiveType, fileNameRoot, wikiAddress):
 	twentySixHours = 26 * 3600
 	if getSeconds(nowMinusLast) > (24 * 5 + 22) * 3600:
 		return getTitles(wikiAddress)
-#	almoner.makeDirectory(fileNameRoot)
 	recentPageAddress = wikiAddress + '/doku.php?do=recent&id=start&show_changes=pages&first[0]'
 	lines = almoner.getTextLines(almoner.getInternetText(recentPageAddress))
 	lineDatetime = None
@@ -101,6 +96,10 @@ def getRecentTitles(archiveType, fileNameRoot, wikiAddress):
 				recentPageAddress = wikiAddress + '/doku.php?do=recent&id=start&show_changes=pages&' + name
 		lines = almoner.getTextLines(almoner.getInternetText(recentPageAddress))
 	return getTitles(wikiAddress)
+
+def getSeconds(timedelta):
+	'Get the total number of seconds.'
+	return timedelta.days * 86400 + timedelta.seconds
 
 def getTitles(wikiAddress):
 	'Get all titles of the dokuwiki.'
