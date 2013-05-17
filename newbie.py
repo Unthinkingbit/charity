@@ -98,7 +98,7 @@ def writeOutput(arguments):
 	shouldAddName = almoner.getBoolean(arguments, 'false', 'name')
 	round = int(almoner.getParameter(arguments, '23', 'round'))
 	start = int(almoner.getParameter(arguments, '22', 'start'))
-	outputNewbieTo = almoner.getParameter(arguments, 'newbies.csv', 'output')
+	outputNewbieTo = almoner.getParameter(arguments, 'newbie.csv', 'output')
 	previousRecipentSet = getPreviousRecipentSet(accountRootName, round, start)
 	newbieText = getNewbieText(previousRecipentSet, round, shouldAddName)
 	if almoner.sendOutputTo(outputNewbieTo, newbieText):

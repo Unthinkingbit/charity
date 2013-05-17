@@ -28,6 +28,7 @@ import devtome
 import os
 import shutil
 import sys
+import tarfile
 import time
 import zipfile
 
@@ -44,12 +45,20 @@ def getSeconds(timedelta):
 
 def getRecentTitles(archiveType, fileNameRoot, wikiAddress):
 	'Get all titles of the dokuwiki.'
-	zipFileName = fileNameRoot + '.' + archiveType
-	if not os.path.exists(zipFileName):
+	archiveFileName = fileNameRoot + '.' + archiveType
+	if not os.path.exists(archiveFileName):
 		return getTitles(wikiAddress)
-	zipArchive = zipfile.ZipFile(zipFileName, 'r')
-	zipArchive.extractall(fileNameRoot)
-	zipArchive.close()
+	if archiveType == 'zip':
+		zipArchive = zipfile.ZipFile(archiveFileName, 'r')
+		zipArchive.extractall(fileNameRoot)
+		zipArchive.close()
+	else:
+		mode = 'r'
+		if archiveType == 'bz2':
+			mode = 'r:bz2'
+		tarArchive = tarfile.open(archiveFileName, mode)
+		tarArchive.extractall(fileNameRoot)
+		tarArchive.close()
 	lastModifiedText = almoner.getFileText(os.path.join(fileNameRoot, 'last_modified.txt'))
 	lastModifiedDatetime = datetime.datetime.strptime(lastModifiedText, globalDateTimeFormat)
 	print('Last modified: %s' % lastModifiedDatetime)
@@ -136,6 +145,22 @@ def writeOutput(arguments):
 	shouldMakeSnapshot = almoner.getBoolean(arguments, 'false', 'snapshot')
 	writeZipFile(archiveType, fileNameRoot, shouldMakeSnapshot, wikiAddress)
 
+def writeTarFileByFolder(archiveType, archiveFileName, backupFolder):
+	'Write tar file from a folder and remove that folder.'
+	if archiveFileName in os.listdir(os.getcwd()):
+		os.remove(archiveFileName)
+	mode = 'w'
+	if archiveType == 'bz2':
+		mode = 'w:bz2'
+	tarArchive = tarfile.open(archiveFileName, mode)
+	backupFileNames = os.listdir(backupFolder)
+	for backupFileName in backupFileNames:
+		tarArchive.add(os.path.join(backupFolder, backupFileName), backupFileName)
+	tarArchive.close()
+	print('The tar file has been written to:\n%s\n' % archiveFileName)
+	if os.path.isdir(backupFolder):
+		shutil.rmtree(backupFolder)
+
 def writeZipFile(archiveType, fileNameRoot, shouldMakeSnapshot, wikiAddress):
 	'Write zip file.'
 	print('Copying:')
@@ -157,13 +182,17 @@ def writeZipFile(archiveType, fileNameRoot, shouldMakeSnapshot, wikiAddress):
 		fileName = os.path.join(fileNameRoot, title)
 		almoner.writeFileText(fileName, sourceText)
 	print('There were %s files in the wiki.\n' % len(titles))
-	zipFileName = almoner.writeZipFileByFolder(fileNameRoot)
+	archiveFileName = fileNameRoot + '.' + archiveType
+	if archiveType == 'zip':
+		almoner.writeZipFileByFolder(fileNameRoot)
+	else:
+		writeTarFileByFolder(archiveType, archiveFileName, fileNameRoot)
 	if shouldMakeSnapshot:
 		snapshotSuffix = datetime.datetime.today().strftime('_%y-%m-%d_%H')
 		destination = fileNameRoot + snapshotSuffix + '.' + archiveType
-		shutil.copyfile(zipFileName, destination)
+		shutil.copyfile(archiveFileName, destination)
 		print('The snapshot zip file has been written to:\n%s\n' % destination)
-		
+
 
 
 def main():

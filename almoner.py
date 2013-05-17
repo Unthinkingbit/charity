@@ -325,7 +325,6 @@ def writeZipFileByFolder(backupFolder):
 	print('The zip file has been written to:\n%s\n' % zipNameExtension)
 	if os.path.isdir(backupFolder):
 		shutil.rmtree(backupFolder)
-	return zipNameExtension
 
 
 class Contributor:
