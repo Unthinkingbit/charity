@@ -311,6 +311,8 @@ and CENT was replaced by the MIN_TX_FEE wherever the min transaction fee was mea
 
 The generation is constant at 50,000 coins per block, which is 1,000 times higher than the bitcoin starting rate.  At a typical rate of 144 blocks a day, 1,008 a week, roughly 4,000 a month, that means the 200,000,000 devcoins are generated each month.  Of those, 90% go to the developers, so the developers get 180,000,000 devcoins a month in total.
 
+The generation is unlimited, there is no block halving. The generation pays for ongoing development, which increases revenue. So the revenue per devcoin can keep increasing, even though the number of devcoins keeps increasing.
+
 ===Random Number===
 Random numbers for voting are determined by a hash of the string composed of the post time and the next block of the highest difficulty block chain, which at the time of this writing is bitcoin.  For consecutive random numbers, the next number is the hash of the string doubled and so on.  For example, say someone applies to be accepted as an active developer.  When they post their application, the hash of their post time and the next block after their post is combined to make a string.  The hexadecimal hash of that string is used as a number from zero to one, multiplied by the number of administrators, to get the first administrator.  The hexadecimal hash of the doubled string is multiplied by the number of remaining adminstrators, to get the second administrator.  The hash of the tripled string is multiplied by the remaining, to get the third administrator.
 
