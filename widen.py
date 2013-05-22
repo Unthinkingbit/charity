@@ -69,7 +69,6 @@ def writeWidenedFile(folderName, peerRootAddress, peerTextUntilCoins, widenRound
 	'Write widened file.'
 	title = almoner.getSuffixedFileName('receiver.csv', str(widenRound))
 	widenPath = os.path.join(folderName, title)
-	print(  widenPath)
 	receiverAddress = almoner.getSuffixedFileName(peerRootAddress, str(widenRound))
 	receiverText = almoner.getLocationText(receiverAddress)
 	receiverTextFromCoins = receiverText[receiverText.find('_begincoins') :]

@@ -62,7 +62,7 @@ import sys
 __license__ = 'MIT'
 
 
-def getNewbieText(previousRecipentSet, round, shouldAddName):
+def getNewbieText(previousRecipentSet, round):
 	'Get the list of newbie keys, and optionally also names.'
 	cString = cStringIO.StringIO()
 	recipientDictionary = account.getRecipientDictionary(round)
@@ -70,16 +70,14 @@ def getNewbieText(previousRecipentSet, round, shouldAddName):
 	recipientKeys.sort()
 	for recipientKey in recipientKeys:
 		if recipientKey not in previousRecipentSet:
-			if shouldAddName:
-				cString.write('%s,' % recipientKey)
-			cString.write('%s\n' % recipientDictionary[recipientKey])
+			cString.write('%s,%s\n' % (recipientKey, recipientDictionary[recipientKey]))
 	return cString.getvalue()
 
-def getPreviousRecipentSet(accountRootName, round, start):
+def getPreviousRecipentSet(round, start):
 	'Get the set of the previous recipient names.'
 	previousRecipentSet = set([])
 	for accountIndex in xrange(start, round):
-		accountFileName = accountRootName + '_%s.csv' % accountIndex
+		accountFileName = 'account_%s.csv' % accountIndex
 		lines = almoner.getTextLines(almoner.getFileText(accountFileName))
 		for line in lines[1 :]:
 			splitLine = line.split(',')
@@ -91,18 +89,16 @@ def getPreviousRecipentSet(accountRootName, round, start):
 
 def writeOutput(arguments):
 	'Write output.'
-	if '-h' in arguments or '-help' in arguments:
+	if '-h' in arguments or '-help' in arguments or len(arguments) == 0:
 		print(__doc__)
 		return
-	accountRootName = almoner.getParameter(arguments, 'account', 'input')
-	shouldAddName = almoner.getBoolean(arguments, 'false', 'name')
 	round = int(almoner.getParameter(arguments, '23', 'round'))
 	start = int(almoner.getParameter(arguments, '22', 'start'))
 	outputNewbieTo = almoner.getParameter(arguments, 'newbie.csv', 'output')
-	previousRecipentSet = getPreviousRecipentSet(accountRootName, round, start)
-	newbieText = getNewbieText(previousRecipentSet, round, shouldAddName)
+	previousRecipentSet = getPreviousRecipentSet(round, start)
+	newbieText = getNewbieText(previousRecipentSet, round)
 	if almoner.sendOutputTo(outputNewbieTo, newbieText):
-		print('The newbies file has been written to:\n%s\n' % outputNewbieTo)
+		print('The newbie file has been written to:\n%s\n' % outputNewbieTo)
 
 
 def main():

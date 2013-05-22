@@ -147,6 +147,17 @@ def getAccountLines(arguments, suffixNumberString):
 	print('')
 	return accountLines
 
+def getAddressDictionary(round):
+	'Get the address dictionary.'
+	addressDictionary = {}
+	for accountLine in getAccountLines([], str(round)):
+		accountLineSplit = accountLine.split(',')
+		if len(accountLineSplit) > 1:
+			name = accountLineSplit[0].strip()
+			if name != '':
+				addressDictionary[accountLineSplit[1]] = name
+	return addressDictionary
+
 def getAddressFractions(lines):
 	'Get the AddressFractions by text.'
 	addressFractions = []
@@ -261,16 +272,15 @@ def getReceiverLinesByDenominatorSequences(denominatorSequences):
 	return receiverLines
 
 def getRecipientDictionary(round):
-	'Get the recipent dictionary.'
-	accountLines = getAccountLines([], str(round))
-	recipentDictionary = {}
-	for accountLine in accountLines:
+	'Get the recipient dictionary.'
+	recipientDictionary = {}
+	for accountLine in getAccountLines([], str(round)):
 		accountLineSplit = accountLine.split(',')
 		if len(accountLineSplit) > 1:
 			name = accountLineSplit[0]
 			if name != '':
-				recipentDictionary[name] = accountLineSplit[1]
-	return recipentDictionary
+				recipientDictionary[name] = accountLineSplit[1]
+	return recipientDictionary
 
 def getShuffledElements(elements):
 	"""

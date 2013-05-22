@@ -54,7 +54,7 @@ def getOutput(arguments):
 def writeOutput(arguments):
 	'Write output.'
 	if len(arguments) < 2 or '-h' in arguments or '-help' in arguments:
-		print(  __doc__)
+		print(__doc__)
 		return
 	outputTo = almoner.getParameter(arguments, 'devcoinalmoner.csv', 'output')
 	if almoner.sendOutputTo(outputTo, getOutput(arguments)):

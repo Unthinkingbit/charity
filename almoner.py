@@ -88,6 +88,9 @@ def getCommaNumberString(number):
 	'Get the number string with commas.'
 	commaNumberString = str(number)
 	commaIndex = len(commaNumberString) - 3
+	dotIndex = commaNumberString.find('.')
+	if dotIndex > -1:
+		commaIndex = dotIndex - 3
 	while commaIndex > 0:
 		commaNumberString = commaNumberString[: commaIndex] + ',' + commaNumberString[commaIndex :]
 		commaIndex -= 3
@@ -301,7 +304,7 @@ def writeFileText(fileName, fileText, writeMode='w+'):
 def writeOutput(arguments):
 	'Write output.'
 	if len(arguments) < 2 or '-h' in arguments or '-help' in arguments:
-		print(  __doc__)
+		print(__doc__)
 		return
 	outputTo = getParameter(arguments, 'almoner.csv', 'output')
 	if sendOutputTo(outputTo, getOutput(arguments)):
