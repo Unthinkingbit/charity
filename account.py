@@ -377,7 +377,7 @@ class AddressFraction:
 		words = line.split(',')
 		if len(words) < 2:
 			return
-		self.coinAddress = words[1]
+		self.coinAddress = words[1].strip()
 		if len(words) < 3:
 			self.fractions.append(Fraction())
 			return
