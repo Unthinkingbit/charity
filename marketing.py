@@ -94,9 +94,44 @@ def getExtraPayoutFifth(lineStrippedLower):
 	if rank < 0:
 		return 1
 	dollarsPerMonth = 60000000 / rank
-#	if lineStrippedLower == 'bitcoinaddict.com':
-#		dollarsPerMonth = dollarsPerMonth * 8 / 10
+	if lineStrippedLower == 'bitcoinaddict.com':
+		dollarsPerMonth = dollarsPerMonth * 8 / 10
 	return max(dollarsPerMonth / 40 - 2, 1) # roundedUp(240 / 5 * 2)
+
+def getPayoutFifthBitcoin(linkText):
+	'Get the payout fifth for a bitcoin forum signature.'
+	postString = '<td><b>Posts: </b></td>'
+	postIndex = linkText.find(postString)
+	if postIndex == -1:
+		return 0
+	postEndIndex = postIndex + len(postString)
+	postNumberEndIndex = linkText.find('</td>', postEndIndex + 1)
+	if postNumberEndIndex == -1:
+		return 0
+	postNumberString = linkText[postEndIndex : postNumberEndIndex].strip()
+	if '>' in postNumberString:
+		postNumberString = postNumberString[postNumberString.find('>') + 1 :]
+	postNumber = int(postNumberString)
+	if postNumber > 1000:
+		print('Big signature payout: 2')
+		return 2
+	else:
+		print('Small signature payout: 1')
+		return 1
+
+def getPayoutFifthPpcoin(linkText):
+	'Get the payout fifth for a ppcoin forum signature.'
+	if '<span>Show Posts...</span>' in linkText:
+		print('Ppcoin signature payout: 1')
+		return 1
+	return 0
+
+def getPayoutFifthTerracoin(linkText):
+	'Get the payout fifth for a terracoin forum signature.'
+	if '>Show Posts</a>' in linkText:
+		print('Terracoin signature payout: 1')
+		return 1
+	return 0
 
 def getPublishers(lines, workerNameSet):
 	publishers = []
@@ -157,7 +192,7 @@ class Publisher:
 		self.payoutFifth = 0
 		self.postPayout = 0
 		self.postWords = 0
-		self.signaturePayout = False
+		self.signaturePageSet = set([])
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
 		self.subdomainPayout = 0
 		print('\nLoading pages from %s' % self.name)
@@ -274,33 +309,26 @@ class Publisher:
 
 	def addSignaturePayout(self, lineStrippedLower):
 		'Add signature payout if there is a devtome link.'
+		if len(self.signaturePageSet) > 2:
+			return
 		lineStrippedLower = almoner.getWithoutLeadingStar(lineStrippedLower)
 		if not lineStrippedLower.startswith('http'):
 			return
 		linkText = almoner.getInternetText(lineStrippedLower)
 		if 'devtome.com' not in linkText:
 			return
-		if self.signaturePayout:
+		if linkText in self.signaturePageSet:
 			return
-		self.signaturePayout = True
-		postString = '<td><b>Posts: </b></td>'
-		postIndex = linkText.find(postString)
-		if postIndex == -1:
-			return
-		postEndIndex = postIndex + len(postString)
-		postNumberEndIndex = linkText.find('</td>', postEndIndex + 1)
-		if postNumberEndIndex == -1:
-			return
-		postNumberString = linkText[postEndIndex : postNumberEndIndex].strip()
-		if '>' in postNumberString:
-			postNumberString = postNumberString[postNumberString.find('>') + 1 :]
-		postNumber = int(postNumberString)
-		if postNumber > 1000:
-			self.payoutFifth += 2
-			print('Big signature payout: 2')
-		else:
-			self.payoutFifth += 1
-			print('Small signature payout: 1')
+		payoutFifth = 0
+		if 'bitcointalk.org' in lineStrippedLower:
+			payoutFifth = getPayoutFifthBitcoin(linkText)
+		elif 'ppcointalk.org' in lineStrippedLower:
+			payoutFifth = getPayoutFifthPpcoin(linkText)
+		elif 'terracointalk.org' in lineStrippedLower:
+			payoutFifth = getPayoutFifthTerracoin(linkText)
+		if payoutFifth > 0:
+			self.signaturePageSet.add(linkText)
+			self.payoutFifth += payoutFifth
 
 	def write(self, cString):
 		'Write.'
