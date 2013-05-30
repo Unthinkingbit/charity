@@ -93,10 +93,10 @@ def getExtraPayoutFifth(lineStrippedLower):
 	rank = int(alexaText)
 	if rank < 0:
 		return 1
-	dollarsPerMonth = 60000000 / rank
+	dollarsPerMonth = 30000000 / rank / 4 # banner add will grab one quarter of the revenue
 	if lineStrippedLower == 'bitcoinaddict.com':
 		dollarsPerMonth = dollarsPerMonth * 8 / 10
-	return max(dollarsPerMonth / 40 - 2, 1) # roundedUp(240 / 5 * 2)
+	return max(dollarsPerMonth / 4 - 2, 1) # 5 = 40$ (share) / 5 (payout fifth) / 2 (devcoin bonus)
 
 def getPayoutFifthBitcoin(linkText):
 	'Get the payout fifth for a bitcoin forum signature.'
@@ -187,10 +187,10 @@ class Publisher:
 	def __init__(self, coinAddress, name):
 		'Initialize.'
 		self.coinAddress = coinAddress
-		self.domainPayout = 0
+		self.domainPayoutSet = set([])
 		self.name = name
 		self.payoutFifth = 0
-		self.postPayout = 0
+		self.postPayoutSet = set([])
 		self.postWords = 0
 		self.signaturePageSet = set([])
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
@@ -218,7 +218,7 @@ class Publisher:
 				self.addPostPayout(lineStrippedLower)
 			if isSignature:
 				self.addSignaturePayout(lineStrippedLower)
-		if self.domainPayout == 0:
+		if len(self.domainPayoutSet) == 0:
 			if self.subdomainPayout == 1:
 				self.payoutFifth += 1
 				print('Subdomain payout: 1')
@@ -237,7 +237,7 @@ class Publisher:
 		lineStrippedLower = almoner.getWithoutLeadingStar(lineStrippedLower)
 		if not lineStrippedLower.startswith('http'):
 			return
-		if self.domainPayout > 4:
+		if len(self.domainPayoutSet) > 4:
 			return
 		originalLink = lineStrippedLower
 		if lineStrippedLower.startswith('http://'):
@@ -250,6 +250,8 @@ class Publisher:
 			lineStrippedLower = lineStrippedLower[len('vps.') :]
 		if lineStrippedLower.endswith('/'):
 			lineStrippedLower = lineStrippedLower[: -1]
+		if lineStrippedLower in self.domainPayoutSet:
+			return
 		if '/' in lineStrippedLower:
 			if self.subdomainPayout == 0:
 				linkText = almoner.getInternetText(originalLink)
@@ -260,12 +262,12 @@ class Publisher:
 		linkText = '<a href="http://www.devtome.com/doku.php?id=earn_devcoins_by_writing"><img width="728" height="90"></a>'
 		if lineStrippedLower != 'bitcoinaddict.com':
 			linkText = almoner.getInternetText(originalLink)
-		if 'devtome.com' not in linkText:
+		beginIndex = linkText.find('devtome.com')
+		if beginIndex == -1:
 			return
-		self.domainPayout += 1
+		self.domainPayoutSet.add(lineStrippedLower)
 		self.payoutFifth += 2
 		printString = 'Domain name payout: 2, Address: %s' % lineStrippedLower
-		beginIndex = linkText.find('devtome.com')
 		while beginIndex != -1:
 			endIndex = linkText.find('</a>', beginIndex)
 			if endIndex == -1:
@@ -286,7 +288,7 @@ class Publisher:
 		lineStrippedLower = almoner.getWithoutLeadingStar(lineStrippedLower)
 		if not lineStrippedLower.startswith('http'):
 			return
-		if self.postPayout > 4:
+		if len(self.postPayoutSet) > 4:
 			return
 		linkText = almoner.getInternetText(lineStrippedLower)
 		if '#' in lineStrippedLower:
@@ -304,8 +306,10 @@ class Publisher:
 		linkText = linkText[postBeginIndex : postEndIndex]
 		if 'devtome.com' not in linkText:
 			return
+		if linkText in self.postPayoutSet:
+			return
+		self.postPayoutSet.add(linkText)
 		self.postWords += len(linkText.split())
-		self.postPayout += 1
 
 	def addSignaturePayout(self, lineStrippedLower):
 		'Add signature payout if there is a devtome link.'

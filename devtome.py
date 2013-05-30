@@ -262,6 +262,7 @@ class Author:
 		almoner.writeFileText(os.path.join(backupFolder, 'wiki:user:' + name), sourceText)
 		isCollated = False
 		isOriginal = False
+		linkTexts = set([])
 		for line in almoner.getTextLines(sourceText):
 			lineStrippedLower = line.strip().lower()
 			if '==' in lineStrippedLower:
@@ -273,20 +274,24 @@ class Author:
 					isOriginal = True
 			if isCollated:
 				linkText = getLinkText(lineStrippedLower)
-				self.tomecount.imageCount += getImageCount(linkText)
-				wordCount = getWordCount(linkText)
-				self.tomecount.collatedWordCount += wordCount
-				if wordCount > 0:
-					print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
-					almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)[1 :]), linkText)
+				if linkText not in linkTexts:
+					linkTexts.add(linkText)
+					self.tomecount.imageCount += getImageCount(linkText)
+					wordCount = getWordCount(linkText)
+					self.tomecount.collatedWordCount += wordCount
+					if wordCount > 0:
+						print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
+						almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)[1 :]), linkText)
 			if isOriginal:
 				linkText = getLinkText(lineStrippedLower)
-				self.tomecount.imageCount += getImageCount(linkText)
-				wordCount = getWordCount(linkText)
-				self.tomecount.originalWordCount += wordCount
-				if wordCount > 0:
-					print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
-					almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)[1 :]), linkText)
+				if linkText not in linkTexts:
+					linkTexts.add(linkText)
+					self.tomecount.imageCount += getImageCount(linkText)
+					wordCount = getWordCount(linkText)
+					self.tomecount.originalWordCount += wordCount
+					if wordCount > 0:
+						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
+						almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)[1 :]), linkText)
 		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
