@@ -118,6 +118,8 @@ def getLinkName(line):
 	'Get the name of the article in the line.'
 	linkStartIndex = line.find('[[')
 	if linkStartIndex == -1:
+		if '[' in line:
+			print('Warning, external link format instead of internal link format.')
 		return ''
 	linkStartIndex += len('[[')
 	linkEndIndex = line.find(']]', linkStartIndex)
