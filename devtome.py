@@ -78,12 +78,16 @@ def addJoinedTitles(cString, words):
 def getAuthors(backupFolder, lines, titles):
 	'Get the authors.'
 	authors = []
+	authorSet = set([])
 	almoner.makeDirectory(backupFolder)
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 0:
 			if len(words[0]) > 0:
-				authors.append(Author(backupFolder, titles, words))
+				author = Author(backupFolder, titles, words)
+				if author.name not in authorSet:
+					authorSet.add(author.name)
+					authors.append(author)
 	almoner.writeZipFileByFolder(backupFolder)
 	return authors
 
@@ -257,11 +261,11 @@ class Author:
 			self.parameterDictionary[titles[wordIndex]] = word
 		if 'Cumulative Payout' in self.parameterDictionary:
 			self.tomecount.previousPayout = int(self.parameterDictionary['Cumulative Payout'])
-		name = self.parameterDictionary['Name']
-		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % name
-		print('Loading articles from %s' % name)
+		self.name = self.parameterDictionary['Name']
+		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
+		print('Loading articles from %s' % self.name)
 		sourceText = getSourceText(self.sourceAddress)
-		almoner.writeFileText(os.path.join(backupFolder, 'wiki:user:' + name), sourceText)
+		almoner.writeFileText(os.path.join(backupFolder, 'wiki:user:' + self.name), sourceText)
 		isCollated = False
 		isOriginal = False
 		linkTexts = set([])
