@@ -220,8 +220,6 @@ def getTotalTomecount(authors):
 
 def getWordCount(linkText):
 	'Get the word count of the page linked to in the line.'
-	if linkText == '':
-		return 0
 	linkText = linkText.replace('.', ' ').replace(',', ' ').replace(';', ' ').replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
 	return len(linkText.split())
 
