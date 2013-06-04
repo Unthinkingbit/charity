@@ -118,6 +118,34 @@ def getImageCount(linkText):
 				imageCount += 1
 	return imageCount
 
+def getIsLastEditByAuthor(linkString, name):
+	'Determine if the last edit was by the author.'
+	if name == 'Knotwork' or name == 'Kumala' or name == 'Icoin' or name == 'Unthinkingbit':
+		return True
+	revisionsText = almoner.getInternetText('http://devtome.com/doku.php?id=%s&do=edit' % linkString)
+	time.sleep(1)
+	lastModIndex = revisionsText.find('<li id="lastmod">')
+	if lastModIndex == -1:
+		print('Warning, lastmod not found on revisions page.')
+		return False
+	revisionsText = revisionsText[lastModIndex :]
+	breakIndex = revisionsText.find('<br')
+	if breakIndex == -1:
+		print('Warning, break not found on revisions page.')
+		return False
+	revisionsText = revisionsText[: breakIndex]
+	byString = ' by '
+	byIndex = revisionsText.find(byString)
+	if byString == -1:
+		print('Warning, byString not found on revisions page.')
+		return False
+	editor = revisionsText[byIndex + len(byString) :].strip()
+	if editor != name.lower():
+		print('Warning, editor is not the same as the name.')
+		print(editor)
+		return False
+	return True
+
 def getLinkName(line):
 	'Get the name of the article in the line.'
 	linkStartIndex = line.find('[[')
@@ -135,13 +163,15 @@ def getLinkName(line):
 		linkString = linkString[: linkDividerIndex]
 	return linkString
 
-def getLinkText(line):
+def getLinkText(line, name):
 	'Get the text of the page linked to in the line.'
 	linkString = getLinkName(line)
 	if linkString == '':
 		return ''
 	time.sleep(1)
-	return getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % linkString)
+	if getIsLastEditByAuthor(linkString, name):
+		return getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % linkString)
+	return ''
 
 def getSourceText(address):
 	'Get the devtome source text for the address.'
@@ -277,7 +307,7 @@ class Author:
 				elif 'original' in lineStrippedLower:
 					isOriginal = True
 			if isCollated:
-				linkText = getLinkText(lineStrippedLower)
+				linkText = getLinkText(lineStrippedLower, self.name)
 				if linkText not in linkTexts:
 					linkTexts.add(linkText)
 					self.tomecount.imageCount += getImageCount(linkText)
@@ -287,7 +317,7 @@ class Author:
 						print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)[1 :]), linkText)
 			if isOriginal:
-				linkText = getLinkText(lineStrippedLower)
+				linkText = getLinkText(lineStrippedLower, self.name)
 				if linkText not in linkTexts:
 					linkTexts.add(linkText)
 					self.tomecount.imageCount += getImageCount(linkText)
