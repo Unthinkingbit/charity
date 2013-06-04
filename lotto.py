@@ -90,6 +90,7 @@ def getDifferenceDictionary(round):
 		if differenceDictionary[differenceKey] > highestCount:
 			highestCount = differenceDictionary[differenceKey]
 			highestKey = differenceKey
+	print('Most prolific writer is: %s' % highestKey)
 	del(differenceDictionary[highestKey])
 	return differenceDictionary
 
