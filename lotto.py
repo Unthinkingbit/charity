@@ -1,4 +1,6 @@
 """
+http://www.megamillions.com/numbers/
+https://bitcointalk.org/index.php?topic=34586.msg2028001;topicseen#msg2028001
 <textarea id="wpTextbox1" name="wpTextbox1" cols="80" rows="25" readonly="">
 ==Articles==
 ===Collated===
