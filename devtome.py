@@ -161,7 +161,7 @@ def getLinkName(line):
 	linkDividerIndex = linkString.find('|')
 	if linkDividerIndex != -1:
 		linkString = linkString[: linkDividerIndex]
-	return linkString
+	return linkString.strip().replace(' ', '_')[1 :]
 
 def getLinkText(line, name):
 	'Get the text of the page linked to in the line.'
@@ -325,7 +325,7 @@ class Author:
 					self.tomecount.originalWordCount += wordCount
 					if wordCount > 0:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
-						almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)[1 :]), linkText)
+						almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)), linkText)
 		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount

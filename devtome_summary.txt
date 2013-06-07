@@ -2,17 +2,17 @@ The round 99 devtome word earnings are pasted below and at:
 https://raw.github.com/Unthinkingbit/charity/master/devtome_earnings_99.csv
 
 Acs26,1pK5e7YxixmERU617STiXgiGdnactBQrT,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Acs26)
-Alex0909,1Mgvwf4B1VFWKyT91tYnRVPqpTv4ddrfVT,32-Word Count(http://devtome.com/doku.php?id=wiki:user:Alex0909)
+Alex0909,1Mgvwf4B1VFWKyT91tYnRVPqpTv4ddrfVT,34-Word Count(http://devtome.com/doku.php?id=wiki:user:Alex0909)
 Alyssa85,1ERn5JRTm5P47LzhiLCbKtduwj9M3cPE81,7-Word Count(http://devtome.com/doku.php?id=wiki:user:Alyssa85)
 Ashleysly,1Mdu9MbAEsUm81NzEPQR7GCkUxbG39pWMy,9-Word Count(http://devtome.com/doku.php?id=wiki:user:Ashleysly)
 Balthozar,1kFhM8vtEzbZ43Z5wcadPvNrb4xFXbgze,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Balthozar)
 Barnacle_Ed,16xxKVrtDxTuEJhADUxVmZK94im43RXi45,33-Word Count(http://devtome.com/doku.php?id=wiki:user:Barnacle_Ed)
-BitcoinAlchemist,1JBmwfJ4HmxTDDYwZY1rC63xR9h8Usqtat,12-Word Count(http://devtome.com/doku.php?id=wiki:user:BitcoinAlchemist)
+BitcoinAlchemist,1JBmwfJ4HmxTDDYwZY1rC63xR9h8Usqtat,13-Word Count(http://devtome.com/doku.php?id=wiki:user:BitcoinAlchemist)
 Bmlzootown,1Dx6QsUh2BjcYSkFdFtrCRC9Xx5fDJWeHp,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Bmlzootown)
 Ceebizcut,1M5haKYJ8PJ43kHTs6okSBLj5gUhLRQiUJ,7-Word Count(http://devtome.com/doku.php?id=wiki:user:Ceebizcut)
 Cryptobyte,1HwxMzbFqZfyE6HaR2D3keJQ1ync1V5UQR,5-Word Count(http://devtome.com/doku.php?id=wiki:user:Cryptobyte)
 Cryptopi,19GkNDjmTiGsmyCijGx6tpXdT67W3rNPHE,34-Word Count(http://devtome.com/doku.php?id=wiki:user:Cryptopi)
-DeadSea33,1A9qwtctYmYrCKSegy7RrNCUJxuohwFQmD,70-Word Count(http://devtome.com/doku.php?id=wiki:user:DeadSea33)
+DeadSea33,1A9qwtctYmYrCKSegy7RrNCUJxuohwFQmD,73-Word Count(http://devtome.com/doku.php?id=wiki:user:DeadSea33)
 Devtome_Writer,17wwzTrWrk1buS9bxEFdgTsvhiyrDakBZe,10-Word Count(http://devtome.com/doku.php?id=wiki:user:Devtome_Writer)
 Dexter,18jMxk8jqwvgpx4wT48VAb6jGbYNazz4b7,67-Word Count(http://devtome.com/doku.php?id=wiki:user:Dexter)
 Diamondcardz,18q45dAKGakQdPkjrg17NrfdiFGKWULwSJ,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Diamondcardz)
@@ -45,7 +45,7 @@ Veruminnumeris,1KZZaLCMPTh9tiNZ7JDXeZUjr6yPYYwtGD,48-Word Count(http://devtome.c
 Vilmanoella,14wvMyGUXvJpdW2GbKWCEsMDw5s5Ay2F4r,41-Word Count(http://devtome.com/doku.php?id=wiki:user:Vilmanoella)
 Wardsmith,1SbC9Y3b5eZkYtEd7dbtzD7eP6rtEMfj5,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Wardsmith)
 Weisoq,1Cy9e1Yuwboj63XRkMkT6W6YsGDtYDrsUp,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Weisoq)
-Wiser,1LpoMowMPEVWk2LaJUdAUNaK7gBDRA1r7F,21-Word Count(http://devtome.com/doku.php?id=wiki:user:Wiser)
+Wiser,1LpoMowMPEVWk2LaJUdAUNaK7gBDRA1r7F,22-Word Count(http://devtome.com/doku.php?id=wiki:user:Wiser)
 Xenophaux,1H5qJrnYG9pPzFZ2zbmKihymnB23ViEbXz,5-Word Count(http://devtome.com/doku.php?id=wiki:user:Xenophaux)
 Yungbull,1NgSfubWAAYrApH5rAe8RYcfdtQTNbWxbo,21-Word Count(http://devtome.com/doku.php?id=wiki:user:Yungbull)
 
@@ -55,11 +55,11 @@ https://raw.github.com/Unthinkingbit/charity/master/devtome.py
 The word counts for each writer are at:
 https://raw.github.com/Unthinkingbit/charity/master/devtome_99.csv
 
-The word earnings were generated on 2013-06-06, and the total word counts follow below.
+The word earnings were generated on 2013-06-07, and the total word counts follow below.
 
 Collated Word Count: 88,084
 Collated Weighted Word Count: 26,421
 Images: 5
-Original Word Count: 1,462,997
-Total Word Count: 1,551,081
-Total Weighted Word Count: 1,489,468
+Original Word Count: 1,469,549
+Total Word Count: 1,557,633
+Total Weighted Word Count: 1,496,020

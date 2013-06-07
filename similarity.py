@@ -67,9 +67,24 @@ import zipfile
 __license__ = 'MIT'
 
 	
+def addToAuthorDictionary(authorDictionary, name, text):
+	'Add author name to invoiced articles.'
+	isArticle = False
+	for line in almoner.getTextLines(text):
+		lineStrippedLower = line.strip().lower()
+		if '==' in lineStrippedLower:
+			isArticle = False
+			if 'collated' in lineStrippedLower or 'original' in lineStrippedLower:
+				isArticle = True
+		if isArticle:
+			title = devtome.getLinkName(lineStrippedLower)
+			if title != '':
+				authorDictionary[title] = name[len('wiki:user:') :]
+	
 def getArticles():
 	'Get the articles.'
 	articles = []
+	authorDictionary = {}
 	fileNameRoot = 'devtome_articles'
 	archiveFileName = fileNameRoot + '.zip'
 	zipArchive = zipfile.ZipFile(archiveFileName, 'r')
@@ -77,12 +92,17 @@ def getArticles():
 	zipArchive.close()
 	names = os.listdir(fileNameRoot)
 	for name in names:
-		if not name.startswith('wiki:user:'):
-			filePath = os.path.join(fileNameRoot, name)
-			sourceText = almoner.getFileText(filePath)
-			longWords = getLongWords(sourceText)
+		filePath = os.path.join(fileNameRoot, name)
+		text = almoner.getFileText(filePath)
+		if name.startswith('wiki:user:'):
+			addToAuthorDictionary(authorDictionary, name, text)
+		else:
+			longWords = getLongWords(text)
 			if len(longWords) > 40:
 				articles.append(Article(longWords, name))
+	for article in articles:
+		if article.name in authorDictionary:
+			article.author = authorDictionary[article.name]
 	shutil.rmtree(fileNameRoot)
 	return articles
 
@@ -125,6 +145,14 @@ def getSimilarityText(articles):
 		article.addLine(cString)
 	return cString.getvalue()
 
+def getSockpuppetText(articles):
+	'Get the text of the most similar other article from different authors.'
+	cString = cStringIO.StringIO()
+	cString.write('Author,Other Author,Name,Other,Similarity (%)\n')
+	for article in articles:
+		article.addSockpuppetLine(cString)
+	return cString.getvalue()
+
 def normalizeFrequencyDictionary(frequencyDictionary):
 	'Divide each frequency by the total count.'
 	totalCount = 0
@@ -140,16 +168,21 @@ def writeOutput(arguments):
 		print(__doc__)
 		return
 	outputSimilarityTo = almoner.getParameter(arguments, 'similarity.csv', 'output')
+	outputSockpuppetTo = almoner.getParameter(arguments, 'similarity_sockpuppet.csv', 'output')
 	articles = getArticles()
 	similarityText = getSimilarityText(articles)
+	sockpuppetText = getSockpuppetText(articles)
 	if almoner.sendOutputTo(outputSimilarityTo, similarityText):
 		print('The similarity file has been written to:\n%s\n' % outputSimilarityTo)
+	if almoner.sendOutputTo(outputSockpuppetTo, sockpuppetText):
+		print('The sockpuppet file has been written to:\n%s\n' % outputSockpuppetTo)
 
 
 class Article:
 	'A class to handle an article.'
 	def __init__(self, longWords, name):
 		'Initialize.'
+		self.author = ''
 		self.name = name
 		self.frequencyDictionary = {}
 		for longWord in longWords:
@@ -160,11 +193,17 @@ class Article:
 
 	def __repr__(self):
 		'Get the string representation of this class.'
-		return str(self.name)
+		return '%s, %s' % (self.name, self.author)
 
 	def addLine(self, cString):
 		'Add the article to the similarity csv cString.'
 		cString.write('%s,%s,%s\n' % (self.name, self.mostSimilar.name, round(100.0 * self.greatestSimilarity, 1)))
+
+	def addSockpuppetLine(self, cString):
+		'Add the article to the sockpuppet csv cString.'
+		if self.author != self.mostSimilar.author:
+			similarity = round(100.0 * self.greatestSimilarity, 1)
+			cString.write('%s,%s,%s,%s,%s\n' % (self.author, self.mostSimilar.author, self.name, self.mostSimilar.name, similarity))
 
 	def setDistinct(self, totalFrequencyDictionary):
 		'Set distinct words.'
