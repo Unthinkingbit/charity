@@ -23,7 +23,6 @@ http://www.python.org/download/
 """
 
 import almoner
-import devtome
 import os
 import shutil
 import sys

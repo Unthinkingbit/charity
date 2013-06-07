@@ -1,7 +1,53 @@
 The round 99 devtome word earnings are pasted below and at:
 https://raw.github.com/Unthinkingbit/charity/master/devtome_earnings_99.csv
 
+Acs26,1pK5e7YxixmERU617STiXgiGdnactBQrT,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Acs26)
+Alex0909,1Mgvwf4B1VFWKyT91tYnRVPqpTv4ddrfVT,32-Word Count(http://devtome.com/doku.php?id=wiki:user:Alex0909)
 Alyssa85,1ERn5JRTm5P47LzhiLCbKtduwj9M3cPE81,7-Word Count(http://devtome.com/doku.php?id=wiki:user:Alyssa85)
+Ashleysly,1Mdu9MbAEsUm81NzEPQR7GCkUxbG39pWMy,9-Word Count(http://devtome.com/doku.php?id=wiki:user:Ashleysly)
+Balthozar,1kFhM8vtEzbZ43Z5wcadPvNrb4xFXbgze,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Balthozar)
+Barnacle_Ed,16xxKVrtDxTuEJhADUxVmZK94im43RXi45,33-Word Count(http://devtome.com/doku.php?id=wiki:user:Barnacle_Ed)
+BitcoinAlchemist,1JBmwfJ4HmxTDDYwZY1rC63xR9h8Usqtat,12-Word Count(http://devtome.com/doku.php?id=wiki:user:BitcoinAlchemist)
+Bmlzootown,1Dx6QsUh2BjcYSkFdFtrCRC9Xx5fDJWeHp,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Bmlzootown)
+Ceebizcut,1M5haKYJ8PJ43kHTs6okSBLj5gUhLRQiUJ,7-Word Count(http://devtome.com/doku.php?id=wiki:user:Ceebizcut)
+Cryptobyte,1HwxMzbFqZfyE6HaR2D3keJQ1ync1V5UQR,5-Word Count(http://devtome.com/doku.php?id=wiki:user:Cryptobyte)
+Cryptopi,19GkNDjmTiGsmyCijGx6tpXdT67W3rNPHE,34-Word Count(http://devtome.com/doku.php?id=wiki:user:Cryptopi)
+DeadSea33,1A9qwtctYmYrCKSegy7RrNCUJxuohwFQmD,70-Word Count(http://devtome.com/doku.php?id=wiki:user:DeadSea33)
+Devtome_Writer,17wwzTrWrk1buS9bxEFdgTsvhiyrDakBZe,10-Word Count(http://devtome.com/doku.php?id=wiki:user:Devtome_Writer)
+Dexter,18jMxk8jqwvgpx4wT48VAb6jGbYNazz4b7,67-Word Count(http://devtome.com/doku.php?id=wiki:user:Dexter)
+Diamondcardz,18q45dAKGakQdPkjrg17NrfdiFGKWULwSJ,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Diamondcardz)
+Eammy,1EPRS5bUm6USqLWZf5faBzZF2dXhHdyfgc,8-Word Count(http://devtome.com/doku.php?id=wiki:user:Eammy)
+Eeharris,1CfWWyDNUeioJc7TBnqDBDyQKJUYwT7S2Z,31-Word Count(http://devtome.com/doku.php?id=wiki:user:Eeharris)
+Emilianoz,1EykDePNj9311jvwcUaZczCjNFQ6Ep1zmi,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Emilianoz)
+Estera,14VRNYCwocTSAyPprHnKx12Eim6jDBHYZq,17-Word Count(http://devtome.com/doku.php?id=wiki:user:Estera)
+Fheenix,1JvdsgxiJQYAJSE4Tjs3BWbXZk6Kw9mxnB,46-Word Count(http://devtome.com/doku.php?id=wiki:user:Fheenix)
+FinShaggy,1BbHG9is6AisQq47Zxi9KHVb3Duo6Lbi9M,7-Word Count(http://devtome.com/doku.php?id=wiki:user:FinShaggy)
+Glongsword,1CRfD8qjUd8uKnYX35oxz8qAYrCnn2Zryc,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Glongsword)
+Grantbills,1Dz6fEZma7bUwnGo44yRjgduP71cWtkgS4,27-Word Count(http://devtome.com/doku.php?id=wiki:user:Grantbills)
+Hellinoos,19xyjSda5tHdkdyYCSsEp9Psq9ELgKJrJd,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Hellinoos)
+Hemingway,1Mrin7GnKsBPJ78mqZiChKzNtY5WC84WFZ,25-Word Count(http://devtome.com/doku.php?id=wiki:user:Hemingway)
+JackRussell,1CcWpm9HSqZwE96H3SeB7V1QGUhGHfxJh,3-Word Count(http://devtome.com/doku.php?id=wiki:user:JackRussell)
+Lawyer,13B9eDYgwTdhfWHgQXYT8EWNpL3uV4Ffie,77-Word Count(http://devtome.com/doku.php?id=wiki:user:Lawyer)
+Matt2416,19wkReFDngXWYvqrC7g96SD3uuqR5P8ahX,8-Word Count(http://devtome.com/doku.php?id=wiki:user:Matt2416)
+Maximilian_Wilhelm,1BroUgeCemQvWeYBekpFyEFGZVqrXnrtQ9,50-Word Count(http://devtome.com/doku.php?id=wiki:user:Maximilian_Wilhelm)
+Metazilla,1CJSRunQtPQsiZRK7vznyeCfyDTb2kxGA8,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Metazilla)
+Moxy_Jane,184yBE6BY5WRpUvj7pzXjdRaemUByHvgx3,14-Word Count(http://devtome.com/doku.php?id=wiki:user:Moxy_Jane)
+Odolvlobo,1dmnkVoTBRLvJMSpRGnVMvFR7ygsKz3s4,5-Word Count(http://devtome.com/doku.php?id=wiki:user:Odolvlobo)
+Operaficionado,19FLaursDZbNyB7Fvj4wjKXYcX8GrZkkGr,15-Word Count(http://devtome.com/doku.php?id=wiki:user:Operaficionado)
+Osoverflow,1AzAEfFAcctucZB9H2P5d8TRJQFLWyBJPf,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Osoverflow)
+Raptorak,1ASdsZ1JUwtVXDfYBx7MRNMeHQ8J51pSRw,80-Word Count(http://devtome.com/doku.php?id=wiki:user:Raptorak)
+Shakezula,1AyjX2QpTYFnmMFnzD3A2sqosfrrMuKbcz,37-Word Count(http://devtome.com/doku.php?id=wiki:user:Shakezula)
+Shortstain,1NNRTWBA5PLVUwHsgCwQ6XTerak59VQCjL,14-Word Count(http://devtome.com/doku.php?id=wiki:user:Shortstain)
+Stealtheh,1KZBFKD7NpV7ndufLZfKDdQgRz8nfXEBDm,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Stealtheh)
+The_Goat_Master,1KGxe5my4BWjt9CExxPTWBRLVfdfeB6Ery,6-Word Count(http://devtome.com/doku.php?id=wiki:user:The_Goat_Master)
+Unthinkingbit,17vec4jQGCzMEsTnivizHPaowE715tu2CB,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Unthinkingbit)
+Veruminnumeris,1KZZaLCMPTh9tiNZ7JDXeZUjr6yPYYwtGD,48-Word Count(http://devtome.com/doku.php?id=wiki:user:Veruminnumeris)
+Vilmanoella,14wvMyGUXvJpdW2GbKWCEsMDw5s5Ay2F4r,41-Word Count(http://devtome.com/doku.php?id=wiki:user:Vilmanoella)
+Wardsmith,1SbC9Y3b5eZkYtEd7dbtzD7eP6rtEMfj5,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Wardsmith)
+Weisoq,1Cy9e1Yuwboj63XRkMkT6W6YsGDtYDrsUp,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Weisoq)
+Wiser,1LpoMowMPEVWk2LaJUdAUNaK7gBDRA1r7F,21-Word Count(http://devtome.com/doku.php?id=wiki:user:Wiser)
+Xenophaux,1H5qJrnYG9pPzFZ2zbmKihymnB23ViEbXz,5-Word Count(http://devtome.com/doku.php?id=wiki:user:Xenophaux)
+Yungbull,1NgSfubWAAYrApH5rAe8RYcfdtQTNbWxbo,21-Word Count(http://devtome.com/doku.php?id=wiki:user:Yungbull)
 
 They are generated by devtome.py:
 https://raw.github.com/Unthinkingbit/charity/master/devtome.py
@@ -9,11 +55,11 @@ https://raw.github.com/Unthinkingbit/charity/master/devtome.py
 The word counts for each writer are at:
 https://raw.github.com/Unthinkingbit/charity/master/devtome_99.csv
 
-The word earnings were generated on 2013-06-03, and the total word counts follow below.
+The word earnings were generated on 2013-06-06, and the total word counts follow below.
 
-Collated Word Count: 0
-Collated Weighted Word Count: 0
-Images: 0
-Original Word Count: 7,060
-Total Word Count: 7,060
-Total Weighted Word Count: 7,060
+Collated Word Count: 88,084
+Collated Weighted Word Count: 26,421
+Images: 5
+Original Word Count: 1,462,997
+Total Word Count: 1,551,081
+Total Weighted Word Count: 1,489,468
