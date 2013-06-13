@@ -50,7 +50,7 @@ globalGoldenRatio = math.sqrt(1.25) + 0.5
 
 
 def addAdministratorBonus(accountLines):
-	'Add the administrator bonus, up to a maximum of 7%.'
+	'Add the administrator bonus, up to a maximum of 9%.'
 	originalReceiverLines = getReceiverLinesByAccountLines(accountLines)
 	originalNumberOfLinesFloat = float(len(originalReceiverLines))
 	administrators = []
@@ -63,12 +63,12 @@ def addAdministratorBonus(accountLines):
 		administratorPay += administrator.pay
 		if administrator.isGeneralAdministrator:
 			generalAdministrators.append(administrator)
-	for bonusMultiplier in xrange(3, 1, -1):
+	for bonusMultiplier in xrange(7, 1, -1):
 		bonusPay = bonusMultiplier * float(len(generalAdministrators))
 		totalAdministratorPay = bonusPay + administratorPay
 		totalShares = originalNumberOfLinesFloat + bonusPay
 		percentPay = 0.1 * round(1000.0 * totalAdministratorPay / totalShares)
-		if percentPay < 7.0:
+		if percentPay < 9.0:
 			bonusShares = bonusMultiplier * len(generalAdministrators)
 			accountLines.append('Administrator Bonus' + ': %s Shares' % bonusShares)
 			for generalAdministrator in generalAdministrators:
