@@ -107,15 +107,15 @@ def getImageCount(linkText):
 	if linkText == '':
 		return 0
 	imageCount = 0
-	lines = linkText.lower().split('[[')
+	lines = linkText.lower().split('{{')
 	for line in lines:
-		if line.startswith('file:') or line.startswith('image:'):
-			if (']]') in line:
-				line = line[: line.find(']]')].strip()
-			if ('|') in line:
-				line = line[: line.find('|')].strip()
-			if line.endswith('.gif') or line.endswith('.jpg') or line.endswith('.png'):
-				imageCount += 1
+		endBracketIndex = line.find('}}')
+		if endBracketIndex != -1:
+			line = line[: endBracketIndex].strip()
+#			if ('|') in line:
+#				line = line[: line.find('|')].strip()
+		if line.endswith('.gif') or line.endswith('.jpg') or line.endswith('.png'):
+			imageCount += 1
 	return imageCount
 
 def getIsLastEditByAuthor(linkString, name):

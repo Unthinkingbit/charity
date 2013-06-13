@@ -14,9 +14,9 @@ Boelens,1PZ4yQmyi4JsfhUUHJiNs15gt98MreQXw1,1-Word Count(http://devtome.com/doku.
 Ceebizcut,1M5haKYJ8PJ43kHTs6okSBLj5gUhLRQiUJ,7-Word Count(http://devtome.com/doku.php?id=wiki:user:Ceebizcut)
 Cryptobyte,1HwxMzbFqZfyE6HaR2D3keJQ1ync1V5UQR,5-Word Count(http://devtome.com/doku.php?id=wiki:user:Cryptobyte)
 Cryptopi,19GkNDjmTiGsmyCijGx6tpXdT67W3rNPHE,38-Word Count(http://devtome.com/doku.php?id=wiki:user:Cryptopi)
-DeadSea33,1A9qwtctYmYrCKSegy7RrNCUJxuohwFQmD,60-Word Count(http://devtome.com/doku.php?id=wiki:user:DeadSea33)
+DeadSea33,1A9qwtctYmYrCKSegy7RrNCUJxuohwFQmD,61-Word Count(http://devtome.com/doku.php?id=wiki:user:DeadSea33)
 Devtome_Writer,17wwzTrWrk1buS9bxEFdgTsvhiyrDakBZe,10-Word Count(http://devtome.com/doku.php?id=wiki:user:Devtome_Writer)
-Dexter,18jMxk8jqwvgpx4wT48VAb6jGbYNazz4b7,59-Word Count(http://devtome.com/doku.php?id=wiki:user:Dexter)
+Dexter,18jMxk8jqwvgpx4wT48VAb6jGbYNazz4b7,60-Word Count(http://devtome.com/doku.php?id=wiki:user:Dexter)
 Diamondcardz,18q45dAKGakQdPkjrg17NrfdiFGKWULwSJ,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Diamondcardz)
 Eammy,1EPRS5bUm6USqLWZf5faBzZF2dXhHdyfgc,8-Word Count(http://devtome.com/doku.php?id=wiki:user:Eammy)
 Eeharris,1CfWWyDNUeioJc7TBnqDBDyQKJUYwT7S2Z,80-Word Count(http://devtome.com/doku.php?id=wiki:user:Eeharris)
@@ -31,16 +31,18 @@ Hellinoos,19xyjSda5tHdkdyYCSsEp9Psq9ELgKJrJd,4-Word Count(http://devtome.com/dok
 Hemingway,1Mrin7GnKsBPJ78mqZiChKzNtY5WC84WFZ,25-Word Count(http://devtome.com/doku.php?id=wiki:user:Hemingway)
 JackRussell,1CcWpm9HSqZwE96H3SeB7V1QGUhGHfxJh,5-Word Count(http://devtome.com/doku.php?id=wiki:user:JackRussell)
 Lawyer,13B9eDYgwTdhfWHgQXYT8EWNpL3uV4Ffie,77-Word Count(http://devtome.com/doku.php?id=wiki:user:Lawyer)
+Marticps,12UVr7jmrEitXQfzDPXAQ7etiVaa21p4iT,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Marticps)
 Matt2416,19wkReFDngXWYvqrC7g96SD3uuqR5P8ahX,15-Word Count(http://devtome.com/doku.php?id=wiki:user:Matt2416)
 Maximilian_Wilhelm,1BroUgeCemQvWeYBekpFyEFGZVqrXnrtQ9,50-Word Count(http://devtome.com/doku.php?id=wiki:user:Maximilian_Wilhelm)
 Metazilla,1CJSRunQtPQsiZRK7vznyeCfyDTb2kxGA8,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Metazilla)
+Mosinnagant,1MWgsbq9464j7RF8WFdJzV72ZKpCxceNfW,8-Word Count(http://devtome.com/doku.php?id=wiki:user:Mosinnagant)
 Moxy_Jane,184yBE6BY5WRpUvj7pzXjdRaemUByHvgx3,14-Word Count(http://devtome.com/doku.php?id=wiki:user:Moxy_Jane)
 Odolvlobo,1dmnkVoTBRLvJMSpRGnVMvFR7ygsKz3s4,6-Word Count(http://devtome.com/doku.php?id=wiki:user:Odolvlobo)
 Operaficionado,19FLaursDZbNyB7Fvj4wjKXYcX8GrZkkGr,15-Word Count(http://devtome.com/doku.php?id=wiki:user:Operaficionado)
 Osoverflow,1AzAEfFAcctucZB9H2P5d8TRJQFLWyBJPf,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Osoverflow)
 Raptorak,1ASdsZ1JUwtVXDfYBx7MRNMeHQ8J51pSRw,80-Word Count(http://devtome.com/doku.php?id=wiki:user:Raptorak)
-Shakezula,1AyjX2QpTYFnmMFnzD3A2sqosfrrMuKbcz,37-Word Count(http://devtome.com/doku.php?id=wiki:user:Shakezula)
-Shortstain,1NNRTWBA5PLVUwHsgCwQ6XTerak59VQCjL,68-Word Count(http://devtome.com/doku.php?id=wiki:user:Shortstain)
+Shakezula,1AyjX2QpTYFnmMFnzD3A2sqosfrrMuKbcz,38-Word Count(http://devtome.com/doku.php?id=wiki:user:Shakezula)
+Shortstain,1NNRTWBA5PLVUwHsgCwQ6XTerak59VQCjL,70-Word Count(http://devtome.com/doku.php?id=wiki:user:Shortstain)
 Stealtheh,1KZBFKD7NpV7ndufLZfKDdQgRz8nfXEBDm,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Stealtheh)
 The_Goat_Master,1KGxe5my4BWjt9CExxPTWBRLVfdfeB6Ery,8-Word Count(http://devtome.com/doku.php?id=wiki:user:The_Goat_Master)
 Veruminnumeris,1KZZaLCMPTh9tiNZ7JDXeZUjr6yPYYwtGD,48-Word Count(http://devtome.com/doku.php?id=wiki:user:Veruminnumeris)
@@ -57,11 +59,11 @@ https://raw.github.com/Unthinkingbit/charity/master/devtome.py
 The word counts for each writer are at:
 https://raw.github.com/Unthinkingbit/charity/master/devtome_24.csv
 
-The word earnings were generated on 2013-06-12, and the total word counts follow below.
+The word earnings were generated on 2013-06-13, and the total word counts follow below.
 
 Collated Word Count: 133,628
 Collated Weighted Word Count: 40,083
-Images: 5
-Original Word Count: 1,623,443
-Total Word Count: 1,757,071
-Total Weighted Word Count: 1,663,576
+Images: 592
+Original Word Count: 1,631,609
+Total Word Count: 1,765,237
+Total Weighted Word Count: 1,677,612
