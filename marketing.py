@@ -133,15 +133,17 @@ def getPayoutFifthTerracoin(linkText):
 		return 1
 	return 0
 
-def getPublishers(lines, workerNameSet):
+def getPublishers(lines, round):
 	publishers = []
+	workerNameSet = set(account.getRecipientDictionary(round).keys())
+	shareListSet = account.getShareListSet(round)
 	for line in lines[1 :]:
 		splitLine = line.split(',')
 		if len(splitLine) > 1:
 			name = splitLine[0].strip()
 			if name != '':
 				coinAddress = splitLine[1].strip()
-				publisher = Publisher(coinAddress, name)
+				publisher = Publisher(coinAddress, name in shareListSet, name)
 				if publisher.name in workerNameSet:
 					publishers.append(publisher)
 				else:
@@ -173,8 +175,7 @@ def writeOutput(arguments):
 	lines = almoner.getTextLines(almoner.getFileText(publishersFileName))
 	outputEarningsTo = almoner.getParameter(arguments, 'marketing_earnings_%s.csv' % round, 'earnings')
 	outputSummaryTo = almoner.getParameter(arguments, 'marketing_summary.txt', 'summary')
-	workerNameSet = set(account.getRecipientDictionary(round).keys())
-	publishers = getPublishers(lines, workerNameSet)
+	publishers = getPublishers(lines, round)
 	earningsText = getEarningsText(publishers)
 	if almoner.sendOutputTo(outputEarningsTo, earningsText):
 		print('The marketing earnings bounty file has been written to:\n%s\n' % outputEarningsTo)
@@ -184,7 +185,7 @@ def writeOutput(arguments):
 
 class Publisher:
 	'A class to handle a publisher.'
-	def __init__(self, coinAddress, name):
+	def __init__(self, coinAddress, isShareName, name):
 		'Initialize.'
 		self.coinAddress = coinAddress
 		self.domainPayoutSet = set([])
@@ -230,6 +231,9 @@ class Publisher:
 				self.payoutFifth += 1
 				print('Small post payout: 1')
 		if self.payoutFifth > 0:
+			if isShareName:
+				print('%s is on a share list, so the payout is doubled.' % self.name)
+				self.payoutFifth += self.payoutFifth
 			print('Total payout fifths: %s' % self.payoutFifth)
 
 	def addLinkPayout(self, lineStrippedLower):

@@ -282,6 +282,23 @@ def getRecipientDictionary(round):
 				recipientDictionary[name] = accountLineSplit[1]
 	return recipientDictionary
 
+def getShareListSet(round):
+	'Get the names of the developers on the share list set.'
+	isShareName = False
+	shareListSet = set([])
+	for accountLine in getAccountLines([], str(round)):
+		accountLineSplit = accountLine.split(',')
+		if len(accountLineSplit) == 0:
+			isShareName = False
+		elif len(accountLineSplit[0]) == 0:
+			isShareName = False
+		if isShareName:
+			shareListSet.add(accountLineSplit[0])
+		if len(accountLineSplit) == 1:
+			if ' Share List: ' in accountLineSplit[0]:
+				isShareName = True
+	return shareListSet
+
 def getShuffledElements(elements):
 	"""
 	Because the number of lines is usually not perfectly divisible into 4,000, the addresses of each developer are spread out, so that in each
