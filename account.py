@@ -428,9 +428,14 @@ class Administrator:
 			bracketIndex = word.find('(')
 			if bracketIndex > -1:
 				wordUntilBracket = word[: bracketIndex]
-			if wordUntilBracket == '2/5-File Administrator':
+			if wordUntilBracket.endswith('-File Administrator'):
 				self.isFileAdministrator = True
-				self.pay += 0.4
+				numberStrings = wordUntilBracket[: wordUntilBracket.find('-')].split('/')
+				firstFloat = float(numberStrings[0])
+				if len(numberStrings) == 2:
+					self.pay += firstFloat / float(numberStrings[1])
+				else:
+					self.pay += firstFloat
 			elif 'Administrator' in wordUntilBracket:
 				dashIndex = wordUntilBracket.find('-')
 				if dashIndex != -1:

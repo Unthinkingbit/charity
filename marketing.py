@@ -63,6 +63,10 @@ import sys
 __license__ = 'MIT'
 
 
+globalShareValue = 20
+globalDollarDivider = globalShareValue / 5 / 2 # globalShareValue / 5 (payout fifth) / 2 (devcoin bonus)
+
+
 def getEarningsText(publishers):
 	'Get the marketing earnings text.'
 	cString = cStringIO.StringIO()
@@ -96,7 +100,7 @@ def getExtraPayoutFifth(lineStrippedLower):
 	dollarsPerMonth = 30000000 / rank / 4 # banner add will grab one quarter of the revenue
 	if lineStrippedLower == 'bitcoinaddict.com':
 		dollarsPerMonth = dollarsPerMonth * 8 / 10
-	return max(dollarsPerMonth / 4 - 2, 1) # 5 = 40$ (share) / 5 (payout fifth) / 2 (devcoin bonus)
+	return max(dollarsPerMonth / globalDollarDivider - 2, 1)
 
 def getPayoutFifthBitcoin(linkText):
 	'Get the payout fifth for a bitcoin forum signature.'
