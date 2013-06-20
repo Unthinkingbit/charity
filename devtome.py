@@ -122,7 +122,7 @@ def getIsLastEditByAuthor(linkString, name):
 	'Determine if the last edit was by the author.'
 	if name == 'Knotwork' or name == 'Kumala' or name == 'Icoin' or name == 'Unthinkingbit':
 		return True
-	revisionsText = almoner.getInternetText('http://devtome.com/doku.php?id=%s&do=edit' % linkString)
+	revisionsText = almoner.getInternetText('http://devtome.com/doku.php?id=%s&do=revisions' % linkString)
 	time.sleep(1)
 	lastModIndex = revisionsText.find('<li id="lastmod">')
 	if lastModIndex == -1:
@@ -136,7 +136,7 @@ def getIsLastEditByAuthor(linkString, name):
 	revisionsText = revisionsText[: breakIndex]
 	byString = ' by '
 	byIndex = revisionsText.find(byString)
-	if byString == -1:
+	if byIndex == -1:
 		print('Warning, byString not found on revisions page.')
 		return False
 	editor = revisionsText[byIndex + len(byString) :].strip()
