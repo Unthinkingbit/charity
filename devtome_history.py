@@ -100,7 +100,7 @@ def writeOutput(arguments):
 	lastRound = int(almoner.getParameter(arguments, '9999999', 'round'))
 	outputHistoryTo = almoner.getParameter(arguments, 'devtome_history.csv', 'output')
 	weightedWordCounts = getWeightedWordCounts(lastRound, start)
-	historyText = getHistoryText(start, weightedWordCounts)
+	historyText = getHistoryText(start, weightedWordCounts[: -1]) # because the last count is for a partial round
 	if almoner.sendOutputTo(outputHistoryTo, historyText):
 		print('The history file has been written to:\n%s\n' % outputHistoryTo)
 
