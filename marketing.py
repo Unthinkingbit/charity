@@ -97,7 +97,7 @@ def getExtraPayoutFifth(lineStrippedLower):
 	rank = int(alexaText)
 	if rank < 0:
 		return 1
-	dollarsPerMonth = 30000000 / rank / 4 # banner add will grab one quarter of the revenue
+	dollarsPerMonth = 15000000 / rank / 4 # banner add will grab one quarter of the revenue
 	if lineStrippedLower == 'bitcoinaddict.com':
 		dollarsPerMonth = dollarsPerMonth * 8 / 10
 	return max(dollarsPerMonth / globalDollarDivider - 2, 1)

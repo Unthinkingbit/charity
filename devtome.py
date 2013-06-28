@@ -1,24 +1,13 @@
 """
-<textarea id="wpTextbox1" name="wpTextbox1" cols="80" rows="25" readonly="">==Articles==
-===Collated===
-*[[Home Remedy]] - Source: [http://en.wikibooks.org/wiki/Ethnomedicine/Ethnomedicine_by_Illness Ethnomedicine by Illness] and [http://en.wikibooks.org/wiki/Ethnomedicine/Home_Remedies Home Remedies] - Improvement: Combined wikibooks with wikipedia articles
+Devtome is a program to calculate the writer earnings.
 
-===Original===
-*[[Devcoin]] - Source: [https://github.com/Unthinkingbit/charity/blob/master/devcoin.html https://github.com/Unthinkingbit/charity/blob/master/devcoin.html]
-*[[Devcoin_bounty|Devcoin Bounty]] - Source: [https://github.com/Unthinkingbit/charity/blob/master/devcoin_bounty.html https://github.com/Unthinkingbit/charity/blob/master/devcoin_bounty.html]
+The weighted word counts for all the articles invoiced by the writer are totalled. The word count is divided by a thousand to get the total number of shares. The total minus the total of the previous round is the earnings for that round, which is written to the earnings file. All the statistics for the writers for that round are written to the devtome file.
 
-==Tip==
-Coin Address: 17vec4jQGCzMEsTnivizHPaowE715tu2CB</textarea>
-
-
-Account is a program to generate a devcoin receiver file from a bitcoinshare, bounty, devcoinshare and peer file.
-
-This is meant to be used by devcoin accountants and auditors to create and check the receiver files.  The account file has a list of addresses and shares.  Anything after a dash is a comment.
-
+The weighted word count is the sum of the words, plus the number of images times ten. If the article is in the collated section, the total is multiplied by 0.3. The writers are read from the devtome file of the previous round.
 
 ==Commands==
 ===Help===
-The -h option, the -help option, will print the help, which is this document.  The example follows:
+The -h option, or the -help option, will print the help, which is this document. The example follows:
 python account.py -h
 
 ===Input===
