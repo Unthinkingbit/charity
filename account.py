@@ -169,7 +169,7 @@ def getCutLines(cutLines, suffixNumber):
 	"""
 	The lines are cut at a different part of the list, so that a developer whose key starts with 1A does not get more on average over multiple
 	rounds than a developer whose key starts with 1Z. This is done by cutting the list at an index which is the golden ratio times the round
-	number, then modulo is used to keep it within the list bounds. It also reverses the list at every even suffix number, in case cutting is
+	number, then modulo is used to keep it within the list bounds. It also reverses the list at every even round number, in case cutting is
 	not enough to average pay over multiple rounds.
 	"""
 	rotation = (float(suffixNumber) * globalGoldenRatio) % 1.0
@@ -313,7 +313,7 @@ def getShuffledElements(elements):
 	return shuffledElements
 
 def getSuffixNumber(fileName):
-	'Determine the suffix number, returning 0 if there is not one.'
+	'Determine the round number, returning 0 if there is not one.'
 	underscoreIndex = fileName.rfind('_')
 	if underscoreIndex == -1:
 		return 0
