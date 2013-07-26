@@ -4,13 +4,11 @@ http://devcoinpool.btc-music.com/receiver/receiver_25.csv
 http://devcoinblockexplorer.info/receiver/receiver_25.csv
 http://devtome.com/files/receiver_25.csv
 http://devcoin.darkgamex.ch/receiver_25.csv
-http://d.evco.in/receiver/receiver_25.csv
-http://show-me-the-devcoin.info/devtome/receiver_25.csv
 
 The account file is at:
 http://galaxies.mygamesonline.org/account_25.csv
 
-There were 669 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 669 = 269,058 dvc. Administrator pay is 54.0 shares, 8.1 percent of the total.
+There were 669 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 669 = 269,058 dvc. Administrator pay is 54.0 shares, 8.1 percent of the total. The value at vircurex is 0.855 mcbtc/dvc, which works out to 0.23 btc. At the mtgox price of 96$, that works out to 22$. 
 
 People on that list will start getting those coins in round 25, starting at block 100,000. The procedure for generating the receiver files is at:
 http://devtome.com/doku.php?id=devcoin#generating_the_files
