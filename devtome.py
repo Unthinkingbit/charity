@@ -59,12 +59,13 @@ def addJoinedTitles(cString, words):
 	words.append('Word Count')
 	words.append('Weighted Word Count')
 	words.append('Cumulative Payout')
+	words.append('Unique Page Views')
 	words.append('Proportion')
 	words.append('Previous Cumulative Payout')
 	words.append('Payout')
 	cString.write('%s\n' % ','.join(words))
 
-def getAuthors(backupFolder, lines, titles):
+def getAuthors(backupFolder, lines, titles, viewDictionary):
 	'Get the authors.'
 	authors = []
 	authorSet = set([])
@@ -73,7 +74,7 @@ def getAuthors(backupFolder, lines, titles):
 		words = line.split(',')
 		if len(words) > 0:
 			if len(words[0]) > 0:
-				author = Author(backupFolder, titles, words)
+				author = Author(backupFolder, titles, viewDictionary, words)
 				if author.name not in authorSet:
 					authorSet.add(author.name)
 					authors.append(author)
@@ -154,14 +155,13 @@ def getLinkName(line):
 		linkString = linkString[: linkDividerIndex]
 	return linkString.strip().replace(' ', '_')[1 :]
 
-def getLinkText(line, name):
+def getLinkText(lowerLinkName, name):
 	'Get the text of the page linked to in the line.'
-	linkString = getLinkName(line)
-	if linkString == '':
+	if lowerLinkName == '':
 		return ''
 	time.sleep(1)
-	if getIsLastEditByAuthor(linkString, name):
-		return getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % linkString)
+	if getIsLastEditByAuthor(lowerLinkName, name):
+		return getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % lowerLinkName)
 	return ''
 
 def getSourceText(address):
@@ -228,16 +228,27 @@ def getTotalTomecount(authors):
 	totalTomecount = Tomecount()
 	totalTomecount.proportion = 1.0
 	for author in authors:
-		totalTomecount.collatedWordCount += author.tomecount.collatedWordCount
 		totalTomecount.collatedWeightedWordCount += author.tomecount.collatedWeightedWordCount
+		totalTomecount.collatedWordCount += author.tomecount.collatedWordCount
+		totalTomecount.cumulativePayout += author.tomecount.cumulativePayout
 		totalTomecount.imageCount += author.tomecount.imageCount
 		totalTomecount.originalWordCount += author.tomecount.originalWordCount
-		totalTomecount.wordCount += author.tomecount.wordCount
-		totalTomecount.weightedWordCount += author.tomecount.weightedWordCount
-		totalTomecount.cumulativePayout += author.tomecount.cumulativePayout
+		totalTomecount.pageViews += author.tomecount.pageViews
 		totalTomecount.payout += author.tomecount.payout
 		totalTomecount.previousPayout += author.tomecount.previousPayout
+		totalTomecount.weightedWordCount += author.tomecount.weightedWordCount
+		totalTomecount.wordCount += author.tomecount.wordCount
 	return totalTomecount
+
+def getViewDictionary(viewFileName):
+	'Get the page view dictionary.'
+	viewDictionary = {}
+	lines = almoner.getTextLines(almoner.getFileText(viewFileName))
+	for line in lines[1 :]:
+		words = line.split(',')
+		if len(words) > 1:
+			viewDictionary[words[0]] = words[1]
+	return viewDictionary
 
 def getWordCount(linkText):
 	'Get the word count of the page linked to in the line.'
@@ -253,11 +264,13 @@ def writeOutput(arguments):
 	rootFileName = almoner.getParameter(arguments, 'devtome', 'wiki')
 	currentFileName = almoner.getParameter(arguments, rootFileName + '_%s.csv' % round, 'current')
 	previousFileName = almoner.getParameter(arguments, rootFileName + '_%s.csv' % (round - 1), 'previous')
+	viewFileName = almoner.getParameter(arguments, 'devtome_analytics_%s.csv' % round, 'view')
 	lines = almoner.getTextLines(almoner.getFileText(previousFileName))
 	titleLine = lines[0]
 	titles = titleLine.split(',')
 	backupFolder = rootFileName + '_articles'
-	authors = getAuthors(backupFolder, lines, titles)
+	viewDictionary = getViewDictionary(viewFileName)
+	authors = getAuthors(backupFolder, lines, titles, viewDictionary)
 	totalTomecount = getTotalTomecount(authors)
 	tomecountText = getTomecountText(authors, totalTomecount)
 	earningsText = getEarningsText(authors)
@@ -272,7 +285,7 @@ def writeOutput(arguments):
 
 class Author:
 	'A class to handle an author.'
-	def __init__(self, backupFolder, titles, words):
+	def __init__(self, backupFolder, titles, viewDictionary, words):
 		'Initialize.'
 		self.tomecount = Tomecount()
 		self.parameterDictionary = {}
@@ -293,30 +306,39 @@ class Author:
 			if '==' in lineStrippedLower:
 				isCollated = False
 				isOriginal = False
-				if 'collated' in lineStrippedLower:
-					isCollated = True
-				elif 'original' in lineStrippedLower:
-					isOriginal = True
 			if isCollated:
-				linkText = getLinkText(lineStrippedLower, self.name)
+				lowerLinkName = getLinkName(line).lower()
+				linkText = getLinkText(lowerLinkName, self.name)
 				if linkText not in linkTexts:
 					linkTexts.add(linkText)
 					self.tomecount.imageCount += getImageCount(linkText)
 					wordCount = getWordCount(linkText)
 					self.tomecount.collatedWordCount += wordCount
+					if lowerLinkName in viewDictionary:
+						self.tomecount.pageViews += int(viewDictionary[lowerLinkName])
 					if wordCount > 0:
 						print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
-						almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)[1 :]), linkText)
+						almoner.writeFileText(os.path.join(backupFolder, lowerLinkName), linkText)
 			if isOriginal:
-				linkText = getLinkText(lineStrippedLower, self.name)
+				lowerLinkName = getLinkName(line).lower()
+				linkText = getLinkText(lowerLinkName, self.name)
 				if linkText not in linkTexts:
 					linkTexts.add(linkText)
 					self.tomecount.imageCount += getImageCount(linkText)
 					wordCount = getWordCount(linkText)
 					self.tomecount.originalWordCount += wordCount
+					if lowerLinkName in viewDictionary:
+						self.tomecount.pageViews += int(viewDictionary[lowerLinkName])
 					if wordCount > 0:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
-						almoner.writeFileText(os.path.join(backupFolder, getLinkName(lineStrippedLower)), linkText)
+						almoner.writeFileText(os.path.join(backupFolder, lowerLinkName), linkText)
+			if '==' in lineStrippedLower:
+				isCollated = False
+				isOriginal = False
+				if 'collated' in lineStrippedLower:
+					isCollated = True
+				elif 'original' in lineStrippedLower:
+					isOriginal = True
 		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
@@ -347,16 +369,17 @@ class Tomecount:
 	'A class to handle the tome accounting.'
 	def __init__(self):
 		'Initialize.'
+		self.collatedWeightedWordCount = 0
 		self.collatedWordCount = 0
+		self.cumulativePayout = 0
 		self.imageCount = 0
 		self.originalWordCount = 0
-		self.collatedWeightedWordCount = 0
+		self.pageViews = 0
 		self.payout = 0
 		self.previousPayout = 0
 		self.proportion = 0.0
-		self.wordCount = 0
 		self.weightedWordCount = 0
-		self.cumulativePayout = 0
+		self.wordCount = 0
 
 	def __repr__(self):
 		'Get the string representation of this class.'
@@ -371,6 +394,7 @@ class Tomecount:
 		words.append(str(self.wordCount))
 		words.append(str(self.weightedWordCount))
 		words.append(str(self.cumulativePayout))
+		words.append(str(self.pageViews))
 		words.append(str(self.proportion))
 		words.append(str(self.previousPayout))
 		words.append(str(self.payout))
