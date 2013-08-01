@@ -60,6 +60,7 @@ def addJoinedTitles(cString, words):
 	words.append('Weighted Word Count')
 	words.append('Cumulative Payout')
 	words.append('Unique Page Views')
+	words.append('Normalized Root Worth')
 	words.append('Proportion')
 	words.append('Previous Cumulative Payout')
 	words.append('Payout')
@@ -224,9 +225,11 @@ def getTomecountText(authors, totalTomecount):
 	return cString.getvalue()
 
 def getTotalTomecount(authors):
-	'Get the tomecount csv text for the authors.'
+	'Get the tomecount total and calculate the earnings for the authors.'
 	totalTomecount = Tomecount()
 	totalTomecount.proportion = 1.0
+	numberOfWriters = 0
+	totalRootWorth = 0.0
 	for author in authors:
 		totalTomecount.collatedWeightedWordCount += author.tomecount.collatedWeightedWordCount
 		totalTomecount.collatedWordCount += author.tomecount.collatedWordCount
@@ -238,6 +241,14 @@ def getTotalTomecount(authors):
 		totalTomecount.previousPayout += author.tomecount.previousPayout
 		totalTomecount.weightedWordCount += author.tomecount.weightedWordCount
 		totalTomecount.wordCount += author.tomecount.wordCount
+		if author.tomecount.cumulativePayout > 0:
+			numberOfWriters += 1
+		totalRootWorth += author.tomecount.normalizedRootWorth
+	rootWorthMultiplier = float(numberOfWriters) / totalRootWorth
+	totalTomecount.normalizedRootWorth = 1.0
+	for author in authors:
+		if author.tomecount.cumulativePayout > 0:
+			author.tomecount.normalizedRootWorth *= rootWorthMultiplier
 	return totalTomecount
 
 def getViewDictionary(viewFileName):
@@ -351,6 +362,9 @@ class Author:
 		if self.tomecount.payout > maximumPayout:
 			self.tomecount.payout = maximumPayout
 			self.tomecount.cumulativePayout = self.tomecount.previousPayout + maximumPayout
+		if self.tomecount.cumulativePayout > 0:
+			worthRatio = float(self.tomecount.pageViews) / float(self.tomecount.weightedWordCount)
+			self.tomecount.normalizedRootWorth = math.sqrt(math.sqrt(worthRatio))
 
 	def __repr__(self):
 		'Get the string representation of this class.'
@@ -373,6 +387,7 @@ class Tomecount:
 		self.collatedWordCount = 0
 		self.cumulativePayout = 0
 		self.imageCount = 0
+		self.normalizedRootWorth = 0.0
 		self.originalWordCount = 0
 		self.pageViews = 0
 		self.payout = 0
@@ -395,6 +410,7 @@ class Tomecount:
 		words.append(str(self.weightedWordCount))
 		words.append(str(self.cumulativePayout))
 		words.append(str(self.pageViews))
+		words.append(str(self.normalizedRootWorth))
 		words.append(str(self.proportion))
 		words.append(str(self.previousPayout))
 		words.append(str(self.payout))

@@ -10,7 +10,7 @@ https://raw.github.com/Unthinkingbit/charity/master/devtome.py
 The word counts for each writer are at:
 https://raw.github.com/Unthinkingbit/charity/master/devtome_99.csv
 
-The word earnings were generated on 2013-07-31, and the total word counts follow below.
+The word earnings were generated on 2013-08-01, and the total word counts follow below.
 
 Collated Word Count: 205,181
 Collated Weighted Word Count: 61,554
