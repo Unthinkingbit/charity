@@ -59,11 +59,13 @@ def addJoinedTitles(cString, words):
 	words.append('Word Count')
 	words.append('Weighted Word Count')
 	words.append('Cumulative Payout')
-	words.append('Unique Page Views')
-	words.append('Normalized Root Worth')
 	words.append('Proportion')
 	words.append('Previous Cumulative Payout')
 	words.append('Payout')
+	words.append('Unique Page Views')
+	words.append('Normalized Root Worth')
+	words.append('Bounded Earnings Multiplier')
+	words.append('Earnings')
 	cString.write('%s\n' % ','.join(words))
 
 def getAuthors(backupFolder, lines, titles, viewDictionary):
@@ -165,6 +167,22 @@ def getLinkText(lowerLinkName, name):
 		return getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % lowerLinkName)
 	return ''
 
+def getRevenueNeutralEarnings(authors, totalTomecount):
+	'Get the revenue neutral earnings.'
+	earningsMultiplier = 2.0
+	extraMultiplier = earningsMultiplier
+	revenueNeutralEarnings = totalTomecount.payout
+	while extraMultiplier > 0.00001:
+		extraMultiplier *= 0.5
+		revenueNeutralEarnings = getTotalEarnings(authors, earningsMultiplier, totalTomecount)
+		if revenueNeutralEarnings == totalTomecount.payout:
+			return revenueNeutralEarnings
+		if revenueNeutralEarnings > totalTomecount.payout:
+			earningsMultiplier -= extraMultiplier
+		else:
+			earningsMultiplier += extraMultiplier
+	return revenueNeutralEarnings
+
 def getSourceText(address):
 	'Get the devtome source text for the address.'
 	text = almoner.getInternetText(address)
@@ -210,6 +228,16 @@ def getSummaryText(earningsText, round, totalTomecount):
 	cString.write('Total Weighted Word Count: %s\n' % almoner.getCommaNumberString(totalTomecount.weightedWordCount))
 	return cString.getvalue()
 
+def getTotalEarnings(authors, earningsMultiplier, totalTomecount):
+	'Get the total earnings.'
+	totalEarnings = 0
+	for author in authors:
+		if author.tomecount.payout > 0:
+			author.tomecount.boundedEarningsMultiplier = max(min(earningsMultiplier * author.tomecount.normalizedRootWorth, 1.25), 0.75)
+			author.tomecount.earnings = int(round(author.tomecount.boundedEarningsMultiplier * float(author.tomecount.payout)))
+			totalEarnings += author.tomecount.earnings
+	return totalEarnings
+
 def getTomecountText(authors, totalTomecount):
 	'Get the tomecount csv text for the authors.'
 	cString = cStringIO.StringIO()
@@ -227,9 +255,11 @@ def getTomecountText(authors, totalTomecount):
 def getTotalTomecount(authors):
 	'Get the tomecount total and calculate the earnings for the authors.'
 	totalTomecount = Tomecount()
-	totalTomecount.proportion = 1.0
+	numberOfActiveWriters = 0
 	numberOfWriters = 0
+	totalBoundedEarningsMultiplier = 0.0
 	totalRootWorth = 0.0
+	totalTomecount.proportion = 1.0
 	for author in authors:
 		totalTomecount.collatedWeightedWordCount += author.tomecount.collatedWeightedWordCount
 		totalTomecount.collatedWordCount += author.tomecount.collatedWordCount
@@ -249,6 +279,13 @@ def getTotalTomecount(authors):
 	for author in authors:
 		if author.tomecount.cumulativePayout > 0:
 			author.tomecount.normalizedRootWorth *= rootWorthMultiplier
+	earningsMultiplier = 1.0
+	totalTomecount.earnings = getRevenueNeutralEarnings(authors, totalTomecount)
+	for author in authors:
+		if author.tomecount.earnings > 0:
+			totalBoundedEarningsMultiplier += author.tomecount.boundedEarningsMultiplier
+			numberOfActiveWriters += 1
+	totalTomecount.boundedEarningsMultiplier = totalBoundedEarningsMultiplier / float(numberOfActiveWriters)
 	return totalTomecount
 
 def getViewDictionary(viewFileName):
@@ -383,9 +420,11 @@ class Tomecount:
 	'A class to handle the tome accounting.'
 	def __init__(self):
 		'Initialize.'
+		self.boundedEarningsMultiplier = 0.0
 		self.collatedWeightedWordCount = 0
 		self.collatedWordCount = 0
 		self.cumulativePayout = 0
+		self.earnings = 0
 		self.imageCount = 0
 		self.normalizedRootWorth = 0.0
 		self.originalWordCount = 0
@@ -409,11 +448,13 @@ class Tomecount:
 		words.append(str(self.wordCount))
 		words.append(str(self.weightedWordCount))
 		words.append(str(self.cumulativePayout))
-		words.append(str(self.pageViews))
-		words.append(str(self.normalizedRootWorth))
 		words.append(str(self.proportion))
 		words.append(str(self.previousPayout))
 		words.append(str(self.payout))
+		words.append(str(self.pageViews))
+		words.append(str(self.normalizedRootWorth))
+		words.append(str(self.boundedEarningsMultiplier))
+		words.append(str(self.earnings))
 		return '%s\n' % ','.join(words)
 
 def main():
