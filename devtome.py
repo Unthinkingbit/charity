@@ -90,7 +90,7 @@ def getEarningsText(authors):
 	for author in authors:
 		coinAddress = author.parameterDictionary['Coin Address']
 		name = author.parameterDictionary['Name']
-		lastPayoutString = str(author.tomecount.payout)
+		lastPayoutString = str(author.tomecount.earnings)
 		if lastPayoutString != '0':
 			cString.write('%s,%s,%s-Word Count(%s)\n' % (name, coinAddress, lastPayoutString, author.sourceAddress.replace('&do=edit', '')))
 	return cString.getvalue()
