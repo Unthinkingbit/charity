@@ -274,6 +274,8 @@ def getTotalTomecount(authors):
 		if author.tomecount.cumulativePayout > 0:
 			numberOfWriters += 1
 		totalRootWorth += author.tomecount.normalizedRootWorth
+	if totalRootWorth == 0.0:
+		totalRootWorth = 1.0
 	rootWorthMultiplier = float(numberOfWriters) / totalRootWorth
 	totalTomecount.normalizedRootWorth = 1.0
 	for author in authors:

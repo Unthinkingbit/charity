@@ -21,6 +21,7 @@ Kickaha4,12RuaN5UvZYkMn4BiiS4mMoffe3mgjzZMU,2-Word Count(http://devtome.com/doku
 Maitotoxin,1EZpys8PMP8bZxs2tFTY5T7cimmVMZAxuw,6-Word Count(http://devtome.com/doku.php?id=wiki:user:Maitotoxin)
 Matt2416,19wkReFDngXWYvqrC7g96SD3uuqR5P8ahX,3-Word Count(http://devtome.com/doku.php?id=wiki:user:Matt2416)
 Mistercoin,1PxUC79jXvZRbewCeRLPm9gtUbzWGdC2h8,5-Word Count(http://devtome.com/doku.php?id=wiki:user:Mistercoin)
+Mosinnagant,17vec4jQGCzMEsTnivizHPaowE715tu2CB,8-Word Count(http://devtome.com/doku.php?id=wiki:user:Mosinnagant)
 Nsddev,1F5uDaCF8ZP6kiLHvDhWsSNPHP6kwt7udi,34-Word Count(http://devtome.com/doku.php?id=wiki:user:Nsddev)
 Pb321go,1BCLJDtMgucGgFE9GxKpeBZ2r1Ho5kuBso,60-Word Count(http://devtome.com/doku.php?id=wiki:user:Pb321go)
 Penguinwriter,1LNL1Zrg5h2z8m9c48fgdMx2uXmN3S5Kch,58-Word Count(http://devtome.com/doku.php?id=wiki:user:Penguinwriter)
@@ -44,6 +45,6 @@ The word earnings were generated on 2013-08-14, and the total word counts follow
 Collated Word Count: 650,775
 Collated Weighted Word Count: 195,227
 Images: 900
-Original Word Count: 2,579,968
-Total Word Count: 3,230,743
-Total Weighted Word Count: 2,784,195
+Original Word Count: 2,587,968
+Total Word Count: 3,238,743
+Total Weighted Word Count: 2,792,195
