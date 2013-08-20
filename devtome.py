@@ -383,8 +383,6 @@ class Author:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						almoner.writeFileText(os.path.join(backupFolder, lowerLinkName), linkText)
 			if '==' in lineStrippedLower:
-				isCollated = False
-				isOriginal = False
 				if 'collated' in lineStrippedLower:
 					isCollated = True
 				elif 'original' in lineStrippedLower:

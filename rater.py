@@ -135,29 +135,30 @@ class Writer:
 	'A class to handle a writer.'
 	def __init__(self, name):
 		'Initialize.'
+		self.articles = []
 		self.name = name
 		sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
 		print('Loading user page from %s' % self.name)
 		sourceText = devtome.getSourceText(sourceAddress)
-		return ###
+		isCollated = False
+		isOriginal = False
 		for line in almoner.getTextLines(sourceText):
 			lineStrippedLower = line.strip().lower()
 			if '==' in lineStrippedLower:
-				isLink = False
-				isPost = False
-				isSignature = False
-				if 'link' in lineStrippedLower:
-					isLink = True
-				if 'post' in lineStrippedLower:
-					isPost = True
-				if 'signature' in lineStrippedLower:
-					isSignature = True
-			if isLink:
-				self.addLinkPayout(lineStrippedLower)
-			if isPost:
-				self.addPostPayout(lineStrippedLower)
-			if isSignature:
-				self.addSignaturePayout(lineStrippedLower)
+				isCollated = False
+				isOriginal = False
+			if isCollated:
+				lowerLinkName = devtome.getLinkName(line).lower()
+				self.articles.append(lowerLinkName)
+			if isOriginal:
+				lowerLinkName = devtome.getLinkName(line).lower()
+				self.articles.append(lowerLinkName)
+			if '==' in lineStrippedLower:
+				if 'collated' in lineStrippedLower:
+					isCollated = True
+				elif 'original' in lineStrippedLower:
+					isOriginal = True
+		print(  self.articles)
 
 	def __repr__(self):
 		'Get the string representation of this class.'
