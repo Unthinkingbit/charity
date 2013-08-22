@@ -156,7 +156,12 @@ def getLinkName(line):
 	linkDividerIndex = linkString.find('|')
 	if linkDividerIndex != -1:
 		linkString = linkString[: linkDividerIndex]
-	return linkString.strip().replace(' ', '_')[1 :]
+	if len(linkString) == 0:
+		return ''
+	linkString = linkString.strip()
+	if linkString[0] == ':':
+		linkString = linkString[1 :]
+	return linkString.strip().replace(' ', '_')
 
 def getLinkText(lowerLinkName, name):
 	'Get the text of the page linked to in the line.'
