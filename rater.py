@@ -80,6 +80,7 @@ def getRaterText(maximumWriters, round):
 	raters = getRaters()
 	raters.sort()
 	writers = getWriters(round)
+	random.shuffle(writers)
 	writersInRange = WriterRange()
 	for raterIndex, rater in enumerate(raters):
 		if raterIndex != 0:
@@ -93,8 +94,8 @@ def getRaterText(maximumWriters, round):
 		for ratedWritersIndex, ratedWriter in enumerate(ratedWriters):
 			articles = ratedWriter.articles
 			articleLinkString = '[[%s]]' % articles[int(float(len(articles)) * random.random())]
-			if ratedWritersIndex % 2 == 0 and ratedWritersIndex > 0:
-				cString.write('\n\n\n')
+			if ratedWritersIndex % 3 == 0 and ratedWritersIndex > 0:
+				cString.write('\n')
 			cString.write('*[[wiki:user:%s]], %s: ?\n' % (ratedWriter.name.lower(), articleLinkString))
 	return cString.getvalue()
 
@@ -120,6 +121,7 @@ def writeOutput(arguments):
 	if '-h' in arguments or '-help' in arguments:
 		print(__doc__)
 		return
+	random.seed(1) #delete this after test
 	round = int(almoner.getParameter(arguments, '26', 'round'))
 	maximumWriters = int(almoner.getParameter(arguments, '12', 'writers'))
 	outputRaterTo = almoner.getParameter(arguments, 'rater_%s.csv' % round, 'rater')
