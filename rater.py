@@ -89,6 +89,7 @@ def getRaterText(maximumWriters, round):
 		cString.write('Create:\n')
 		cString.write('http://devtome.com/doku.php?id=rating_%s_%s\n\n' % (rater.lower(), round))
 		cString.write('Copy and paste:\n')
+		cString.write('Writer, Article: 0-99\n')
 		for ratedWritersIndex, ratedWriter in enumerate(ratedWriters):
 			articles = ratedWriter.articles
 			articleLinkString = '[[%s]]' % articles[int(float(len(articles)) * random.random())]
