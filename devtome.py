@@ -145,8 +145,9 @@ def getLinkName(line):
 	'Get the name of the article in the line.'
 	linkStartIndex = line.find('[[')
 	if linkStartIndex == -1:
-		if '[' in line:
+		if '[' in line and 'devtome.' in line:
 			print('Warning, external link format instead of internal link format.')
+			print(line)
 		return ''
 	linkStartIndex += len('[[')
 	linkEndIndex = line.find(']]', linkStartIndex)
@@ -161,6 +162,7 @@ def getLinkName(line):
 	linkString = linkString.strip()
 	if linkString[0] == ':':
 		linkString = linkString[1 :]
+	linkString = linkString.replace('&amp;', ' ').replace('  ', ' ').replace('  ', ' ')
 	return linkString.strip().replace(' ', '_')
 
 def getLinkText(lowerLinkName, name):

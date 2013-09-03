@@ -93,10 +93,10 @@ def getRaterText(maximumWriters, round):
 		cString.write('Writer, Article: 0-99\n')
 		for ratedWritersIndex, ratedWriter in enumerate(ratedWriters):
 			articles = ratedWriter.articles
-			articleLinkString = '[[%s]]' % articles[int(float(len(articles)) * random.random())]
+			articleLinkString = '[[%s]]' % articles[int(float(len(articles)) * random.random())].replace('_', ' ').capitalize()
 			if ratedWritersIndex % 3 == 0 and ratedWritersIndex > 0:
 				cString.write('\n')
-			cString.write('*[[wiki:user:%s]], %s: ?\n' % (ratedWriter.name.lower(), articleLinkString))
+			cString.write('*[[wiki:user:%s]], %s: \n' % (ratedWriter.name.capitalize(), articleLinkString))
 	return cString.getvalue()
 
 def getWriterName(writer):
