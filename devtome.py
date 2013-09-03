@@ -131,6 +131,7 @@ def getIsLastEditByAuthor(linkString, name):
 	byIndex = revisionsText.find(byString)
 	if byIndex == -1:
 		print('Warning, byString not found on revisions page.')
+		print(linkString)
 		return False
 	editor = revisionsText[byIndex + len(byString) :].strip()
 	if editor == 'raptorak' or editor == 'unthinkingbit' or editor == 'weisoq':
@@ -162,7 +163,7 @@ def getLinkName(line):
 	linkString = linkString.strip()
 	if linkString[0] == ':':
 		linkString = linkString[1 :]
-	linkString = linkString.replace('&amp;', ' ').replace('  ', ' ').replace('  ', ' ')
+	linkString = linkString.replace('&amp;', ' ').replace('&quot;', ' ').replace('  ', ' ').replace('  ', ' ')
 	return linkString.strip().replace(' ', '_')
 
 def getLinkText(lowerLinkName, name):

@@ -105,7 +105,7 @@ def getWriterName(writer):
 
 def getWriters(round):
 	writers = []
-	lines = almoner.getTextLines(almoner.getFileText('devtome_%s.csv' % round))
+	lines = almoner.getTextLines(almoner.getFileText('devtome_%s.csv' % (round - 1)))
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 1:
@@ -122,7 +122,7 @@ def writeOutput(arguments):
 		print(__doc__)
 		return
 	random.seed(1) #delete this after test
-	round = int(almoner.getParameter(arguments, '26', 'round'))
+	round = int(almoner.getParameter(arguments, '27', 'round'))
 	maximumWriters = int(almoner.getParameter(arguments, '12', 'writers'))
 	outputRaterTo = almoner.getParameter(arguments, 'rater_%s.csv' % round, 'rater')
 #	ratingFileName = almoner.getParameter(arguments, 'rating_%s.csv' % round, 'rating')
