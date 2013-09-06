@@ -82,6 +82,13 @@ def getAuthors(backupFolder, lines, titles, viewDictionary):
 					authorSet.add(author.name)
 					authors.append(author)
 	almoner.writeZipFileByFolder(backupFolder)
+	for author in authors:
+		if len(author.warnings) > 0:
+			print('BIG WARNING')
+			print(author.name)
+			for warning in author.warnings:
+				print(warning)
+			print('')
 	return authors
 
 def getEarningsText(authors):
@@ -113,7 +120,7 @@ def getImageCount(linkText):
 
 def getIsLastEditByAuthor(linkString, name):
 	'Determine if the last edit was by the author.'
-	if name == 'Knotwork' or name == 'Kumala' or name == 'Icoin' or name == 'Unthinkingbit':
+	if name == 'Knotwork' or name == 'Kumala' or name == 'Icoin' or name == 'Xenophaux' or name == 'Unthinkingbit':
 		return True
 	revisionsText = almoner.getInternetText('http://devtome.com/doku.php?id=%s&do=revisions' % linkString)
 	time.sleep(1)
@@ -347,23 +354,27 @@ class Author:
 		'Initialize.'
 		self.tomecount = Tomecount()
 		self.parameterDictionary = {}
+		self.warnings = []
 		for wordIndex, word in enumerate(words):
 			self.parameterDictionary[titles[wordIndex]] = word
 		if 'Cumulative Payout' in self.parameterDictionary:
 			self.tomecount.previousPayout = int(self.parameterDictionary['Cumulative Payout'])
 		self.name = self.parameterDictionary['Name']
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
+		tipAddress = ''
 		print('Loading articles from %s' % self.name)
 		sourceText = getSourceText(self.sourceAddress)
 		almoner.writeFileText(os.path.join(backupFolder, 'wiki:user:' + self.name), sourceText)
 		isCollated = False
 		isOriginal = False
+		isTip = False
 		linkTexts = set([])
 		for line in almoner.getTextLines(sourceText):
 			lineStrippedLower = line.strip().lower()
 			if '==' in lineStrippedLower:
 				isCollated = False
 				isOriginal = False
+				isTip = False
 			if isCollated:
 				lowerLinkName = getLinkName(line).lower()
 				linkText = getLinkText(lowerLinkName, self.name)
@@ -390,11 +401,17 @@ class Author:
 					if wordCount > 0:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						almoner.writeFileText(os.path.join(backupFolder, lowerLinkName), linkText)
+			if isTip:
+				tipAddress = line.strip()
+				if ':' in tipAddress:
+					tipAddress = tipAddress[tipAddress.find(':') + 1 :].strip()
 			if '==' in lineStrippedLower:
 				if 'collated' in lineStrippedLower:
 					isCollated = True
 				elif 'original' in lineStrippedLower:
 					isOriginal = True
+				elif 'tip' in lineStrippedLower:
+					isTip = True
 		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
@@ -404,6 +421,9 @@ class Author:
 		print('Weighted Word Count: %s' % almoner.getCommaNumberString(self.tomecount.weightedWordCount))
 		self.tomecount.payout = max(self.tomecount.cumulativePayout - self.tomecount.previousPayout, 0)
 		maximumPayout = 80
+		if tipAddress != self.parameterDictionary['Coin Address']:
+			self.printWarning('Warning, the coin address is not the same as the tip address, so nothing will be paid.')
+			maximumPayout = 0
 		if self.tomecount.payout > maximumPayout:
 			self.tomecount.payout = maximumPayout
 			self.tomecount.cumulativePayout = self.tomecount.previousPayout + maximumPayout
@@ -422,6 +442,11 @@ class Author:
 			cString.write('%s\n' % ','.join(words))
 			return 
 		cString.write(self.tomecount.getJoinedWords(words))
+
+	def printWarning(self, warning):
+		'Print warning and add it to the warnings.'
+		self.warnings.append(warning)
+		print(warning)
 
 
 class Tomecount:
