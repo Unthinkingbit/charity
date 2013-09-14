@@ -136,7 +136,6 @@ def getIsLastEditByAuthor(linkString, name):
 	revisionsText = revisionsText[: breakIndex]
 	byString = ' by '
 	byIndex = revisionsText.find(byString)
-	return True ###
 	if byIndex == -1:
 		print('Warning, byString not found on revisions page.')
 		print(linkString)
@@ -181,7 +180,7 @@ def getLinkText(lowerLinkName, name):
 		return ''
 	time.sleep(1)
 	if getIsLastEditByAuthor(lowerLinkName, name):
-		return getSourceText('http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % lowerLinkName)
+		return getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % lowerLinkName)
 	return ''
 
 def getRevenueNeutralEarnings(authors, totalTomecount):
