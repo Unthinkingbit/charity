@@ -63,7 +63,7 @@ __license__ = 'MIT'
 
 
 def getNewbieText(previousRecipentSet, round):
-	'Get the list of newbie keys, and optionally also names.'
+	'Get the list of newbie keys, and names.'
 	cString = cStringIO.StringIO()
 	recipientDictionary = account.getRecipientDictionary(round)
 	recipientKeys = recipientDictionary.keys()
