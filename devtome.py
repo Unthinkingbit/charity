@@ -141,7 +141,7 @@ def getIsLastEditByAuthor(linkString, name):
 		print(linkString)
 		return False
 	editor = revisionsText[byIndex + len(byString) :].strip()
-	if editor == 'raptorak' or editor == 'twobits' or editor == 'unthinkingbit' or editor == 'weisoq' or editor == 'xenophaux':
+	if editor == 'raptorak' or editor == 'twobits' or editor == 'unthinkingbit' or editor == 'weisoq' or editor == 'xenophaux' or editor == 'nsddev' or editor == 'ftgcoin':
 		return True
 	if editor != name.lower():
 		print('Warning, editor is not the same as the name.')
