@@ -66,35 +66,27 @@ __license__ = 'MIT'
 def getRatingText(round):
 	'Get the rating text.'
 	cString = cStringIO.StringIO()
+	maxLength = 0
 	ratings = getRatings(round)
+	ratings.append(ratings[0])
 	authorDictionary = {}
 	for rating in ratings:
-		author = rating.author
-		if author in authorDictionary:
-			authorDictionary[author].append(rating)
+		if rating.author in authorDictionary:
+			authorDictionary[rating.author].addRating(rating)
 		else:
-			authorDictionary[author] = [rating]
-	cString.write('Author,All Votes,Median\n')
+			authorDictionary[rating.author] = Author(rating)
 	authorKeys = authorDictionary.keys()
 	authorKeys.sort()
 	for authorKey in authorKeys:
-		votes = []
-		voteStrings = []
-		for rating in authorDictionary[authorKey]:
-			votes.append(rating.vote)
-		votes.sort()
-		for vote in votes:
-			voteStrings.append(str(vote))
-		halfLength = len(votes) / 2
-		median = float(votes[halfLength])
-		if len(votes) % 2 == 0:
-			median = 0.5 * (median + float(votes[halfLength + 1]))
-		cString.write('%s,%s,%s\n' % (authorKey, '-'.join(voteStrings), median))
+		maxLength = max(maxLength, len(authorDictionary[authorKey].ratings))
+	titles = ['Author', 'All Votes', 'Median']
+	for voteIndex in xrange(maxLength):
+		titles.append('Address')
+		titles.append('Vote')
+	cString.write('%s\n' % ','.join(titles))
+	for authorKey in authorKeys:
+		authorDictionary[authorKey].addLine(cString)
 	return cString.getvalue()
-
-def getWriterName(writer):
-	'Get the name for sorting.'
-	return writer.name
 
 def getRatingsByAddress(address):
 	'Get the ratings by address.'
@@ -134,6 +126,38 @@ def writeOutput(arguments):
 	ratingText = getRatingText(round)
 	if almoner.sendOutputTo(outputRatingTo, ratingText):
 		print('The rating file has been written to:\n%s\n' % outputRatingTo)
+
+
+class Author:
+	'A class to handle an author.'
+	def __init__(self, rating):
+		'Initialize.'
+		self.name = rating.author
+		self.ratings = []
+		self.addRating(rating)
+
+	def addLine(self, cString):
+		'Add the author to the rating csv cString.'
+		votes = []
+		for rating in self.ratings:
+			votes.append(rating.vote)
+		votes.sort()
+		voteStrings = []
+		for vote in votes:
+			voteStrings.append(str(vote))
+		halfLength = len(voteStrings) / 2
+		median = float(votes[halfLength])
+		if len(voteStrings) % 2 == 0:
+			median = 0.5 * (median + float(votes[halfLength - 1]))
+		fields = [self.name, '-'.join(voteStrings), str(median)]
+		for rating in self.ratings:
+			fields.append(rating.address)
+			fields.append(str(rating.vote))
+		cString.write('%s\n' % ','.join(fields))
+
+	def addRating(self, rating):
+		'Add rating vote.'
+		self.ratings.append(rating)
 
 
 class Rating:
