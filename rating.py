@@ -56,45 +56,45 @@ http://www.python.org/download/
 import almoner
 import cStringIO
 import devtome
+import math
 import sys
 
 
 __license__ = 'MIT'
 
 
-def getRaterText(maximumWriters, round):
-	'Get the rater text.'
+def getRatingText(round):
+	'Get the rating text.'
 	cString = cStringIO.StringIO()
-	raters = getRaters()
-	raters.sort()
-	writers = getWriters(round)
-	random.shuffle(writers)
-	writersInRange = WriterRange()
-	for raterIndex, rater in enumerate(raters):
-		if raterIndex != 0:
-			cString.write('\n\n\n')
-		ratedWriters = writersInRange.getRatedWriters(maximumWriters, round, raters, writers)
-		ratedWriters.sort(key=getWriterName)
-		cString.write('Create:\n')
-		cString.write('http://devtome.com/doku.php?id=rating_%s_%s\n\n' % (rater.lower(), round))
-		cString.write('Copy and paste:\n')
-		cString.write('Writer, Article: 0-99\n')
-		for ratedWritersIndex, ratedWriter in enumerate(ratedWriters):
-			articles = ratedWriter.articles
-			articleLinkString = '[[%s]]' % articles[int(float(len(articles)) * random.random())].replace('_', ' ').capitalize()
-			if ratedWritersIndex % 3 == 0 and ratedWritersIndex > 0:
-				cString.write('\n')
-			cString.write('*[[wiki:user:%s]], %s: \n' % (ratedWriter.name.capitalize(), articleLinkString))
+	ratings = getRatings(round)
+	authorDictionary = {}
+	for rating in ratings:
+		author = rating.author
+		if author in authorDictionary:
+			authorDictionary[author].append(rating)
+		else:
+			authorDictionary[author] = [rating]
+	cString.write('Author,All Votes,Median\n')
+	authorKeys = authorDictionary.keys()
+	authorKeys.sort()
+	for authorKey in authorKeys:
+		votes = []
+		voteStrings = []
+		for rating in authorDictionary[authorKey]:
+			votes.append(rating.vote)
+		votes.sort()
+		for vote in votes:
+			voteStrings.append(str(vote))
+		halfLength = len(votes) / 2
+		median = float(votes[halfLength])
+		if len(votes) % 2 == 0:
+			median = 0.5 * (median + float(votes[halfLength + 1]))
+		cString.write('%s,%s,%s\n' % (authorKey, '-'.join(voteStrings), median))
 	return cString.getvalue()
 
 def getWriterName(writer):
 	'Get the name for sorting.'
 	return writer.name
-
-def getRatings(round):
-	'Get the ratings.'
-	ratings = []
-	return ratings
 
 def getRatingsByAddress(address):
 	'Get the ratings by address.'
@@ -115,6 +115,15 @@ def getRatingsByAddress(address):
 			ratings.append(rating)
 	return ratings
 
+def getRatings(round):
+	'Get the ratings by the round.'
+	lines = almoner.getTextLines(almoner.getFileText('rater_%s.csv' % round))
+	ratings = []
+	for line in lines:
+		if line.startswith('http://devtome.com/doku.php?id=rating_'):
+			ratings += getRatingsByAddress('%s&do=edit' % line.strip())
+	return ratings
+
 def writeOutput(arguments):
 	'Write output.'
 	if '-h' in arguments or '-help' in arguments:
@@ -122,10 +131,7 @@ def writeOutput(arguments):
 		return
 	round = int(almoner.getParameter(arguments, '27', 'round'))
 	outputRatingTo = almoner.getParameter(arguments, 'rating_%s.csv' % round, 'rating')
-	ratings = getRatingsByAddress('http://devtome.com/doku.php?id=rating_unthinkingbit_27&do=edit')
-	print(  ratings)
-	return ###
-	ratingText = getRatingText(maximumWriters, round)
+	ratingText = getRatingText(round)
 	if almoner.sendOutputTo(outputRatingTo, ratingText):
 		print('The rating file has been written to:\n%s\n' % outputRatingTo)
 
@@ -136,8 +142,8 @@ class Rating:
 		'Initialize.'
 		self.address = address
 		self.article = ''
+		self.author = ''
 		self.comment = ''
-		self.ratee = ''
 		self.rater = rater
 		self.vote = 0
 		if not line.startswith('*[[wiki:user:'):
@@ -158,33 +164,14 @@ class Rating:
 		raterWords = raterLine.split(']], [[')
 		if len(raterWords) < 2:
 			return
-		self.ratee = raterWords[0][len('*[[wiki:user:') :].strip()
-		if self.ratee == '':
+		self.author = raterWords[0][len('*[[wiki:user:') :].strip()
+		if self.author == '':
 			return
 		self.article = raterWords[1].strip()
 
 	def __repr__(self):
 		'Get the string representation of this class.'
 		return '%s, %s: %s' % (self.ratee, self.rater, self.vote)
-
-
-class WriterRange:
-	'A class to handle a range of writers.'
-	def __init__(self):
-		'Initialize.'
-		self.writerIndex = 0
-
-	def getRatedWriters(self, maximumWriters, round, unrateables, writers):
-		'Get the rated writers.'
-		numberOfWriters = len(writers)
-		writersInRange = []
-		maximumIndex = self.writerIndex + numberOfWriters
-		while len(writersInRange) < maximumWriters and self.writerIndex < maximumIndex:
-			writer = writers[self.writerIndex % numberOfWriters]
-			if writer.name not in unrateables:
-				writersInRange.append(writer)
-			self.writerIndex += 1
-		return writersInRange
 
 
 def main():

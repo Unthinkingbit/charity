@@ -125,7 +125,7 @@ def writeOutput(arguments):
 	random.seed(1) #delete this after test
 	round = int(almoner.getParameter(arguments, '27', 'round'))
 	maximumWriters = int(almoner.getParameter(arguments, '12', 'writers'))
-	outputRaterTo = almoner.getParameter(arguments, 'rater_%s.csv' % round, 'rater')
+	outputRaterTo = 'rater_%s.csv' % round
 #	ratingFileName = almoner.getParameter(arguments, 'rating_%s.csv' % round, 'rating')
 	raterText = getRaterText(maximumWriters, round)
 	if almoner.sendOutputTo(outputRaterTo, raterText):
