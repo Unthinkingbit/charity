@@ -50,6 +50,10 @@ import time
 __license__ = 'MIT'
 
 
+globalEditors = 'ba_al ftgcoin nsddev raptorak twobits unthinkingbit weisoq xenophaux'.split()
+globalNames = 'knotwork kumala icoin xenophaux unthinkingbit'.split()
+
+
 def addJoinedTitles(cString, words):
 	'Add joined titles to the cString.'
 	words.append('Collated Word Count')
@@ -81,14 +85,8 @@ def getAuthors(backupFolder, lines, titles, viewDictionary):
 				if author.name not in authorSet:
 					authorSet.add(author.name)
 					authors.append(author)
-	almoner.writeZipFileByFolder(backupFolder)
-	for author in authors:
-		if len(author.warnings) > 0:
-			print('BIG WARNING')
-			print(author.name)
-			for warning in author.warnings:
-				print(warning)
-			print('')
+	if len(authors) > 50:
+		almoner.writeZipFileByFolder(backupFolder)
 	return authors
 
 def getEarningsText(authors):
@@ -112,15 +110,14 @@ def getImageCount(linkText):
 		endBracketIndex = line.find('}}')
 		if endBracketIndex != -1:
 			line = line[: endBracketIndex].strip()
-#			if ('|') in line:
-#				line = line[: line.find('|')].strip()
 		if line.endswith('.gif') or line.endswith('.jpg') or line.endswith('.png'):
 			imageCount += 1
 	return imageCount
 
 def getIsLastEditByAuthor(linkString, name):
 	'Determine if the last edit was by the author.'
-	if name == 'Knotwork' or name == 'Kumala' or name == 'Icoin' or name == 'Xenophaux' or name == 'Unthinkingbit':
+	nameLower = name.lower()
+	if nameLower in globalNames:
 		return True
 	revisionsText = almoner.getInternetText('http://devtome.com/doku.php?id=%s&do=revisions' % linkString)
 	time.sleep(1)
@@ -141,9 +138,9 @@ def getIsLastEditByAuthor(linkString, name):
 		print(linkString)
 		return False
 	editor = revisionsText[byIndex + len(byString) :].strip()
-	if editor == 'raptorak' or editor == 'twobits' or editor == 'unthinkingbit' or editor == 'weisoq' or editor == 'xenophaux' or editor == 'nsddev' or editor == 'ftgcoin':
+	if editor in globalEditors:
 		return True
-	if editor != name.lower():
+	if editor != nameLower:
 		print('Warning, editor is not the same as the name.')
 		print(editor)
 		print(linkString)
@@ -249,7 +246,7 @@ def getTotalEarnings(authors, earningsMultiplier, totalTomecount):
 	totalEarnings = 0
 	for author in authors:
 		if author.tomecount.payout > 0:
-			author.tomecount.boundedEarningsMultiplier = max(min(earningsMultiplier * author.tomecount.normalizedRootWorth, 1.25), 0.75)
+			author.tomecount.boundedEarningsMultiplier = max(min(earningsMultiplier * author.tomecount.normalizedRootWorth, 1.4999), 0.5001)
 			author.tomecount.earnings = int(round(author.tomecount.boundedEarningsMultiplier * float(author.tomecount.payout)))
 			totalEarnings += author.tomecount.earnings
 	return totalEarnings
@@ -303,7 +300,8 @@ def getTotalTomecount(authors):
 		if author.tomecount.earnings > 0:
 			totalBoundedEarningsMultiplier += author.tomecount.boundedEarningsMultiplier
 			numberOfActiveWriters += 1
-	totalTomecount.boundedEarningsMultiplier = totalBoundedEarningsMultiplier / float(numberOfActiveWriters)
+	if numberOfActiveWriters > 0:
+		totalTomecount.boundedEarningsMultiplier = totalBoundedEarningsMultiplier / float(numberOfActiveWriters)
 	return totalTomecount
 
 def getViewDictionary(viewFileName):
@@ -315,6 +313,23 @@ def getViewDictionary(viewFileName):
 		if len(words) > 1:
 			viewDictionary[words[0]] = words[1]
 	return viewDictionary
+
+def getWarningsText(authors):
+	'Get the warnings text.'
+	cString = cStringIO.StringIO()
+	for author in authors:
+		if len(author.warnings) > 0:
+			cString.write('%s\n' % author.name)
+			for warning in author.warnings:
+				cString.write('%s\n' % warning)
+			cString.write('\n')
+	warningsText = cString.getvalue()
+	if warningsText != '':
+		print('\n')
+		print('Monetary Warnings')
+		print(warningsText)
+		print('')
+	return warningsText
 
 def getWordCount(linkText):
 	'Get the word count of the page linked to in the line.'
@@ -340,13 +355,17 @@ def writeOutput(arguments):
 	totalTomecount = getTotalTomecount(authors)
 	tomecountText = getTomecountText(authors, totalTomecount)
 	earningsText = getEarningsText(authors)
+	warningsText = getWarningsText(authors)
 	outputSummaryTo = almoner.getParameter(arguments, 'devtome_summary.txt', 'summary')
 	almoner.writeFileText(currentFileName, tomecountText)
 	outputEarningsTo = almoner.getParameter(arguments, 'devtome_earnings_%s.csv' % round, 'earnings')
+	outputWarningsTo = almoner.getParameter(arguments, 'devtome_warnings.txt', 'warnings')
 	if almoner.sendOutputTo(outputEarningsTo, earningsText):
 		print('The devtome earnings file has been written to:\n%s\n' % outputEarningsTo)
 	if almoner.sendOutputTo(outputSummaryTo, getSummaryText(earningsText, round, totalTomecount)):
 		print('The summary file has been written to:\n%s\n' % outputSummaryTo)
+	if almoner.sendOutputTo(outputWarningsTo, warningsText):
+		print('The devtome warnings file has been written to:\n%s\n' % outputWarningsTo)
 
 
 class Author:
@@ -432,7 +451,7 @@ class Author:
 			self.tomecount.cumulativePayout = self.tomecount.previousPayout + maximumPayout
 		if self.tomecount.cumulativePayout > 0:
 			worthRatio = float(self.tomecount.pageViews) / float(self.tomecount.weightedWordCount)
-			self.tomecount.normalizedRootWorth = math.sqrt(math.sqrt(worthRatio))
+			self.tomecount.normalizedRootWorth = math.sqrt(worthRatio)
 
 	def __repr__(self):
 		'Get the string representation of this class.'

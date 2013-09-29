@@ -56,23 +56,11 @@ http://www.python.org/download/
 import almoner
 import cStringIO
 import devtome
-import random
 import sys
 
 
 __license__ = 'MIT'
 
-
-def getRaters():
-	raters = []
-	lines = almoner.getTextLines(almoner.getFileText('rater.csv'))
-	for line in lines[1 :]:
-		words = line.split(',')
-		if len(words) > 0:
-			rater = words[0].strip()
-			if rater != '':
-				raters.append(rater)
-	return raters
 
 def getRaterText(maximumWriters, round):
 	'Get the rater text.'
@@ -103,66 +91,81 @@ def getWriterName(writer):
 	'Get the name for sorting.'
 	return writer.name
 
-def getWriters(round):
-	'Get the writers.'
-	writers = []
-	lines = almoner.getTextLines(almoner.getFileText('devtome_%s.csv' % (round - 1)))
+def getRatings(round):
+	'Get the ratings.'
+	ratings = []
+	return ratings
+
+def getRatingsByAddress(address):
+	'Get the ratings by address.'
+	ratings = []
+	firstUnderscore = address.find('_')
+	if firstUnderscore == -1:
+		print('Warning, no underscore in address.')
+		return []
+	lastUnderscore = address.rfind('_')
+	if firstUnderscore == lastUnderscore:
+		print('Warning, firstUnderscore same as lastUnderscore.')
+		return []
+	rater = address[firstUnderscore + 1 : lastUnderscore]
+	lines = almoner.getTextLines(devtome.getSourceText(address))
 	for line in lines[1 :]:
-		words = line.split(',')
-		if len(words) > 1:
-			name = words[0].strip()
-			if name != '':
-				writer = Writer(name)
-				if len(writer.articles) > 0:
-					writers.append(writer)
-	return writers
+		rating = Rating(address, line, rater)
+		if rating.article != '':
+			ratings.append(rating)
+	return ratings
 
 def writeOutput(arguments):
 	'Write output.'
 	if '-h' in arguments or '-help' in arguments:
 		print(__doc__)
 		return
-	random.seed(1) #delete this after test
 	round = int(almoner.getParameter(arguments, '27', 'round'))
-	maximumWriters = int(almoner.getParameter(arguments, '12', 'writers'))
-	outputRaterTo = almoner.getParameter(arguments, 'rater_%s.csv' % round, 'rater')
-#	ratingFileName = almoner.getParameter(arguments, 'rating_%s.csv' % round, 'rating')
-	raterText = getRaterText(maximumWriters, round)
-	if almoner.sendOutputTo(outputRaterTo, raterText):
-		print('The rater file has been written to:\n%s\n' % outputRaterTo)
+	outputRatingTo = almoner.getParameter(arguments, 'rating_%s.csv' % round, 'rating')
+	ratings = getRatingsByAddress('http://devtome.com/doku.php?id=rating_unthinkingbit_27&do=edit')
+	print(  ratings)
+	return ###
+	ratingText = getRatingText(maximumWriters, round)
+	if almoner.sendOutputTo(outputRatingTo, ratingText):
+		print('The rating file has been written to:\n%s\n' % outputRatingTo)
 
 
-class Writer:
-	'A class to handle a writer.'
-	def __init__(self, name):
+class Rating:
+	'A class to handle a rating.'
+	def __init__(self, address, line, rater):
 		'Initialize.'
-		self.articles = []
-		self.name = name
-		sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
-		print('Loading user page from %s' % self.name)
-		sourceText = devtome.getSourceText(sourceAddress)
-		isCollated = False
-		isOriginal = False
-		for line in almoner.getTextLines(sourceText):
-			lineStrippedLower = line.strip().lower()
-			if '==' in lineStrippedLower:
-				isCollated = False
-				isOriginal = False
-			if isCollated:
-				lowerLinkName = devtome.getLinkName(line).lower()
-				self.articles.append(lowerLinkName)
-			if isOriginal:
-				lowerLinkName = devtome.getLinkName(line).lower()
-				self.articles.append(lowerLinkName)
-			if '==' in lineStrippedLower:
-				if 'collated' in lineStrippedLower:
-					isCollated = True
-				elif 'original' in lineStrippedLower:
-					isOriginal = True
+		self.address = address
+		self.article = ''
+		self.comment = ''
+		self.ratee = ''
+		self.rater = rater
+		self.vote = 0
+		if not line.startswith('*[[wiki:user:'):
+			return
+		words = line.split(']]:')
+		if len(words) < 2:
+			return
+		ratingLine = words[1].strip()
+		spaceIndex = ratingLine.find(' ')
+		voteString = ratingLine
+		if spaceIndex != -1:
+			voteString = ratingLine[: spaceIndex]
+			self.comment = ratingLine[spaceIndex :].strip()
+		if not voteString.isdigit():
+			return
+		self.vote = int(voteString)
+		raterLine = words[0].strip()
+		raterWords = raterLine.split(']], [[')
+		if len(raterWords) < 2:
+			return
+		self.ratee = raterWords[0][len('*[[wiki:user:') :].strip()
+		if self.ratee == '':
+			return
+		self.article = raterWords[1].strip()
 
 	def __repr__(self):
 		'Get the string representation of this class.'
-		return self.name
+		return '%s, %s: %s' % (self.ratee, self.rater, self.vote)
 
 
 class WriterRange:
