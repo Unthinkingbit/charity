@@ -177,7 +177,7 @@ def getLinkText(lowerLinkName, name):
 		return ''
 	time.sleep(1)
 	if getIsLastEditByAuthor(lowerLinkName, name):
-		return getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % lowerLinkName)
+		return almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % lowerLinkName)
 	return ''
 
 def getRevenueNeutralEarnings(authors, totalTomecount):
@@ -195,32 +195,6 @@ def getRevenueNeutralEarnings(authors, totalTomecount):
 		else:
 			earningsMultiplier += extraMultiplier
 	return revenueNeutralEarnings
-
-def getSourceText(address):
-	'Get the devtome source text for the address.'
-	text = almoner.getInternetText(address)
-	textAreaTagIndex = text.find('<textarea')
-	if textAreaTagIndex == -1:
-		print('')
-		print('Warning, no textarea tag found for:')
-		print(address)
-		print('')
-		return ''
-	tagEndIndex = text.find('>', textAreaTagIndex)
-	if tagEndIndex == -1:
-		print('')
-		print('Warning, no tag end found for:')
-		print(address)
-		print('')
-		return ''
-	textAreaEndTagIndex = text.find('</textarea>', tagEndIndex)
-	if textAreaEndTagIndex == -1:
-		print('')
-		print('Warning, no textarea end tag found for:')
-		print(address)
-		print('')
-		return ''
-	return text[tagEndIndex + 1 : textAreaEndTagIndex].lstrip()
 
 def getSummaryText(earningsText, round, totalTomecount):
 	'Get the summary text.'
@@ -383,7 +357,7 @@ class Author:
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
 		tipAddress = ''
 		print('Loading articles from %s' % self.name)
-		sourceText = getSourceText(self.sourceAddress)
+		sourceText = almoner.getSourceText(self.sourceAddress)
 		almoner.writeFileText(os.path.join(backupFolder, 'wiki:user:' + self.name), sourceText)
 		isCollated = False
 		isOriginal = False

@@ -140,7 +140,7 @@ class Writer:
 		self.name = name
 		sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
 		print('Loading user page from %s' % self.name)
-		sourceText = devtome.getSourceText(sourceAddress)
+		sourceText = almoner.getSourceText(sourceAddress)
 		isCollated = False
 		isOriginal = False
 		for line in almoner.getTextLines(sourceText):

@@ -24,7 +24,6 @@ http://www.python.org/download/
 
 import almoner
 import datetime
-import devtome
 import os
 import shutil
 import sys
@@ -176,7 +175,7 @@ def writeZipFile(archiveType, fileNameRoot, shouldMakeSnapshot, wikiAddress):
 		if letter != previousLetter:
 			previousLetter = letter
 			print('Copying articles starting with %s.' % letter.upper())
-		sourceText = devtome.getSourceText(wikiAddress + '/doku.php?id=%s&do=edit' % title)
+		sourceText = almoner.getSourceText(wikiAddress + '/doku.php?id=%s&do=edit' % title)
 		time.sleep(2)
 		fileName = os.path.join(fileNameRoot, title)
 		almoner.writeFileText(fileName, sourceText)

@@ -56,7 +56,6 @@ http://www.python.org/download/
 import account
 import almoner
 import cStringIO
-import devtome
 import sys
 
 
@@ -201,7 +200,7 @@ class Publisher:
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
 		self.subdomainPayout = 0
 		print('\nLoading pages from %s' % self.name)
-		sourceText = devtome.getSourceText(self.sourceAddress)
+		sourceText = almoner.getSourceText(self.sourceAddress)
 		isLink = False
 		isPost = False
 		isSignature = False

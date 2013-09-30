@@ -208,6 +208,32 @@ def getParameter(arguments, defaultValue, name):
 		return defaultValue
 	return arguments[nameIndexNext]
 
+def getSourceText(address):
+	'Get the devtome source text for the address.'
+	text = getInternetText(address)
+	textAreaTagIndex = text.find('<textarea')
+	if textAreaTagIndex == -1:
+		print('')
+		print('Warning, no textarea tag found for:')
+		print(address)
+		print('')
+		return ''
+	tagEndIndex = text.find('>', textAreaTagIndex)
+	if tagEndIndex == -1:
+		print('')
+		print('Warning, no tag end found for:')
+		print(address)
+		print('')
+		return ''
+	textAreaEndTagIndex = text.find('</textarea>', tagEndIndex)
+	if textAreaEndTagIndex == -1:
+		print('')
+		print('Warning, no textarea end tag found for:')
+		print(address)
+		print('')
+		return ''
+	return text[tagEndIndex + 1 : textAreaEndTagIndex].lstrip()
+
 def getStartsWithWords(text, words):
 	'Determine if the text starts with a word in the list of words.'
 	for word in words:

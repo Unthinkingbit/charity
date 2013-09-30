@@ -55,7 +55,6 @@ http://www.python.org/download/
 
 import almoner
 import cStringIO
-import devtome
 import math
 import sys
 
@@ -100,7 +99,7 @@ def getRatingsByAddress(address):
 		print('Warning, firstUnderscore same as lastUnderscore.')
 		return []
 	rater = address[firstUnderscore + 1 : lastUnderscore]
-	lines = almoner.getTextLines(devtome.getSourceText(address))
+	lines = almoner.getTextLines(almoner.getSourceText(address))
 	for line in lines[1 :]:
 		rating = Rating(address, line, rater)
 		if rating.article != '':
