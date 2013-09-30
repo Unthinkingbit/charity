@@ -74,8 +74,8 @@ def getEarningsText(ratings):
 	raterKeys = raterDictionary.keys()
 	raterKeys.sort()
 	for raterKey in raterKeys:
-		rating = raterDictionary[raterKey]
-		cString.write('%s,%s,%s-Word Count(%s)\n' % (rating.rater, 'coin address', '2', rating.address))
+		rating = raterDictionary[raterKey][0]
+		cString.write('%s,%s,%s-Rating Comments(%s)\n' % (rating.rater, 'coin address', '2', rating.address.replace('&do=edit', '')))
 	return cString.getvalue()
 
 def getRatingText(ratings):
