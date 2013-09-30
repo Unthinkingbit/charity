@@ -62,12 +62,26 @@ import sys
 __license__ = 'MIT'
 
 
-def getRatingText(round):
+def getEarningsText(ratings):
+	'Get the ratings earnings text.'
+	cString = cStringIO.StringIO()
+	raterDictionary = {}
+	for rating in ratings:
+		if rating.rater in raterDictionary:
+			raterDictionary[rating.rater].append(rating)
+		else:
+			raterDictionary[rating.rater] = [rating]
+	raterKeys = raterDictionary.keys()
+	raterKeys.sort()
+	for raterKey in raterKeys:
+		rating = raterDictionary[raterKey]
+		cString.write('%s,%s,%s-Word Count(%s)\n' % (rating.rater, 'coin address', '2', rating.address))
+	return cString.getvalue()
+
+def getRatingText(ratings):
 	'Get the rating text.'
 	cString = cStringIO.StringIO()
 	maxLength = 0
-	ratings = getRatings(round)
-	ratings.append(ratings[0])
 	authorDictionary = {}
 	for rating in ratings:
 		if rating.author in authorDictionary:
@@ -121,8 +135,13 @@ def writeOutput(arguments):
 		print(__doc__)
 		return
 	round = int(almoner.getParameter(arguments, '27', 'round'))
+	ratings = getRatings(round)
+	ratingText = getRatingText(ratings)
+	earningsText = getEarningsText(ratings)
+	outputEarningsTo = almoner.getParameter(arguments, 'rating_earnings_%s.csv' % round, 'earnings')
 	outputRatingTo = almoner.getParameter(arguments, 'rating_%s.csv' % round, 'rating')
-	ratingText = getRatingText(round)
+	if almoner.sendOutputTo(outputEarningsTo, earningsText):
+		print('The rating earnings file has been written to:\n%s\n' % outputEarningsTo)
 	if almoner.sendOutputTo(outputRatingTo, ratingText):
 		print('The rating file has been written to:\n%s\n' % outputRatingTo)
 
