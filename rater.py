@@ -53,6 +53,7 @@ If python 2.x is not on your machine, download the latest python 2.x, which is a
 http://www.python.org/download/
 """
 
+from datetime import date
 import almoner
 import cStringIO
 import devtome
@@ -63,29 +64,59 @@ import sys
 __license__ = 'MIT'
 
 
+def getBelowRaterWriters(name, raterWriters):
+	'Get the rater writers whose name is 1 to 12 ordinals below, wrapped around.'
+	nameOrdinal = getFirstLetterIndex(name)
+	belowRaterWriters = []
+	for raterWriter in raterWriters:
+		raterOrdinal = getFirstLetterIndex(raterWriter.name)
+		if raterOrdinal >= nameOrdinal:
+			raterOrdinal -= 26
+		if nameOrdinal - raterOrdinal <= 12:
+			belowRaterWriters.append(raterWriter)
+	return belowRaterWriters
+
+def getFirstLetterIndex(name):
+	'Get the index of the first letter, with A being 0, and anything other than a letter being 25.'
+	firstLetterIndex = ord(name[0].lower()) - 97
+	if firstLetterIndex < 0:
+		return 25
+	if firstLetterIndex > 25:
+		return 25
+	return firstLetterIndex
+
 def getRaters():
+	'Get the rater names.'
 	raters = []
 	lines = almoner.getTextLines(almoner.getFileText('rater.csv'))
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 0:
-			rater = words[0].strip()
+			rater = words[0].strip().lower()
 			if rater != '':
 				raters.append(rater)
 	return raters
 
-def getRaterText(maximumWriters, round):
+def getRaterText(maximumWriters, round, seedString):
 	'Get the rater text.'
-	cString = cStringIO.StringIO()
-	raters = getRaters()
-	raters.sort()
 	writers = getWriters(round)
 	random.shuffle(writers)
-	writersInRange = WriterRange()
+	cString = cStringIO.StringIO()
+	otherWriters = []
+	raterWriters = []
+	raters = getRaters()
+	raters.sort()
+	raterSet = set(raters)
+	for writer in writers:
+		if writer.name in raterSet:
+			raterWriters.append(writer)
+		else:
+			otherWriters.append(writer)
+	writersInRange = WriterRange(maximumWriters, otherWriters, raterWriters)
 	for raterIndex, rater in enumerate(raters):
 		if raterIndex != 0:
 			cString.write('\n\n\n')
-		ratedWriters = writersInRange.getRatedWriters(maximumWriters, round, raters, writers)
+		ratedWriters = writersInRange.getRatedWriters(rater)
 		ratedWriters.sort(key=getWriterName)
 		cString.write('Create:\n')
 		cString.write('http://devtome.com/doku.php?id=rating_%s_%s\n\n' % (rater.lower(), round))
@@ -97,6 +128,7 @@ def getRaterText(maximumWriters, round):
 			if ratedWritersIndex % 3 == 0 and ratedWritersIndex > 0:
 				cString.write('\n')
 			cString.write('*[[wiki:user:%s]], %s: \n' % (ratedWriter.name.capitalize(), articleLinkString))
+	cString.write('\n\nThe rater seed was %s.\n' % seedString)
 	return cString.getvalue()
 
 def getWriterName(writer):
@@ -110,7 +142,7 @@ def getWriters(round):
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 1:
-			name = words[0].strip()
+			name = words[0].strip().lower()
 			if name != '':
 				writer = Writer(name)
 				if len(writer.articles) > 0:
@@ -122,12 +154,13 @@ def writeOutput(arguments):
 	if '-h' in arguments or '-help' in arguments:
 		print(__doc__)
 		return
-	random.seed(1) #delete this after test
 	round = int(almoner.getParameter(arguments, '27', 'round'))
 	maximumWriters = int(almoner.getParameter(arguments, '12', 'writers'))
 	outputRaterTo = 'rater_%s.csv' % round
+	seedString = almoner.getParameter(arguments, date.today().isoformat(), 'seed')
+	random.seed(seedString)
 #	ratingFileName = almoner.getParameter(arguments, 'rating_%s.csv' % round, 'rating')
-	raterText = getRaterText(maximumWriters, round)
+	raterText = getRaterText(maximumWriters, round, seedString)
 	if almoner.sendOutputTo(outputRaterTo, raterText):
 		print('The rater file has been written to:\n%s\n' % outputRaterTo)
 
@@ -167,19 +200,29 @@ class Writer:
 
 class WriterRange:
 	'A class to handle a range of writers.'
-	def __init__(self):
+	def __init__(self, maximumWriters, otherWriters, raterWriters):
 		'Initialize.'
+		self.maximumWriters = maximumWriters
+		self.otherWriters = otherWriters
+		self.raterQuantityMultiplier = float(maximumWriters) / float(len(otherWriters) + len(raterWriters)) * 26.0 / 12.0
+		self.raterWriters = raterWriters
 		self.writerIndex = 0
+		print(  self.raterQuantityMultiplier)
+		print(  len(otherWriters))
+		print(  len(raterWriters))
 
-	def getRatedWriters(self, maximumWriters, round, unrateables, writers):
+	def getRatedWriters(self, name):
 		'Get the rated writers.'
-		numberOfWriters = len(writers)
+		belowRaterWriters = getBelowRaterWriters(name, self.raterWriters)
+		print(  name)
+		print(  self.raterWriters)
+		print(  belowRaterWriters)
+		numberOfWriters = len(self.otherWriters)
 		writersInRange = []
 		maximumIndex = self.writerIndex + numberOfWriters
-		while len(writersInRange) < maximumWriters and self.writerIndex < maximumIndex:
-			writer = writers[self.writerIndex % numberOfWriters]
-			if writer.name not in unrateables:
-				writersInRange.append(writer)
+		while len(writersInRange) < self.maximumWriters and self.writerIndex < maximumIndex:
+			writer = self.otherWriters[self.writerIndex % numberOfWriters]
+			writersInRange.append(writer)
 			self.writerIndex += 1
 		return writersInRange
 

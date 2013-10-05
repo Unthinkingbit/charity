@@ -70,7 +70,7 @@ def getNewbieText(previousRecipentSet, round):
 	recipientKeys.sort()
 	for recipientKey in recipientKeys:
 		if recipientKey not in previousRecipentSet:
-			cString.write('%s,%s\n' % (recipientKey, recipientDictionary[recipientKey]))
+			cString.write('%s,%s\n' % (recipientKey.capitalize(), recipientDictionary[recipientKey]))
 	return cString.getvalue()
 
 def getPreviousRecipentSet(round, start):
@@ -84,7 +84,7 @@ def getPreviousRecipentSet(round, start):
 			if len(splitLine) > 1:
 				name = splitLine[0].strip()
 				if name != '':
-					previousRecipentSet.add(name)
+					previousRecipentSet.add(name.lower())
 	return previousRecipentSet
 
 def writeOutput(arguments):

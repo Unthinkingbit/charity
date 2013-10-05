@@ -53,16 +53,16 @@ If python 2.x is not on your machine, download the latest python 2.x, which is a
 http://www.python.org/download/
 """
 
+import account
 import almoner
 import cStringIO
-import math
 import sys
 
 
 __license__ = 'MIT'
 
 
-def getEarningsText(ratings):
+def getEarningsText(ratings, recipientDictionary):
 	'Get the ratings earnings text.'
 	cString = cStringIO.StringIO()
 	raterDictionary = {}
@@ -74,20 +74,58 @@ def getEarningsText(ratings):
 	raterKeys = raterDictionary.keys()
 	raterKeys.sort()
 	for raterKey in raterKeys:
+		numberOfComments = 0
+		for rating in raterDictionary[raterKey]:
+			if len(rating.comment) > 5:
+				numberOfComments += 1
+		earning = 3 + int(round(0.4 * float(min(numberOfComments, 5))))
 		rating = raterDictionary[raterKey][0]
-		cString.write('%s,%s,%s-Rating Comments(%s)\n' % (rating.rater, 'coin address', '2', rating.address.replace('&do=edit', '')))
+		coinAddress = recipientDictionary[raterKey]
+		cString.write('%s,%s,%s-Rating Comments(%s)\n' % (raterKey.capitalize(), coinAddress, earning, rating.address.replace('&do=edit', '')))
 	return cString.getvalue()
 
-def getRatingText(ratings):
+def getPreviousVoteDictionary(round):
+	'Get the vote dictionary from the previous round.'
+	lines = almoner.getTextLines(almoner.getFileText('rating_%s.csv' % (round - 1)))
+	if len(lines) < 2:
+		return {}
+	previousVoteIndex = getPreviousVoteIndex(lines[0])
+	previousVoteDictionary = {}
+	for line in lines[1 :]:
+		words = line.split(',')
+		if len(words) >= previousVoteIndex:
+			name = words[0].strip().lower()
+			if len(name) > 0:
+				previousVoteDictionary[name] = words[previousVoteIndex].strip().lower().split('-')
+	return previousVoteDictionary
+
+def getPreviousVoteIndex(line):
+	'Get the vote index from the previous round.'
+	words = line.split(',')
+	for wordIndex, word in enumerate(words):
+		if 'Votes' in word:
+			return wordIndex
+	return 1
+
+def getRatingText(ratings, round):
 	'Get the rating text.'
 	cString = cStringIO.StringIO()
 	maxLength = 0
 	authorDictionary = {}
+	previousVoteDictionary = getPreviousVoteDictionary(round)
 	for rating in ratings:
 		if rating.author in authorDictionary:
 			authorDictionary[rating.author].addRating(rating)
 		else:
-			authorDictionary[rating.author] = Author(rating)
+			previousVotes = []
+			if rating.author in previousVoteDictionary:
+				previousVotes = previousVoteDictionary[rating.author]
+			author = Author(rating.author, previousVotes)
+			author.addRating(rating)
+			authorDictionary[rating.author] = author
+	for name in previousVoteDictionary:
+		if name not in authorDictionary:
+			authorDictionary[name] = Author(name, previousVoteDictionary[name])
 	authorKeys = authorDictionary.keys()
 	authorKeys.sort()
 	for authorKey in authorKeys:
@@ -101,6 +139,16 @@ def getRatingText(ratings):
 		authorDictionary[authorKey].addLine(cString)
 	return cString.getvalue()
 
+def getRatings(round):
+	'Get the ratings by the round.'
+	lines = almoner.getTextLines(almoner.getFileText('rater_%s.csv' % round))
+	ratings = []
+	for line in lines:
+		if line.startswith('http://devtome.com/doku.php?id=rating_'):
+			ratings += getRatingsByAddress('%s&do=edit' % line.strip())
+	ratings.append(ratings[0])###
+	return ratings
+
 def getRatingsByAddress(address):
 	'Get the ratings by address.'
 	ratings = []
@@ -112,21 +160,12 @@ def getRatingsByAddress(address):
 	if firstUnderscore == lastUnderscore:
 		print('Warning, firstUnderscore same as lastUnderscore.')
 		return []
-	rater = address[firstUnderscore + 1 : lastUnderscore]
+	rater = address[firstUnderscore + 1 : lastUnderscore].lower()
 	lines = almoner.getTextLines(almoner.getSourceText(address))
 	for line in lines[1 :]:
 		rating = Rating(address, line, rater)
 		if rating.article != '':
 			ratings.append(rating)
-	return ratings
-
-def getRatings(round):
-	'Get the ratings by the round.'
-	lines = almoner.getTextLines(almoner.getFileText('rater_%s.csv' % round))
-	ratings = []
-	for line in lines:
-		if line.startswith('http://devtome.com/doku.php?id=rating_'):
-			ratings += getRatingsByAddress('%s&do=edit' % line.strip())
 	return ratings
 
 def writeOutput(arguments):
@@ -136,10 +175,11 @@ def writeOutput(arguments):
 		return
 	round = int(almoner.getParameter(arguments, '27', 'round'))
 	ratings = getRatings(round)
-	ratingText = getRatingText(ratings)
-	earningsText = getEarningsText(ratings)
+	recipientDictionary = account.getRecipientDictionary(round)
+	earningsText = getEarningsText(ratings, recipientDictionary)
+	ratingText = getRatingText(ratings, round)
 	outputEarningsTo = almoner.getParameter(arguments, 'rating_earnings_%s.csv' % round, 'earnings')
-	outputRatingTo = almoner.getParameter(arguments, 'rating_%s.csv' % round, 'rating')
+	outputRatingTo = 'rating_%s.csv' % round
 	if almoner.sendOutputTo(outputEarningsTo, earningsText):
 		print('The rating earnings file has been written to:\n%s\n' % outputEarningsTo)
 	if almoner.sendOutputTo(outputRatingTo, ratingText):
@@ -148,15 +188,15 @@ def writeOutput(arguments):
 
 class Author:
 	'A class to handle an author.'
-	def __init__(self, rating):
+	def __init__(self, name, previousVotes):
 		'Initialize.'
-		self.name = rating.author
+		self.name = name
+		self.previousVotes = previousVotes
 		self.ratings = []
-		self.addRating(rating)
 
 	def addLine(self, cString):
 		'Add the author to the rating csv cString.'
-		votes = []
+		votes = self.previousVotes[:]
 		for rating in self.ratings:
 			votes.append(rating.vote)
 		votes.sort()
@@ -206,7 +246,7 @@ class Rating:
 		raterWords = raterLine.split(']], [[')
 		if len(raterWords) < 2:
 			return
-		self.author = raterWords[0][len('*[[wiki:user:') :].strip()
+		self.author = raterWords[0][len('*[[wiki:user:') :].strip().lower()
 		if self.author == '':
 			return
 		self.article = raterWords[1].strip()

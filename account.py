@@ -74,7 +74,6 @@ def addAdministratorBonus(accountLines):
 			for generalAdministrator in generalAdministrators:
 				accountLines.append(generalAdministrator.getAccountLine(bonusMultiplier))
 			accountLines.append('')
-			print('Name: Administrator Bonus, Shares: %s' % bonusShares)
 			return
 
 def addReceiverLines(coinAddresses, receiverLines):
@@ -139,12 +138,10 @@ def getAccountLines(arguments, suffixNumberString):
 		else:
 			extraLines = almoner.getNameAddressLines(location)
 		numberOfShares = len(getReceiverLinesByAccountLines(extraLines))
-		print('Name: %s, Location: %s, Shares: %s' % (name, location, numberOfShares))
 		accountLines.append(name + ': %s Shares' % numberOfShares)
 		accountLines += extraLines
 		accountLines.append('')
 	addAdministratorBonus(accountLines)
-	print('')
 	return accountLines
 
 def getAddressDictionary(round):
@@ -277,7 +274,7 @@ def getRecipientDictionary(round):
 	for accountLine in getAccountLines([], str(round)):
 		accountLineSplit = accountLine.split(',')
 		if len(accountLineSplit) > 1:
-			name = accountLineSplit[0]
+			name = accountLineSplit[0].lower()
 			if name != '':
 				recipientDictionary[name] = accountLineSplit[1]
 	return recipientDictionary
@@ -293,7 +290,7 @@ def getShareListSet(round):
 		elif len(accountLineSplit[0]) == 0:
 			isShareName = False
 		if isShareName:
-			shareListSet.add(accountLineSplit[0])
+			shareListSet.add(accountLineSplit[0].lower())
 		if len(accountLineSplit) == 1:
 			if ' Share List: ' in accountLineSplit[0]:
 				isShareName = True

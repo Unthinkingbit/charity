@@ -143,14 +143,14 @@ def getPublishers(lines, round):
 	for line in lines[1 :]:
 		splitLine = line.split(',')
 		if len(splitLine) > 1:
-			name = splitLine[0].strip()
+			name = splitLine[0].strip().lower()
 			if name != '':
 				coinAddress = splitLine[1].strip()
 				publisher = Publisher(coinAddress, name in shareListSet, name)
 				if publisher.name in workerNameSet:
 					publishers.append(publisher)
 				else:
-					print('%s did not work this round.' % publisher.name)
+					print('%s did not work this round.' % publisher.name.capitalize())
 	return publishers
 
 def getSummaryText(earningsText, publishers, suffixNumber):
@@ -199,7 +199,7 @@ class Publisher:
 		self.signaturePageSet = set([])
 		self.sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
 		self.subdomainPayout = 0
-		print('\nLoading pages from %s' % self.name)
+		print('\nLoading pages from %s' % self.name.capitalize())
 		sourceText = almoner.getSourceText(self.sourceAddress)
 		isLink = False
 		isPost = False
@@ -345,7 +345,8 @@ class Publisher:
 		'Write.'
 		if self.payoutFifth == 0:
 			return
-		cString.write('%s,%s,%s/5-Marketing(%s)\n' % (self.name, self.coinAddress, self.payoutFifth, self.sourceAddress.replace('&do=edit', '')))
+		capitalized = self.name.capitalize()
+		cString.write('%s,%s,%s/5-Marketing(%s)\n' % (capitalized, self.coinAddress, self.payoutFifth, self.sourceAddress.replace('&do=edit', '')))
 
 
 def main():
