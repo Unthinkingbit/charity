@@ -128,7 +128,7 @@ def getRaterText(maximumWriters, round, seedString):
 			if ratedWritersIndex % 3 == 0 and ratedWritersIndex > 0:
 				cString.write('\n')
 			cString.write('*[[wiki:user:%s]], %s: \n' % (ratedWriter.name.capitalize(), articleLinkString))
-	cString.write('\n\nThe rater seed was %s.\n' % seedString)
+	cString.write('\n\nRater seed: %s\n' % seedString)
 	return cString.getvalue()
 
 def getWriterName(writer):
@@ -207,24 +207,28 @@ class WriterRange:
 		self.raterQuantityMultiplier = float(maximumWriters) / float(len(otherWriters) + len(raterWriters)) * 26.0 / 12.0
 		self.raterWriters = raterWriters
 		self.writerIndex = 0
-		print(  self.raterQuantityMultiplier)
-		print(  len(otherWriters))
-		print(  len(raterWriters))
 
 	def getRatedWriters(self, name):
 		'Get the rated writers.'
 		belowRaterWriters = getBelowRaterWriters(name, self.raterWriters)
-		print(  name)
-		print(  self.raterWriters)
-		print(  belowRaterWriters)
-		numberOfWriters = len(self.otherWriters)
-		writersInRange = []
-		maximumIndex = self.writerIndex + numberOfWriters
-		while len(writersInRange) < self.maximumWriters and self.writerIndex < maximumIndex:
-			writer = self.otherWriters[self.writerIndex % numberOfWriters]
-			writersInRange.append(writer)
-			self.writerIndex += 1
-		return writersInRange
+		random.shuffle(belowRaterWriters)
+		numberOfRatersFloat = self.raterQuantityMultiplier * len(belowRaterWriters)
+		numberOfRaters = int(numberOfRatersFloat)
+		if random.random() < numberOfRatersFloat - numberOfRaters:
+			numberOfRaters += 1
+		ratedWriters = belowRaterWriters[: numberOfRaters]
+		if len(ratedWriters) >= self.maximumWriters:
+			return ratedWriters[: self.maximumWriters]
+		writersRemaining = self.maximumWriters - len(ratedWriters)
+		if writersRemaining >= len(self.otherWriters):
+			return ratedWriters + self.otherWriters[:]
+		nextWriterIndex = (self.writerIndex + writersRemaining) % len(self.otherWriters)
+		if nextWriterIndex > self.writerIndex:
+			ratedWriters += self.otherWriters[self.writerIndex : nextWriterIndex]
+		else:
+			ratedWriters += self.otherWriters[self.writerIndex :] + self.otherWriters[: nextWriterIndex]
+		self.writerIndex = nextWriterIndex
+		return ratedWriters
 
 
 def main():
