@@ -58,11 +58,33 @@ import almoner
 import cStringIO
 import devtome
 import random
+import rating
 import sys
 
 
 __license__ = 'MIT'
 
+
+def addWriter(line, previousVoteDictionary, writers):
+	'Get the writers.'
+	words = line.split(',')
+	if len(words) < 2:
+		return
+	name = words[0].strip().lower()
+	if name == '':
+		return
+	writer = Writer(name)
+	if len(writer.articles) <= 0:
+		return
+	numberOfRatings = 0
+	if name in previousVoteDictionary:
+		numberOfRatings = len(previousVoteDictionary[name])
+	if numberOfRatings > 8:
+		return
+	if numberOfRatings > 4:
+		if random.random() > 0.2 * float(9 - numberOfRatings):
+			return
+	writers.append(writer)
 
 def getBelowRaterWriters(name, raterWriters):
 	'Get the rater writers whose name is 1 to 12 ordinals below, wrapped around.'
@@ -139,14 +161,9 @@ def getWriters(round):
 	'Get the writers.'
 	writers = []
 	lines = almoner.getTextLines(almoner.getFileText('devtome_%s.csv' % (round - 1)))
+	previousVoteDictionary = rating.getPreviousVoteDictionary(round)
 	for line in lines[1 :]:
-		words = line.split(',')
-		if len(words) > 1:
-			name = words[0].strip().lower()
-			if name != '':
-				writer = Writer(name)
-				if len(writer.articles) > 0:
-					writers.append(writer)
+		addWriter(line, previousVoteDictionary, writers)
 	return writers
 
 def writeOutput(arguments):

@@ -84,6 +84,14 @@ def getEarningsText(ratings, recipientDictionary):
 		cString.write('%s,%s,%s-Rating Comments(%s)\n' % (raterKey.capitalize(), coinAddress, earning, rating.address.replace('&do=edit', '')))
 	return cString.getvalue()
 
+def getMedian(values):
+	'Get the median.'
+	halfLength = len(values) / 2
+	median = float(values[halfLength])
+	if len(values) % 2 == 1:
+		return median
+	return 0.5 * (median + float(values[halfLength - 1]))
+
 def getPreviousVoteDictionary(round):
 	'Get the vote dictionary from the previous round.'
 	lines = almoner.getTextLines(almoner.getFileText('rating_%s.csv' % (round - 1)))
@@ -96,7 +104,11 @@ def getPreviousVoteDictionary(round):
 		if len(words) >= previousVoteIndex:
 			name = words[0].strip().lower()
 			if len(name) > 0:
-				previousVoteDictionary[name] = words[previousVoteIndex].strip().lower().split('-')
+				voteStrings = words[previousVoteIndex].strip().lower().split('-')
+				votes = []
+				for voteString in voteStrings:
+					votes.append(int(voteString))
+				previousVoteDictionary[name] = votes
 	return previousVoteDictionary
 
 def getPreviousVoteIndex(line):
@@ -146,7 +158,6 @@ def getRatings(round):
 	for line in lines:
 		if line.startswith('http://devtome.com/doku.php?id=rating_'):
 			ratings += getRatingsByAddress('%s&do=edit' % line.strip())
-	ratings.append(ratings[0])###
 	return ratings
 
 def getRatingsByAddress(address):
@@ -203,11 +214,7 @@ class Author:
 		voteStrings = []
 		for vote in votes:
 			voteStrings.append(str(vote))
-		halfLength = len(voteStrings) / 2
-		median = float(votes[halfLength])
-		if len(voteStrings) % 2 == 0:
-			median = 0.5 * (median + float(votes[halfLength - 1]))
-		fields = [self.name, '-'.join(voteStrings), str(median)]
+		fields = [self.name, '-'.join(voteStrings), str(getMedian(votes))]
 		for rating in self.ratings:
 			fields.append(rating.address)
 			fields.append(str(rating.vote))
