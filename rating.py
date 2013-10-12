@@ -78,7 +78,7 @@ def getEarningsText(ratings, recipientDictionary):
 		for rating in raterDictionary[raterKey]:
 			if len(rating.comment) > 5:
 				numberOfComments += 1
-		earning = 3 + int(round(0.4 * float(min(numberOfComments, 5))))
+		earning = 3 + int(round(0.35 * float(min(numberOfComments, 5))))
 		rating = raterDictionary[raterKey][0]
 		coinAddress = recipientDictionary[raterKey]
 		cString.write('%s,%s,%s-Rating Comments(%s)\n' % (raterKey.capitalize(), coinAddress, earning, rating.address.replace('&do=edit', '')))
