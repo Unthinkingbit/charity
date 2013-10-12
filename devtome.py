@@ -50,7 +50,7 @@ import time
 __license__ = 'MIT'
 
 
-globalEditors = 'ba_al ftgcoin nsddev raptorak twobits unthinkingbit weisoq xenophaux'.split()
+globalEditors = 'ba_al bigdaub ftgcoin ghostofdawn knotwork ibrennan infoporter master-p nsddev raptorak smeagol thedischarger twobits unthinkingbit weisoq xenophaux'.split()
 globalNames = 'knotwork kumala icoin xenophaux unthinkingbit'.split()
 
 
@@ -424,7 +424,10 @@ class Author:
 			self.tomecount.payout = maximumPayout
 			self.tomecount.cumulativePayout = self.tomecount.previousPayout + maximumPayout
 		if self.tomecount.cumulativePayout > 0:
-			worthRatio = float(self.tomecount.pageViews) / float(self.tomecount.weightedWordCount)
+			weightedPageViews = self.tomecount.pageViews
+			if self.tomecount.previousPayout == 0:
+				weightedPageViews += weightedPageViews
+			worthRatio = float(weightedPageViews) / float(self.tomecount.weightedWordCount)
 			self.tomecount.normalizedRootWorth = math.sqrt(worthRatio)
 
 	def __repr__(self):
