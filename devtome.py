@@ -50,7 +50,7 @@ import time
 __license__ = 'MIT'
 
 
-globalEditors = 'ba_al bigdaub ftgcoin ghostofdawn knotwork ibrennan infoporter master-p nsddev raptorak smeagol thedischarger twobits unthinkingbit weisoq xenophaux'.split()
+globalEditors = 'ba_al bigdaub deadsea33 eeharris finshaggy ftgcoin ghostofdawn knotwork ibrennan infoporter maitotoxin master-p nsddev raptorak smeagol stealtheh thedischarger tom twobits unthinkingbit weisoq xenophaux'.split()
 globalNames = 'knotwork kumala icoin xenophaux unthinkingbit'.split()
 
 
@@ -114,36 +114,34 @@ def getImageCount(linkText):
 			imageCount += 1
 	return imageCount
 
-def getIsLastEditByAuthor(linkString, name):
+def getIsLastEditByAuthor(author, linkString):
 	'Determine if the last edit was by the author.'
-	nameLower = name.lower()
+	nameLower = author.name.lower()
 	if nameLower in globalNames:
 		return True
 	revisionsText = almoner.getInternetText('http://devtome.com/doku.php?id=%s&do=revisions' % linkString)
 	time.sleep(1)
 	lastModIndex = revisionsText.find('<li id="lastmod">')
 	if lastModIndex == -1:
-		print('Warning, lastmod not found on revisions page.')
+		author.printWarning('Warning, lastmod not found on revisions page.')
 		return False
 	revisionsText = revisionsText[lastModIndex :]
 	breakIndex = revisionsText.find('<br')
 	if breakIndex == -1:
-		print('Warning, break not found on revisions page.')
+		author.printWarning('Warning, break not found on revisions page.')
 		return False
 	revisionsText = revisionsText[: breakIndex]
 	byString = ' by '
 	byIndex = revisionsText.find(byString)
 	if byIndex == -1:
-		print('Warning, byString not found on revisions page.')
-		print(linkString)
+		author.printWarning('Warning, byString not found on revisions page.')
+		author.printWarning(linkString)
 		return False
 	editor = revisionsText[byIndex + len(byString) :].strip()
 	if editor in globalEditors:
 		return True
 	if editor != nameLower:
-		print('Warning, editor is not the same as the name.')
-		print(editor)
-		print(linkString)
+		author.printWarning('Warning, editor (%s) is not the same as the creator (%s) in the article: %s.' % (editor, author.name, linkString))
 		return False
 	return True
 
@@ -168,17 +166,11 @@ def getLinkName(line):
 	linkString = linkString.strip()
 	if linkString[0] == ':':
 		linkString = linkString[1 :]
+	questionMarkIndex = linkString.find('?')
+	if questionMarkIndex >= 0:
+		linkString = linkString[: questionMarkIndex]
 	linkString = linkString.replace('&amp;', ' ').replace('&quot;', ' ').replace('  ', ' ').replace('  ', ' ')
 	return linkString.strip().replace(' ', '_')
-
-def getLinkText(lowerLinkName, name):
-	'Get the text of the page linked to in the line.'
-	if lowerLinkName == '':
-		return ''
-	time.sleep(1)
-	if getIsLastEditByAuthor(lowerLinkName, name):
-		return almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % lowerLinkName)
-	return ''
 
 def getRevenueNeutralEarnings(authors, totalTomecount):
 	'Get the revenue neutral earnings.'
@@ -195,6 +187,15 @@ def getRevenueNeutralEarnings(authors, totalTomecount):
 		else:
 			earningsMultiplier += extraMultiplier
 	return revenueNeutralEarnings
+
+def getSourceTextIfByAuthor(author, lowerLinkName):
+	'Get the source text if the author wrote it.'
+	if lowerLinkName == '':
+		return ''
+	time.sleep(1)
+	if getIsLastEditByAuthor(author, lowerLinkName):
+		return almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % lowerLinkName)
+	return ''
 
 def getSummaryText(earningsText, round, totalTomecount):
 	'Get the summary text.'
@@ -371,7 +372,9 @@ class Author:
 				isTip = False
 			if isCollated:
 				lowerLinkName = getLinkName(line).lower()
-				linkText = getLinkText(lowerLinkName, self.name)
+				linkText = getSourceTextIfByAuthor(self, lowerLinkName)
+				if lowerLinkName != '' and linkText == '':
+					self.printWarning('Warning, could not invoice article link: %s' % lowerLinkName)
 				if linkText not in linkTexts:
 					linkTexts.add(linkText)
 					self.tomecount.imageCount += getImageCount(linkText)
@@ -384,7 +387,7 @@ class Author:
 						almoner.writeFileText(os.path.join(backupFolder, lowerLinkName), linkText)
 			if isOriginal:
 				lowerLinkName = getLinkName(line).lower()
-				linkText = getLinkText(lowerLinkName, self.name)
+				linkText = getSourceTextIfByAuthor(self, lowerLinkName)
 				if lowerLinkName != '' and linkText == '':
 					self.printWarning('Warning, could not invoice article link: %s' % lowerLinkName)
 				if linkText not in linkTexts:
@@ -398,9 +401,13 @@ class Author:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						almoner.writeFileText(os.path.join(backupFolder, lowerLinkName), linkText)
 			if isTip:
-				tipAddress = line.strip()
-				if ':' in tipAddress:
-					tipAddress = tipAddress[tipAddress.find(':') + 1 :].strip()
+				tipLine = line.strip().replace("'", '')
+				colonIndex = tipLine.find(':')
+				if colonIndex >= 0:
+					addressName = tipLine[: colonIndex].strip().lower()
+					if 'dvc' in addressName or 'devcoin' in addressName or 'coin address' in addressName:
+						tipAddress = tipLine[colonIndex + 1 :].strip()
+				print(  tipAddress)
 			if '==' in lineStrippedLower:
 				if 'collated' in lineStrippedLower:
 					isCollated = True
