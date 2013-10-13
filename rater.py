@@ -121,6 +121,8 @@ def getRaters():
 
 def getRaterText(maximumWriters, round, seedString):
 	'Get the rater text.'
+	previousRaterDictionary = rating.getPreviousRaterDictionary(round)
+	previousNameDictionary = {}
 	writers = getWriters(round)
 	random.shuffle(writers)
 	cString = cStringIO.StringIO()
@@ -129,12 +131,19 @@ def getRaterText(maximumWriters, round, seedString):
 	raters = getRaters()
 	raters.sort()
 	raterSet = set(raters)
+	for previousRaterKey in previousRaterDictionary.keys():
+		previousRaters = previousRaterDictionary[previousRaterKey]
+		for previousRater in previousRaters:
+			if previousRater in previousNameDictionary:
+				previousNameDictionary[previousRater].append(previousRaterKey)
+			else:
+				previousNameDictionary[previousRater] = [previousRaterKey]
 	for writer in writers:
 		if writer.name in raterSet:
 			raterWriters.append(writer)
 		else:
 			otherWriters.append(writer)
-	writersInRange = WriterRange(maximumWriters, otherWriters, raterWriters)
+	writersInRange = WriterRange(maximumWriters, otherWriters, previousNameDictionary, raterWriters)
 	for raterIndex, rater in enumerate(raters):
 		if raterIndex != 0:
 			cString.write('\n\n\n')
@@ -166,6 +175,14 @@ def getWriters(round):
 		addWriter(line, previousVoteDictionary, writers)
 	return writers
 
+def getWritersMinusNameSet(nameSet, writers):
+	'Get the writers minus the names in the set.'
+	writersMinusNameSet = []
+	for writer in writers:
+		if writer.name not in nameSet:
+			writersMinusNameSet.append(writer)
+	return writersMinusNameSet
+
 def writeOutput(arguments):
 	'Write output.'
 	if '-h' in arguments or '-help' in arguments:
@@ -176,7 +193,6 @@ def writeOutput(arguments):
 	outputRaterTo = 'rater_%s.csv' % round
 	seedString = almoner.getParameter(arguments, date.today().isoformat(), 'seed')
 	random.seed(seedString)
-#	ratingFileName = almoner.getParameter(arguments, 'rating_%s.csv' % round, 'rating')
 	raterText = getRaterText(maximumWriters, round, seedString)
 	if almoner.sendOutputTo(outputRaterTo, raterText):
 		print('The rater file has been written to:\n%s\n' % outputRaterTo)
@@ -214,13 +230,13 @@ class Writer:
 		'Get the string representation of this class.'
 		return self.name
 
-
 class WriterRange:
 	'A class to handle a range of writers.'
-	def __init__(self, maximumWriters, otherWriters, raterWriters):
+	def __init__(self, maximumWriters, otherWriters, previousNameDictionary, raterWriters):
 		'Initialize.'
 		self.maximumWriters = maximumWriters
 		self.otherWriters = otherWriters
+		self.previousNameDictionary = previousNameDictionary
 		self.raterQuantityMultiplier = float(maximumWriters) / float(len(otherWriters) + len(raterWriters)) * 26.0 / 12.0
 		self.raterWriters = raterWriters
 		self.writerIndex = 0
@@ -228,6 +244,10 @@ class WriterRange:
 	def getRatedWriters(self, name):
 		'Get the rated writers.'
 		belowRaterWriters = getBelowRaterWriters(name, self.raterWriters)
+		previousNameSet = set()
+		if name in self.previousNameDictionary:
+			previousNameSet = set(self.previousNameDictionary[name])
+		belowRaterWriters = getWritersMinusNameSet(previousNameSet, belowRaterWriters)
 		random.shuffle(belowRaterWriters)
 		numberOfRatersFloat = self.raterQuantityMultiplier * len(belowRaterWriters)
 		numberOfRaters = int(numberOfRatersFloat)
@@ -237,13 +257,14 @@ class WriterRange:
 		if len(ratedWriters) >= self.maximumWriters:
 			return ratedWriters[: self.maximumWriters]
 		writersRemaining = self.maximumWriters - len(ratedWriters)
-		if writersRemaining >= len(self.otherWriters):
-			return ratedWriters + self.otherWriters[:]
-		nextWriterIndex = (self.writerIndex + writersRemaining) % len(self.otherWriters)
+		otherWriters = getWritersMinusNameSet(previousNameSet, self.otherWriters)
+		if writersRemaining >= len(otherWriters):
+			return ratedWriters + otherWriters
+		nextWriterIndex = (self.writerIndex + writersRemaining) % len(otherWriters)
 		if nextWriterIndex > self.writerIndex:
-			ratedWriters += self.otherWriters[self.writerIndex : nextWriterIndex]
+			ratedWriters += otherWriters[self.writerIndex : nextWriterIndex]
 		else:
-			ratedWriters += self.otherWriters[self.writerIndex :] + self.otherWriters[: nextWriterIndex]
+			ratedWriters += otherWriters[self.writerIndex :] + otherWriters[: nextWriterIndex]
 		self.writerIndex = nextWriterIndex
 		return ratedWriters
 

@@ -407,7 +407,6 @@ class Author:
 					addressName = tipLine[: colonIndex].strip().lower()
 					if 'dvc' in addressName or 'devcoin' in addressName or 'coin address' in addressName:
 						tipAddress = tipLine[colonIndex + 1 :].strip()
-				print(  tipAddress)
 			if '==' in lineStrippedLower:
 				if 'collated' in lineStrippedLower:
 					isCollated = True

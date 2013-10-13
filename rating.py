@@ -92,6 +92,29 @@ def getMedian(values):
 		return median
 	return 0.5 * (median + float(values[halfLength - 1]))
 
+def getPreviousRaterDictionary(round):
+	'Get the rater dictionary from the previous round.'
+	lines = almoner.getTextLines(almoner.getFileText('rating_%s.csv' % (round - 1)))
+	if len(lines) < 2:
+		return {}
+	previousRaterIndex = getPreviousRaterIndex(lines[0])
+	previousRaterDictionary = {}
+	for line in lines[1 :]:
+		words = line.split(',')
+		if len(words) > previousRaterIndex:
+			name = words[0].strip().lower()
+			if len(name) > 0:
+				previousRaterDictionary[name] = words[previousRaterIndex].strip().lower().split('-')
+	return previousRaterDictionary
+
+def getPreviousRaterIndex(line):
+	'Get the rater index from the previous round.'
+	words = line.split(',')
+	for wordIndex, word in enumerate(words):
+		if word.strip().lower() == 'raters':
+			return wordIndex
+	return 3
+
 def getPreviousVoteDictionary(round):
 	'Get the vote dictionary from the previous round.'
 	lines = almoner.getTextLines(almoner.getFileText('rating_%s.csv' % (round - 1)))
@@ -101,7 +124,7 @@ def getPreviousVoteDictionary(round):
 	previousVoteDictionary = {}
 	for line in lines[1 :]:
 		words = line.split(',')
-		if len(words) >= previousVoteIndex:
+		if len(words) > previousVoteIndex:
 			name = words[0].strip().lower()
 			if len(name) > 0:
 				voteStrings = words[previousVoteIndex].strip().lower().split('-')
@@ -115,7 +138,7 @@ def getPreviousVoteIndex(line):
 	'Get the vote index from the previous round.'
 	words = line.split(',')
 	for wordIndex, word in enumerate(words):
-		if 'Votes' in word:
+		if word.strip().lower() == 'votes':
 			return wordIndex
 	return 1
 
@@ -125,6 +148,7 @@ def getRatingText(ratings, round):
 	maxLength = 0
 	authorDictionary = {}
 	previousVoteDictionary = getPreviousVoteDictionary(round)
+	previousRaterDictionary = getPreviousRaterDictionary(round)
 	for rating in ratings:
 		if rating.author in authorDictionary:
 			authorDictionary[rating.author].addRating(rating)
@@ -132,17 +156,19 @@ def getRatingText(ratings, round):
 			previousVotes = []
 			if rating.author in previousVoteDictionary:
 				previousVotes = previousVoteDictionary[rating.author]
-			author = Author(rating.author, previousVotes)
+			if rating.author in previousRaterDictionary:
+				previousRaters = previousRaterDictionary[rating.author]
+			author = Author(rating.author, previousRaters, previousVotes)
 			author.addRating(rating)
 			authorDictionary[rating.author] = author
 	for name in previousVoteDictionary:
 		if name not in authorDictionary:
-			authorDictionary[name] = Author(name, previousVoteDictionary[name])
+			authorDictionary[name] = Author(name, previousRaterDictionary[name], previousVoteDictionary[name])
 	authorKeys = authorDictionary.keys()
 	authorKeys.sort()
 	for authorKey in authorKeys:
 		maxLength = max(maxLength, len(authorDictionary[authorKey].ratings))
-	titles = ['Author', 'All Votes', 'Median']
+	titles = ['Author', 'All Votes', 'Raters', 'Median']
 	for voteIndex in xrange(maxLength):
 		titles.append('Address')
 		titles.append('Vote')
@@ -199,22 +225,26 @@ def writeOutput(arguments):
 
 class Author:
 	'A class to handle an author.'
-	def __init__(self, name, previousVotes):
+	def __init__(self, name, previousRaters, previousVotes):
 		'Initialize.'
 		self.name = name
+		self.previousRaters = previousRaters
 		self.previousVotes = previousVotes
 		self.ratings = []
 
 	def addLine(self, cString):
 		'Add the author to the rating csv cString.'
+		raters = self.previousRaters[:]
 		votes = self.previousVotes[:]
 		for rating in self.ratings:
+			raters.append(rating.rater)
 			votes.append(rating.vote)
+		raters.sort()
 		votes.sort()
 		voteStrings = []
 		for vote in votes:
 			voteStrings.append(str(vote))
-		fields = [self.name, '-'.join(voteStrings), str(getMedian(votes))]
+		fields = [self.name, '-'.join(voteStrings), str(getMedian(votes)), '-'.join(raters)]
 		for rating in self.ratings:
 			fields.append(rating.address)
 			fields.append(str(rating.vote))
