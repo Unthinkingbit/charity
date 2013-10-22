@@ -179,7 +179,7 @@ def getRatingText(ratings, round):
 
 def getRatings(round):
 	'Get the ratings by the round.'
-	lines = almoner.getTextLines(almoner.getFileText('rater_%s.csv' % round))
+	lines = almoner.getTextLines(almoner.getFileText('rater_%s.txt' % round))
 	ratings = []
 	for line in lines:
 		if line.startswith('http://devtome.com/doku.php?id=rating_'):

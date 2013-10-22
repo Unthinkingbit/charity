@@ -107,10 +107,10 @@ def getFirstLetterIndex(name):
 		return 25
 	return firstLetterIndex
 
-def getRaters():
+def getRaters(round):
 	'Get the rater names.'
 	raters = []
-	lines = almoner.getTextLines(almoner.getFileText('rater.csv'))
+	lines = almoner.getTextLines(almoner.getFileText('rater_%s.csv' % round))
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 0:
@@ -128,7 +128,7 @@ def getRaterText(maximumWriters, round, seedString):
 	cString = cStringIO.StringIO()
 	otherWriters = []
 	raterWriters = []
-	raters = getRaters()
+	raters = getRaters(round)
 	raters.sort()
 	raterSet = set(raters)
 	for previousRaterKey in previousRaterDictionary.keys():
@@ -159,7 +159,7 @@ def getRaterText(maximumWriters, round, seedString):
 			if ratedWritersIndex % 3 == 0 and ratedWritersIndex > 0:
 				cString.write('\n')
 			cString.write('*[[wiki:user:%s]], %s: \n' % (ratedWriter.name.capitalize(), articleLinkString))
-	cString.write('\n\nRater seed: %s\n' % seedString)
+	cString.write('\n\nRater seed string: %s\n' % seedString)
 	return cString.getvalue()
 
 def getWriterName(writer):
@@ -190,9 +190,9 @@ def writeOutput(arguments):
 		return
 	round = int(almoner.getParameter(arguments, '27', 'round'))
 	maximumWriters = int(almoner.getParameter(arguments, '12', 'writers'))
-	outputRaterTo = 'rater_%s.csv' % round
+	outputRaterTo = 'rater_%s.txt' % round
 	seedString = almoner.getParameter(arguments, date.today().isoformat(), 'seed')
-	random.seed(seedString)
+	random.seed(seedString[: -1])
 	raterText = getRaterText(maximumWriters, round, seedString)
 	if almoner.sendOutputTo(outputRaterTo, raterText):
 		print('The rater file has been written to:\n%s\n' % outputRaterTo)
