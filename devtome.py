@@ -45,6 +45,7 @@ import os
 import shutil
 import sys
 import time
+import zipfile
 
 
 __license__ = 'MIT'
@@ -77,11 +78,14 @@ def getAuthors(backupFolder, lines, titles, viewDictionary):
 	authors = []
 	authorSet = set([])
 	almoner.makeDirectory(backupFolder)
+	zipArchive = zipfile.ZipFile(backupFolder + '.zip', 'r', compression=zipfile.ZIP_DEFLATED)
+	backupFileSet = set(zipArchive.namelist())
+	zipArchive.close()
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 0:
 			if len(words[0]) > 0:
-				author = Author(backupFolder, titles, viewDictionary, words)
+				author = Author(backupFolder, backupFileSet, titles, viewDictionary, words)
 				if author.name not in authorSet:
 					authorSet.add(author.name)
 					authors.append(author)
@@ -171,6 +175,15 @@ def getLinkName(line):
 		linkString = linkString[: questionMarkIndex]
 	linkString = linkString.replace('&amp;', ' ').replace('&quot;', ' ').replace('  ', ' ').replace('  ', ' ')
 	return linkString.strip().replace(' ', '_')
+
+def getNewArticlesText(authors, round):
+	'Get the new articles text in wiki format.'
+	cString = cStringIO.StringIO()
+	cString.write('New articles in round %s. \n' % round)
+	for author in authors:
+		for newArticle in author.newArticles:
+			cString.write('*[[%s]] \n' % newArticle)
+	return cString.getvalue()
 
 def getRevenueNeutralEarnings(authors, totalTomecount):
 	'Get the revenue neutral earnings.'
@@ -330,13 +343,17 @@ def writeOutput(arguments):
 	totalTomecount = getTotalTomecount(authors)
 	tomecountText = getTomecountText(authors, totalTomecount)
 	earningsText = getEarningsText(authors)
+	newArticlesText = getNewArticlesText(authors, round)
 	warningsText = getWarningsText(authors)
 	outputSummaryTo = almoner.getParameter(arguments, 'devtome_summary.txt', 'summary')
 	almoner.writeFileText(currentFileName, tomecountText)
 	outputEarningsTo = almoner.getParameter(arguments, 'devtome_earnings_%s.csv' % round, 'earnings')
+	outputNewArticlesTo = almoner.getParameter(arguments, 'devtome_new_articles.txt', 'articles')
 	outputWarningsTo = almoner.getParameter(arguments, 'devtome_warnings.txt', 'warnings')
 	if almoner.sendOutputTo(outputEarningsTo, earningsText):
 		print('The devtome earnings file has been written to:\n%s\n' % outputEarningsTo)
+	if almoner.sendOutputTo(outputNewArticlesTo, newArticlesText):
+		print('The devtome new articles file has been written to:\n%s\n' % outputNewArticlesTo)
 	if almoner.sendOutputTo(outputSummaryTo, getSummaryText(earningsText, round, totalTomecount)):
 		print('The summary file has been written to:\n%s\n' % outputSummaryTo)
 	if almoner.sendOutputTo(outputWarningsTo, warningsText):
@@ -345,8 +362,11 @@ def writeOutput(arguments):
 
 class Author:
 	'A class to handle an author.'
-	def __init__(self, backupFolder, titles, viewDictionary, words):
+	def __init__(self, backupFolder, backupFileSet, titles, viewDictionary, words):
 		'Initialize.'
+		self.backupFolder = backupFolder
+		self.backupFileSet = backupFileSet
+		self.newArticles = []
 		self.tomecount = Tomecount()
 		self.parameterDictionary = {}
 		self.warnings = []
@@ -384,7 +404,7 @@ class Author:
 						self.tomecount.pageViews += int(viewDictionary[lowerLinkName])
 					if wordCount > 0:
 						print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
-						almoner.writeFileText(os.path.join(backupFolder, lowerLinkName), linkText)
+						self.saveArticle(lowerLinkName, linkText)
 			if isOriginal:
 				lowerLinkName = getLinkName(line).lower()
 				linkText = getSourceTextIfByAuthor(self, lowerLinkName)
@@ -399,7 +419,7 @@ class Author:
 						self.tomecount.pageViews += int(viewDictionary[lowerLinkName])
 					if wordCount > 0:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
-						almoner.writeFileText(os.path.join(backupFolder, lowerLinkName), linkText)
+						self.saveArticle(lowerLinkName, linkText)
 			if isTip:
 				tipLine = line.strip().replace("'", '')
 				colonIndex = tipLine.find(':')
@@ -452,6 +472,13 @@ class Author:
 		'Print warning and add it to the warnings.'
 		self.warnings.append(warning)
 		print(warning)
+
+	def saveArticle(self, lowerLinkName, linkText):
+		'Save article and if new add to new articles list.'
+		lowerLinkName = lowerLinkName.replace('/', '_')
+		if lowerLinkName not in self.backupFileSet:
+			self.newArticles.append(lowerLinkName)
+		almoner.writeFileText(os.path.join(self.backupFolder, lowerLinkName), linkText)
 
 
 class Tomecount:
