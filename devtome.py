@@ -68,7 +68,9 @@ def addJoinedTitles(cString, words):
 	words.append('Previous Cumulative Payout')
 	words.append('Payout')
 	words.append('Unique Page Views')
-	words.append('Normalized Root Worth')
+	words.append('Views per Thousand Words')
+	words.append('Normalized Popularity')
+	words.append('Normalized Worth')
 	words.append('Bounded Earnings Multiplier')
 	words.append('Earnings')
 	cString.write('%s\n' % ','.join(words))
@@ -173,7 +175,7 @@ def getLinkName(line):
 	questionMarkIndex = linkString.find('?')
 	if questionMarkIndex >= 0:
 		linkString = linkString[: questionMarkIndex]
-	linkString = linkString.replace('&amp;', ' ').replace('&quot;', ' ').replace('  ', ' ').replace('  ', ' ')
+	linkString = linkString.replace('&amp;', ' ').replace('&quot;', ' ').replace('/', '_').replace('  ', ' ').replace('  ', ' ')
 	return linkString.strip().replace(' ', '_')
 
 def getNewArticlesText(authors, round):
@@ -187,7 +189,7 @@ def getNewArticlesText(authors, round):
 
 def getRevenueNeutralEarnings(authors, totalTomecount):
 	'Get the revenue neutral earnings.'
-	earningsMultiplier = 2.0
+	earningsMultiplier = 4.0
 	extraMultiplier = earningsMultiplier
 	revenueNeutralEarnings = totalTomecount.payout
 	while extraMultiplier > 0.00001:
@@ -234,7 +236,7 @@ def getTotalEarnings(authors, earningsMultiplier, totalTomecount):
 	totalEarnings = 0
 	for author in authors:
 		if author.tomecount.payout > 0:
-			author.tomecount.boundedEarningsMultiplier = max(min(earningsMultiplier * author.tomecount.normalizedRootWorth, 1.4999), 0.5001)
+			author.tomecount.boundedEarningsMultiplier = max(min(earningsMultiplier * author.tomecount.normalizedWorth, 1.4999), 0.5001)
 			author.tomecount.earnings = int(round(author.tomecount.boundedEarningsMultiplier * float(author.tomecount.payout)))
 			totalEarnings += author.tomecount.earnings
 	return totalEarnings
@@ -258,9 +260,14 @@ def getTotalTomecount(authors):
 	totalTomecount = Tomecount()
 	numberOfActiveWriters = 0
 	numberOfWriters = 0
-	totalBoundedEarningsMultiplier = 0.0
-	totalRootWorth = 0.0
 	totalTomecount.proportion = 1.0
+	normalizedPopularities = []
+	for author in authors:
+		normalizedPopularities.append(author.tomecount.normalizedPopularity)
+	normalizeValues(normalizedPopularities)
+	for authorIndex, author in enumerate(authors):
+		author.tomecount.normalizedPopularity = normalizedPopularities[authorIndex]
+		author.tomecount.normalizedWorth = author.tomecount.normalizedPopularity
 	for author in authors:
 		totalTomecount.collatedWeightedWordCount += author.tomecount.collatedWeightedWordCount
 		totalTomecount.collatedWordCount += author.tomecount.collatedWordCount
@@ -274,22 +281,20 @@ def getTotalTomecount(authors):
 		totalTomecount.wordCount += author.tomecount.wordCount
 		if author.tomecount.cumulativePayout > 0:
 			numberOfWriters += 1
-		totalRootWorth += author.tomecount.normalizedRootWorth
-	if totalRootWorth == 0.0:
-		totalRootWorth = 1.0
-	rootWorthMultiplier = float(numberOfWriters) / totalRootWorth
-	totalTomecount.normalizedRootWorth = 1.0
-	for author in authors:
-		if author.tomecount.cumulativePayout > 0:
-			author.tomecount.normalizedRootWorth *= rootWorthMultiplier
-	earningsMultiplier = 1.0
+			totalTomecount.viewsPerThousandWords += author.tomecount.viewsPerThousandWords
+			totalTomecount.normalizedPopularity += author.tomecount.normalizedPopularity
+			totalTomecount.normalizedWorth += author.tomecount.normalizedWorth
+	if numberOfWriters > 0:
+		totalTomecount.viewsPerThousandWords /= float(numberOfWriters)
+		totalTomecount.normalizedPopularity /= float(numberOfWriters)
+		totalTomecount.normalizedWorth /= float(numberOfWriters)
 	totalTomecount.earnings = getRevenueNeutralEarnings(authors, totalTomecount)
 	for author in authors:
 		if author.tomecount.earnings > 0:
-			totalBoundedEarningsMultiplier += author.tomecount.boundedEarningsMultiplier
+			totalTomecount.boundedEarningsMultiplier += author.tomecount.boundedEarningsMultiplier
 			numberOfActiveWriters += 1
 	if numberOfActiveWriters > 0:
-		totalTomecount.boundedEarningsMultiplier = totalBoundedEarningsMultiplier / float(numberOfActiveWriters)
+		totalTomecount.boundedEarningsMultiplier /= float(numberOfActiveWriters)
 	return totalTomecount
 
 def getViewDictionary(viewFileName):
@@ -323,6 +328,32 @@ def getWordCount(linkText):
 	'Get the word count of the page linked to in the line.'
 	linkText = linkText.replace('.', ' ').replace(',', ' ').replace(';', ' ').replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
 	return len(linkText.split())
+
+def normalizeValues(values):
+	'Get the positives values normalized in average and standard deviation.'
+	average = 0.0
+	numberOfPositives = 0
+	for value in values:
+		if value > 0.0:
+			average += value
+			numberOfPositives += 1
+	if numberOfPositives == 0:
+		return
+	average /= float(numberOfPositives)
+	reciprocalAverage = 1.0 / average
+	for valueIndex, value in enumerate(values):
+		if value > 0.0:
+			values[valueIndex] *= reciprocalAverage
+	standardDeviation = 0.0
+	for value in values:
+		if value > 0.0:
+			difference = value - 1.0
+			standardDeviation += difference * difference
+	standardDeviation = math.sqrt(standardDeviation / float(numberOfPositives))
+	halfOverDeviation = 0.5 / standardDeviation
+	for valueIndex, value in enumerate(values):
+		if value > 0.0:
+			values[valueIndex] **= halfOverDeviation
 
 def writeOutput(arguments):
 	'Write output.'
@@ -454,7 +485,9 @@ class Author:
 			if self.tomecount.previousPayout == 0:
 				weightedPageViews += weightedPageViews
 			worthRatio = float(weightedPageViews) / float(self.tomecount.weightedWordCount)
-			self.tomecount.normalizedRootWorth = math.sqrt(worthRatio)
+			self.tomecount.viewsPerThousandWords = 1000.0 * float(weightedPageViews) / float(self.tomecount.weightedWordCount)
+			self.tomecount.normalizedWorth = math.sqrt(worthRatio)
+			self.tomecount.normalizedPopularity = self.tomecount.viewsPerThousandWords
 
 	def __repr__(self):
 		'Get the string representation of this class.'
@@ -475,7 +508,6 @@ class Author:
 
 	def saveArticle(self, lowerLinkName, linkText):
 		'Save article and if new add to new articles list.'
-		lowerLinkName = lowerLinkName.replace('/', '_')
 		if lowerLinkName not in self.backupFileSet:
 			self.newArticles.append(lowerLinkName)
 		almoner.writeFileText(os.path.join(self.backupFolder, lowerLinkName), linkText)
@@ -491,12 +523,14 @@ class Tomecount:
 		self.cumulativePayout = 0
 		self.earnings = 0
 		self.imageCount = 0
-		self.normalizedRootWorth = 0.0
+		self.normalizedPopularity = 0.0
+		self.normalizedWorth = 0.0
 		self.originalWordCount = 0
 		self.pageViews = 0
 		self.payout = 0
 		self.previousPayout = 0
 		self.proportion = 0.0
+		self.viewsPerThousandWords = 0.0
 		self.weightedWordCount = 0
 		self.wordCount = 0
 
@@ -517,7 +551,9 @@ class Tomecount:
 		words.append(str(self.previousPayout))
 		words.append(str(self.payout))
 		words.append(str(self.pageViews))
-		words.append(str(self.normalizedRootWorth))
+		words.append(str(self.viewsPerThousandWords))
+		words.append(str(self.normalizedPopularity))
+		words.append(str(self.normalizedWorth))
 		words.append(str(self.boundedEarningsMultiplier))
 		words.append(str(self.earnings))
 		return '%s\n' % ','.join(words)
