@@ -70,24 +70,31 @@ def addJoinedTitles(cString, words):
 	words.append('Unique Page Views')
 	words.append('Views per Thousand Words')
 	words.append('Normalized Popularity')
+	words.append('Rating Median')
+	words.append('Normalized Rating Median')
 	words.append('Normalized Worth')
 	words.append('Bounded Earnings Multiplier')
 	words.append('Earnings')
 	cString.write('%s\n' % ','.join(words))
 
-def getAuthors(backupFolder, lines, titles, viewDictionary):
+def getAuthors(backupFolder, lines, ratingDictionary, titles, viewDictionary):
 	'Get the authors.'
+	averageRating = 0.0
 	authors = []
 	authorSet = set([])
+	ratingValues = ratingDictionary.values()
 	almoner.makeDirectory(backupFolder)
 	zipArchive = zipfile.ZipFile(backupFolder + '.zip', 'r', compression=zipfile.ZIP_DEFLATED)
 	backupFileSet = set(zipArchive.namelist())
 	zipArchive.close()
+	for ratingValue in ratingValues:
+		averageRating += ratingValue
+	averageRating /= float(len(ratingDictionary.values()))
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 0:
 			if len(words[0]) > 0:
-				author = Author(backupFolder, backupFileSet, titles, viewDictionary, words)
+				author = Author(averageRating, backupFolder, backupFileSet, ratingDictionary, titles, viewDictionary, words)
 				if author.name not in authorSet:
 					authorSet.add(author.name)
 					authors.append(author)
@@ -187,6 +194,29 @@ def getNewArticlesText(authors, round):
 			cString.write('*[[%s]] \n' % newArticle)
 	return cString.getvalue()
 
+def getRatingMedianIndex(line):
+	'Get the rating median index.'
+	words = line.split(',')
+	for wordIndex, word in enumerate(words):
+		if word.strip().lower() == 'median':
+			return wordIndex
+	return 2
+
+def getRatingDictionary(ratingFileName):
+	'Get the rating median vote dictionary.'
+	lines = almoner.getTextLines(almoner.getFileText(ratingFileName))
+	if len(lines) < 2:
+		return {}
+	ratingDictionary = {}
+	ratingMedianIndex = getRatingMedianIndex(lines[0])
+	for line in lines[1 :]:
+		words = line.split(',')
+		if len(words) > ratingMedianIndex:
+			name = words[0].strip().lower()
+			if len(name) > 0:
+				ratingDictionary[name] = float(words[ratingMedianIndex].strip().lower())
+	return ratingDictionary
+
 def getRevenueNeutralEarnings(authors, totalTomecount):
 	'Get the revenue neutral earnings.'
 	earningsMultiplier = 4.0
@@ -262,12 +292,16 @@ def getTotalTomecount(authors):
 	numberOfWriters = 0
 	totalTomecount.proportion = 1.0
 	normalizedPopularities = []
+	normalizedRatingMedians = []
 	for author in authors:
 		normalizedPopularities.append(author.tomecount.normalizedPopularity)
+		normalizedRatingMedians.append(author.tomecount.normalizedRatingMedian)
 	normalizeValues(normalizedPopularities)
+	normalizeValues(normalizedRatingMedians)
 	for authorIndex, author in enumerate(authors):
 		author.tomecount.normalizedPopularity = normalizedPopularities[authorIndex]
-		author.tomecount.normalizedWorth = author.tomecount.normalizedPopularity
+		author.tomecount.normalizedRatingMedian = normalizedRatingMedians[authorIndex]
+		author.tomecount.normalizedWorth = 0.5 * (author.tomecount.normalizedPopularity + author.tomecount.normalizedRatingMedian)
 	for author in authors:
 		totalTomecount.collatedWeightedWordCount += author.tomecount.collatedWeightedWordCount
 		totalTomecount.collatedWordCount += author.tomecount.collatedWordCount
@@ -283,10 +317,12 @@ def getTotalTomecount(authors):
 			numberOfWriters += 1
 			totalTomecount.viewsPerThousandWords += author.tomecount.viewsPerThousandWords
 			totalTomecount.normalizedPopularity += author.tomecount.normalizedPopularity
+			totalTomecount.normalizedRatingMedian += author.tomecount.normalizedRatingMedian
 			totalTomecount.normalizedWorth += author.tomecount.normalizedWorth
 	if numberOfWriters > 0:
 		totalTomecount.viewsPerThousandWords /= float(numberOfWriters)
 		totalTomecount.normalizedPopularity /= float(numberOfWriters)
+		totalTomecount.normalizedRatingMedian /= float(numberOfWriters)
 		totalTomecount.normalizedWorth /= float(numberOfWriters)
 	totalTomecount.earnings = getRevenueNeutralEarnings(authors, totalTomecount)
 	for author in authors:
@@ -304,7 +340,7 @@ def getViewDictionary(viewFileName):
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 1:
-			viewDictionary[words[0]] = words[1]
+			viewDictionary[words[0]] = int(words[1])
 	return viewDictionary
 
 def getWarningsText(authors):
@@ -364,13 +400,15 @@ def writeOutput(arguments):
 	rootFileName = almoner.getParameter(arguments, 'devtome', 'wiki')
 	currentFileName = almoner.getParameter(arguments, rootFileName + '_%s.csv' % round, 'current')
 	previousFileName = almoner.getParameter(arguments, rootFileName + '_%s.csv' % (round - 1), 'previous')
+	ratingFileName = almoner.getParameter(arguments, 'rating_%s.csv' % round, 'rating')
 	viewFileName = almoner.getParameter(arguments, 'devtome_analytics_%s.csv' % round, 'view')
 	lines = almoner.getTextLines(almoner.getFileText(previousFileName))
 	titleLine = lines[0]
 	titles = titleLine.split(',')
 	backupFolder = rootFileName + '_articles'
+	ratingDictionary = getRatingDictionary(ratingFileName)
 	viewDictionary = getViewDictionary(viewFileName)
-	authors = getAuthors(backupFolder, lines, titles, viewDictionary)
+	authors = getAuthors(backupFolder, lines, ratingDictionary, titles, viewDictionary)
 	totalTomecount = getTotalTomecount(authors)
 	tomecountText = getTomecountText(authors, totalTomecount)
 	earningsText = getEarningsText(authors)
@@ -393,7 +431,7 @@ def writeOutput(arguments):
 
 class Author:
 	'A class to handle an author.'
-	def __init__(self, backupFolder, backupFileSet, titles, viewDictionary, words):
+	def __init__(self, averageRating, backupFolder, backupFileSet, ratingDictionary, titles, viewDictionary, words):
 		'Initialize.'
 		self.backupFolder = backupFolder
 		self.backupFileSet = backupFileSet
@@ -432,7 +470,7 @@ class Author:
 					wordCount = getWordCount(linkText)
 					self.tomecount.collatedWordCount += wordCount
 					if lowerLinkName in viewDictionary:
-						self.tomecount.pageViews += int(viewDictionary[lowerLinkName])
+						self.tomecount.pageViews += viewDictionary[lowerLinkName]
 					if wordCount > 0:
 						print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						self.saveArticle(lowerLinkName, linkText)
@@ -447,7 +485,7 @@ class Author:
 					wordCount = getWordCount(linkText)
 					self.tomecount.originalWordCount += wordCount
 					if lowerLinkName in viewDictionary:
-						self.tomecount.pageViews += int(viewDictionary[lowerLinkName])
+						self.tomecount.pageViews += viewDictionary[lowerLinkName]
 					if wordCount > 0:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						self.saveArticle(lowerLinkName, linkText)
@@ -481,13 +519,17 @@ class Author:
 			self.tomecount.payout = maximumPayout
 			self.tomecount.cumulativePayout = self.tomecount.previousPayout + maximumPayout
 		if self.tomecount.cumulativePayout > 0:
+			self.tomecount.ratingMedian = averageRating
+			lowerName = self.name.lower()
+			if lowerName in ratingDictionary:
+				self.tomecount.ratingMedian = ratingDictionary[lowerName]
 			weightedPageViews = self.tomecount.pageViews
 			if self.tomecount.previousPayout == 0:
 				weightedPageViews += weightedPageViews
 			worthRatio = float(weightedPageViews) / float(self.tomecount.weightedWordCount)
 			self.tomecount.viewsPerThousandWords = 1000.0 * float(weightedPageViews) / float(self.tomecount.weightedWordCount)
-			self.tomecount.normalizedWorth = math.sqrt(worthRatio)
 			self.tomecount.normalizedPopularity = self.tomecount.viewsPerThousandWords
+			self.tomecount.normalizedRatingMedian = self.tomecount.ratingMedian
 
 	def __repr__(self):
 		'Get the string representation of this class.'
@@ -524,12 +566,14 @@ class Tomecount:
 		self.earnings = 0
 		self.imageCount = 0
 		self.normalizedPopularity = 0.0
+		self.normalizedRatingMedian = 0.0
 		self.normalizedWorth = 0.0
 		self.originalWordCount = 0
 		self.pageViews = 0
 		self.payout = 0
 		self.previousPayout = 0
 		self.proportion = 0.0
+		self.ratingMedian = 0.0
 		self.viewsPerThousandWords = 0.0
 		self.weightedWordCount = 0
 		self.wordCount = 0
@@ -553,6 +597,8 @@ class Tomecount:
 		words.append(str(self.pageViews))
 		words.append(str(self.viewsPerThousandWords))
 		words.append(str(self.normalizedPopularity))
+		words.append(str(self.ratingMedian))
+		words.append(str(self.normalizedRatingMedian))
 		words.append(str(self.normalizedWorth))
 		words.append(str(self.boundedEarningsMultiplier))
 		words.append(str(self.earnings))

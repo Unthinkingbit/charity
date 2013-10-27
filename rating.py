@@ -75,10 +75,12 @@ def getEarningsText(ratings, recipientDictionary):
 	raterKeys.sort()
 	for raterKey in raterKeys:
 		numberOfComments = 0
+		numberOfRatings = 0
 		for rating in raterDictionary[raterKey]:
 			if len(rating.comment) > 5:
 				numberOfComments += 1
-		earning = 3 + int(round(0.35 * float(min(numberOfComments, 5))))
+			numberOfRatings += 1
+		earning = min(3, numberOfRatings) + int(round(0.35 * float(min(numberOfComments, 5))))
 		rating = raterDictionary[raterKey][0]
 		coinAddress = recipientDictionary[raterKey]
 		cString.write('%s,%s,%s-Rating Comments(%s)\n' % (raterKey.capitalize(), coinAddress, earning, rating.address.replace('&do=edit', '')))
@@ -115,6 +117,12 @@ def getPreviousRaterIndex(line):
 			return wordIndex
 	return 3
 
+def getPreviousRaters(name, previousRaterDictionary):
+	'Get the previous raters.'
+	if name in previousRaterDictionary:
+		return previousRaterDictionary[name]
+	return []
+
 def getPreviousVoteDictionary(round):
 	'Get the vote dictionary from the previous round.'
 	lines = almoner.getTextLines(almoner.getFileText('rating_%s.csv' % (round - 1)))
@@ -142,6 +150,12 @@ def getPreviousVoteIndex(line):
 			return wordIndex
 	return 1
 
+def getPreviousVotes(name, previousVoteDictionary):
+	'Get the previous votes.'
+	if name in previousVoteDictionary:
+		return previousVoteDictionary[name]
+	return []
+
 def getRatingText(ratings, round):
 	'Get the rating text.'
 	cString = cStringIO.StringIO()
@@ -153,22 +167,18 @@ def getRatingText(ratings, round):
 		if rating.author in authorDictionary:
 			authorDictionary[rating.author].addRating(rating)
 		else:
-			previousVotes = []
-			if rating.author in previousVoteDictionary:
-				previousVotes = previousVoteDictionary[rating.author]
-			if rating.author in previousRaterDictionary:
-				previousRaters = previousRaterDictionary[rating.author]
-			author = Author(rating.author, previousRaters, previousVotes)
+			previousRaters = getPreviousRaters(rating.author, previousRaterDictionary)
+			author = Author(rating.author, previousRaters, getPreviousVotes(rating.author, previousVoteDictionary))
 			author.addRating(rating)
 			authorDictionary[rating.author] = author
 	for name in previousVoteDictionary:
 		if name not in authorDictionary:
-			authorDictionary[name] = Author(name, previousRaterDictionary[name], previousVoteDictionary[name])
+			authorDictionary[name] = Author(name, getPreviousRaters(name, previousRaterDictionary), getPreviousVotes(name, previousVoteDictionary))
 	authorKeys = authorDictionary.keys()
 	authorKeys.sort()
 	for authorKey in authorKeys:
 		maxLength = max(maxLength, len(authorDictionary[authorKey].ratings))
-	titles = ['Author', 'All Votes', 'Raters', 'Median']
+	titles = ['Author', 'All Votes', 'Median', 'Raters']
 	for voteIndex in xrange(maxLength):
 		titles.append('Address')
 		titles.append('Vote')
@@ -246,7 +256,7 @@ class Author:
 			voteStrings.append(str(vote))
 		fields = [self.name, '-'.join(voteStrings), str(getMedian(votes)), '-'.join(raters)]
 		for rating in self.ratings:
-			fields.append(rating.address)
+			fields.append(rating.address.replace('&do=edit', ''))
 			fields.append(str(rating.vote))
 		cString.write('%s\n' % ','.join(fields))
 
