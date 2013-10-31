@@ -64,10 +64,11 @@ def addJoinedTitles(cString, words):
 	words.append('Word Count')
 	words.append('Weighted Word Count')
 	words.append('Cumulative Payout')
-	words.append('Proportion')
 	words.append('Previous Cumulative Payout')
 	words.append('Payout')
 	words.append('Unique Page Views')
+	words.append('Popularity Times Rating')
+	words.append('Advertising Portion')
 	words.append('Views per Thousand Words')
 	words.append('Normalized Popularity')
 	words.append('Rating Median')
@@ -275,9 +276,7 @@ def getTomecountText(authors, totalTomecount):
 	'Get the tomecount csv text for the authors.'
 	cString = cStringIO.StringIO()
 	addJoinedTitles(cString, ['Name','Coin Address'])
-	weightedWordCountFloat = float(totalTomecount.weightedWordCount)
 	for author in authors:
-		author.tomecount.proportion = float(author.tomecount.weightedWordCount) / weightedWordCountFloat
 		author.addLine(cString)
 	addJoinedTitles(cString, ['','Totals'])
 	cString.write(totalTomecount.getJoinedWords(['','']))
@@ -290,7 +289,7 @@ def getTotalTomecount(authors):
 	totalTomecount = Tomecount()
 	numberOfActiveWriters = 0
 	numberOfWriters = 0
-	totalTomecount.proportion = 1.0
+	totalTomecount.advertisingPortion = 1.0
 	normalizedPopularities = []
 	normalizedRatingMedians = []
 	for author in authors:
@@ -315,20 +314,23 @@ def getTotalTomecount(authors):
 		totalTomecount.wordCount += author.tomecount.wordCount
 		if author.tomecount.cumulativePayout > 0:
 			numberOfWriters += 1
-			totalTomecount.viewsPerThousandWords += author.tomecount.viewsPerThousandWords
+			totalTomecount.popularityTimesRating += author.tomecount.popularityTimesRating
 			totalTomecount.normalizedPopularity += author.tomecount.normalizedPopularity
 			totalTomecount.normalizedRatingMedian += author.tomecount.normalizedRatingMedian
 			totalTomecount.normalizedWorth += author.tomecount.normalizedWorth
+			totalTomecount.viewsPerThousandWords += author.tomecount.viewsPerThousandWords
 	if numberOfWriters > 0:
-		totalTomecount.viewsPerThousandWords /= float(numberOfWriters)
 		totalTomecount.normalizedPopularity /= float(numberOfWriters)
 		totalTomecount.normalizedRatingMedian /= float(numberOfWriters)
 		totalTomecount.normalizedWorth /= float(numberOfWriters)
+		totalTomecount.viewsPerThousandWords /= float(numberOfWriters)
 	totalTomecount.earnings = getRevenueNeutralEarnings(authors, totalTomecount)
 	for author in authors:
 		if author.tomecount.earnings > 0:
 			totalTomecount.boundedEarningsMultiplier += author.tomecount.boundedEarningsMultiplier
 			numberOfActiveWriters += 1
+		if author.tomecount.popularityTimesRating > 0:
+			author.tomecount.advertisingPortion = float(author.tomecount.popularityTimesRating) / float(totalTomecount.popularityTimesRating)
 	if numberOfActiveWriters > 0:
 		totalTomecount.boundedEarningsMultiplier /= float(numberOfActiveWriters)
 	return totalTomecount
@@ -526,10 +528,10 @@ class Author:
 			weightedPageViews = self.tomecount.pageViews
 			if self.tomecount.previousPayout == 0:
 				weightedPageViews += weightedPageViews
-			worthRatio = float(weightedPageViews) / float(self.tomecount.weightedWordCount)
 			self.tomecount.viewsPerThousandWords = 1000.0 * float(weightedPageViews) / float(self.tomecount.weightedWordCount)
 			self.tomecount.normalizedPopularity = self.tomecount.viewsPerThousandWords
 			self.tomecount.normalizedRatingMedian = self.tomecount.ratingMedian
+			self.tomecount.popularityTimesRating = int(round(self.tomecount.pageViews * float(self.tomecount.ratingMedian) / 99.0))
 
 	def __repr__(self):
 		'Get the string representation of this class.'
@@ -559,6 +561,7 @@ class Tomecount:
 	'A class to handle the tome accounting.'
 	def __init__(self):
 		'Initialize.'
+		self.advertisingPortion = 0.0
 		self.boundedEarningsMultiplier = 0.0
 		self.collatedWeightedWordCount = 0
 		self.collatedWordCount = 0
@@ -571,8 +574,8 @@ class Tomecount:
 		self.originalWordCount = 0
 		self.pageViews = 0
 		self.payout = 0
+		self.popularityTimesRating = 0
 		self.previousPayout = 0
-		self.proportion = 0.0
 		self.ratingMedian = 0.0
 		self.viewsPerThousandWords = 0.0
 		self.weightedWordCount = 0
@@ -591,10 +594,11 @@ class Tomecount:
 		words.append(str(self.wordCount))
 		words.append(str(self.weightedWordCount))
 		words.append(str(self.cumulativePayout))
-		words.append(str(self.proportion))
 		words.append(str(self.previousPayout))
 		words.append(str(self.payout))
 		words.append(str(self.pageViews))
+		words.append(str(self.popularityTimesRating))
+		words.append(str(self.advertisingPortion))
 		words.append(str(self.viewsPerThousandWords))
 		words.append(str(self.normalizedPopularity))
 		words.append(str(self.ratingMedian))
