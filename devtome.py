@@ -69,12 +69,13 @@ def addJoinedTitles(cString, words):
 	words.append('Unique Page Views')
 	words.append('Popularity Times Rating')
 	words.append('Advertising Portion')
+	words.append('Advertising Revenue')
 	words.append('Views per Thousand Words')
 	words.append('Normalized Popularity')
 	words.append('Rating Median')
 	words.append('Normalized Rating Median')
 	words.append('Normalized Worth')
-	words.append('Bounded Earnings Multiplier')
+	words.append('Earnings Multiplier')
 	words.append('Earnings')
 	cString.write('%s\n' % ','.join(words))
 
@@ -267,8 +268,8 @@ def getTotalEarnings(authors, earningsMultiplier, totalTomecount):
 	totalEarnings = 0
 	for author in authors:
 		if author.tomecount.payout > 0:
-			author.tomecount.boundedEarningsMultiplier = max(min(earningsMultiplier * author.tomecount.normalizedWorth, 1.4999), 0.5001)
-			author.tomecount.earnings = int(round(author.tomecount.boundedEarningsMultiplier * float(author.tomecount.payout)))
+			author.tomecount.earningsMultiplier = max(min(earningsMultiplier * author.tomecount.normalizedWorth, 1.4999), 0.5001)
+			author.tomecount.earnings = int(round(author.tomecount.earningsMultiplier * float(author.tomecount.payout)))
 			totalEarnings += author.tomecount.earnings
 	return totalEarnings
 
@@ -284,7 +285,7 @@ def getTomecountText(authors, totalTomecount):
 	cString.write(',%s\n' % date.today().isoformat())
 	return cString.getvalue()
 
-def getTotalTomecount(authors):
+def getTotalTomecount(advertisingRevenue, authors):
 	'Get the tomecount total and calculate the earnings for the authors.'
 	totalTomecount = Tomecount()
 	numberOfActiveWriters = 0
@@ -327,12 +328,14 @@ def getTotalTomecount(authors):
 	totalTomecount.earnings = getRevenueNeutralEarnings(authors, totalTomecount)
 	for author in authors:
 		if author.tomecount.earnings > 0:
-			totalTomecount.boundedEarningsMultiplier += author.tomecount.boundedEarningsMultiplier
+			totalTomecount.earningsMultiplier += author.tomecount.earningsMultiplier
 			numberOfActiveWriters += 1
 		if author.tomecount.popularityTimesRating > 0:
 			author.tomecount.advertisingPortion = float(author.tomecount.popularityTimesRating) / float(totalTomecount.popularityTimesRating)
+			author.tomecount.advertisingRevenue = int(round(author.tomecount.advertisingPortion * float(advertisingRevenue)))
+			totalTomecount.advertisingRevenue += author.tomecount.advertisingRevenue
 	if numberOfActiveWriters > 0:
-		totalTomecount.boundedEarningsMultiplier /= float(numberOfActiveWriters)
+		totalTomecount.earningsMultiplier /= float(numberOfActiveWriters)
 	return totalTomecount
 
 def getViewDictionary(viewFileName):
@@ -398,6 +401,7 @@ def writeOutput(arguments):
 	if '-h' in arguments or '-help' in arguments:
 		print(__doc__)
 		return
+	advertisingRevenue = int(almoner.getParameter(arguments, '0', 'advertising'))
 	round = int(almoner.getParameter(arguments, '23', 'round'))
 	rootFileName = almoner.getParameter(arguments, 'devtome', 'wiki')
 	currentFileName = almoner.getParameter(arguments, rootFileName + '_%s.csv' % round, 'current')
@@ -411,7 +415,7 @@ def writeOutput(arguments):
 	ratingDictionary = getRatingDictionary(ratingFileName)
 	viewDictionary = getViewDictionary(viewFileName)
 	authors = getAuthors(backupFolder, lines, ratingDictionary, titles, viewDictionary)
-	totalTomecount = getTotalTomecount(authors)
+	totalTomecount = getTotalTomecount(advertisingRevenue, authors)
 	tomecountText = getTomecountText(authors, totalTomecount)
 	earningsText = getEarningsText(authors)
 	newArticlesText = getNewArticlesText(authors, round)
@@ -562,11 +566,12 @@ class Tomecount:
 	def __init__(self):
 		'Initialize.'
 		self.advertisingPortion = 0.0
-		self.boundedEarningsMultiplier = 0.0
+		self.advertisingRevenue = 0
 		self.collatedWeightedWordCount = 0
 		self.collatedWordCount = 0
 		self.cumulativePayout = 0
 		self.earnings = 0
+		self.earningsMultiplier = 0.0
 		self.imageCount = 0
 		self.normalizedPopularity = 0.0
 		self.normalizedRatingMedian = 0.0
@@ -599,12 +604,13 @@ class Tomecount:
 		words.append(str(self.pageViews))
 		words.append(str(self.popularityTimesRating))
 		words.append(str(self.advertisingPortion))
+		words.append(str(self.advertisingRevenue))
 		words.append(str(self.viewsPerThousandWords))
 		words.append(str(self.normalizedPopularity))
 		words.append(str(self.ratingMedian))
 		words.append(str(self.normalizedRatingMedian))
 		words.append(str(self.normalizedWorth))
-		words.append(str(self.boundedEarningsMultiplier))
+		words.append(str(self.earningsMultiplier))
 		words.append(str(self.earnings))
 		return '%s\n' % ','.join(words)
 
