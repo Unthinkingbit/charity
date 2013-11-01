@@ -79,6 +79,16 @@ def addJoinedTitles(cString, words):
 	words.append('Earnings')
 	cString.write('%s\n' % ','.join(words))
 
+def getAdvertisingRevenueText(authors):
+	'Get the devtome advertising revenue text.'
+	cString = cStringIO.StringIO()
+	for author in authors:
+		coinAddress = author.parameterDictionary['Coin Address']
+		advertisingRevenueString = str(author.tomecount.advertisingRevenue)
+		if advertisingRevenueString != '0':
+			cString.write('%s,%s\n' % (coinAddress, advertisingRevenueString))
+	return cString.getvalue()
+
 def getAuthors(backupFolder, lines, ratingDictionary, titles, viewDictionary):
 	'Get the authors.'
 	averageRating = 0.0
@@ -401,8 +411,9 @@ def writeOutput(arguments):
 	if '-h' in arguments or '-help' in arguments:
 		print(__doc__)
 		return
-	advertisingRevenue = int(almoner.getParameter(arguments, '0', 'advertising'))
+	advertisingRevenue = int(almoner.getParameter(arguments, '0', 'revenue'))
 	round = int(almoner.getParameter(arguments, '23', 'round'))
+	advertisingFileName = almoner.getParameter(arguments, 'devtome', 'wiki')
 	rootFileName = almoner.getParameter(arguments, 'devtome', 'wiki')
 	currentFileName = almoner.getParameter(arguments, rootFileName + '_%s.csv' % round, 'current')
 	previousFileName = almoner.getParameter(arguments, rootFileName + '_%s.csv' % (round - 1), 'previous')
@@ -417,14 +428,19 @@ def writeOutput(arguments):
 	authors = getAuthors(backupFolder, lines, ratingDictionary, titles, viewDictionary)
 	totalTomecount = getTotalTomecount(advertisingRevenue, authors)
 	tomecountText = getTomecountText(authors, totalTomecount)
+	advertisingRevenueText = getAdvertisingRevenueText(authors)
 	earningsText = getEarningsText(authors)
 	newArticlesText = getNewArticlesText(authors, round)
 	warningsText = getWarningsText(authors)
 	outputSummaryTo = almoner.getParameter(arguments, 'devtome_summary.txt', 'summary')
 	almoner.writeFileText(currentFileName, tomecountText)
+	outputAdvertisingRevenueTo = almoner.getParameter(arguments, 'devtome_advertising_revenue.csv', 'advertising')
 	outputEarningsTo = almoner.getParameter(arguments, 'devtome_earnings_%s.csv' % round, 'earnings')
 	outputNewArticlesTo = almoner.getParameter(arguments, 'devtome_new_articles.txt', 'articles')
 	outputWarningsTo = almoner.getParameter(arguments, 'devtome_warnings.txt', 'warnings')
+	if advertisingRevenue > 0:
+		if almoner.sendOutputTo(outputAdvertisingRevenueTo, advertisingRevenueText):
+			print('The devtome advertising revenue file has been written to:\n%s\n' % outputAdvertisingRevenueTo)
 	if almoner.sendOutputTo(outputEarningsTo, earningsText):
 		print('The devtome earnings file has been written to:\n%s\n' % outputEarningsTo)
 	if almoner.sendOutputTo(outputNewArticlesTo, newArticlesText):

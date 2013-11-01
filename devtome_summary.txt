@@ -14,6 +14,6 @@ The word earnings were generated on 2013-10-31, and the total word counts follow
 Collated Word Count: 34,087
 Collated Weighted Word Count: 10,225
 Images: 128
-Original Word Count: 288,301
-Total Word Count: 322,388
-Total Weighted Word Count: 299,806
+Original Word Count: 295,304
+Total Word Count: 329,391
+Total Weighted Word Count: 306,809
