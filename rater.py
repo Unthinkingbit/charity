@@ -65,26 +65,35 @@ import sys
 __license__ = 'MIT'
 
 
-def addWriter(line, previousVoteDictionary, writers):
+def addWriter(previousVoteDictionary, writerName, writers):
 	'Get the writers.'
-	words = line.split(',')
-	if len(words) < 2:
-		return
-	name = words[0].strip().lower()
-	if name == '':
-		return
-	writer = Writer(name)
+	writer = Writer(writerName)
 	if len(writer.articles) <= 0:
 		return
 	numberOfRatings = 0
-	if name in previousVoteDictionary:
-		numberOfRatings = len(previousVoteDictionary[name])
+	if writerName in previousVoteDictionary:
+		numberOfRatings = len(previousVoteDictionary[writerName])
 	if numberOfRatings > 8:
 		return
 	if numberOfRatings > 4:
 		if random.random() > 0.2 * float(9 - numberOfRatings):
 			return
 	writers.append(writer)
+
+def getArticleLinkString(articles):
+	'Get the article link string if there is an article with text.'
+	articleIndexStart = int(float(len(articles)) * random.random())
+	longestArticleLinkString = ''
+	longestLength = 0
+	for extraIndex in xrange(len(articles)):
+		articleLinkString = articles[(articleIndexStart + extraIndex) % len(articles)].replace('_', ' ').capitalize()
+		sourceText = almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % articleLinkString)
+		if len(sourceText) > 200:
+			return articleLinkString
+		if len(sourceText) > longestLength:
+			longestLength = len(sourceText)
+			longestArticleLinkString = articleLinkString
+	return longestArticleLinkString
 
 def getBelowRaterWriters(name, raterWriters):
 	'Get the rater writers whose name is 1 to 12 ordinals below, wrapped around.'
@@ -101,16 +110,14 @@ def getBelowRaterWriters(name, raterWriters):
 def getFirstLetterIndex(name):
 	'Get the index of the first letter, with A being 0, and anything other than a letter being 25.'
 	firstLetterIndex = ord(name[0].lower()) - 97
-	if firstLetterIndex < 0:
-		return 25
-	if firstLetterIndex > 25:
+	if firstLetterIndex < 0 or firstLetterIndex > 25:
 		return 25
 	return firstLetterIndex
 
-def getRaters(round):
+def getRaters():
 	'Get the rater names.'
 	raters = []
-	lines = almoner.getTextLines(almoner.getFileText('rater_%s.csv' % round))
+	lines = almoner.getTextLines(almoner.getFileText('rater.csv'))
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 0:
@@ -119,16 +126,16 @@ def getRaters(round):
 				raters.append(rater)
 	return raters
 
-def getRaterText(maximumWriters, round, seedString):
+def getRaterText(maximumWriters, round, seedString, writerNames):
 	'Get the rater text.'
 	previousRaterDictionary = rating.getPreviousRaterDictionary(round)
 	previousNameDictionary = {}
-	writers = getWriters(round)
+	writers = getWriters(round, writerNames)
 	random.shuffle(writers)
 	cString = cStringIO.StringIO()
 	otherWriters = []
 	raterWriters = []
-	raters = getRaters(round)
+	raters = getRaters()
 	raters.sort()
 	raterSet = set(raters)
 	for previousRaterKey in previousRaterDictionary.keys():
@@ -154,25 +161,39 @@ def getRaterText(maximumWriters, round, seedString):
 		cString.write('Copy and paste:\n')
 		cString.write('Writer, Article: 0-99\n')
 		for ratedWritersIndex, ratedWriter in enumerate(ratedWriters):
-			articles = ratedWriter.articles
-			articleLinkString = '[[%s]]' % articles[int(float(len(articles)) * random.random())].replace('_', ' ').capitalize()
+			articleLinkString = getArticleLinkString(ratedWriter.articles)
 			if ratedWritersIndex % 3 == 0 and ratedWritersIndex > 0:
 				cString.write('\n')
-			cString.write('*[[wiki:user:%s]], %s: \n' % (ratedWriter.name.capitalize(), articleLinkString))
+			if articleLinkString != '':
+				cString.write('*[[wiki:user:%s]], [[%s]]: \n' % (ratedWriter.name.capitalize(), articleLinkString))
 	cString.write('\n\nRater seed string: %s\n' % seedString)
+	cString.write('\nWriter names:\n')
+	for writerName in writerNames:
+		cString.write('%s\n' % writerName)
 	return cString.getvalue()
 
 def getWriterName(writer):
 	'Get the name for sorting.'
 	return writer.name
 
-def getWriters(round):
+def getWriterNames(writerFileName):
+	'Get the writer names.'
+	writerNames = []
+	lines = almoner.getTextLines(almoner.getFileText(writerFileName))
+	for line in lines[1 :]:
+		words = line.split(',')
+		if len(words) > 0:
+			name = words[0].strip().lower()
+			if name != '':
+				writerNames.append(name)
+	return writerNames
+
+def getWriters(round, writerNames):
 	'Get the writers.'
 	writers = []
-	lines = almoner.getTextLines(almoner.getFileText('devtome_%s.csv' % (round - 1)))
 	previousVoteDictionary = rating.getPreviousVoteDictionary(round)
-	for line in lines[1 :]:
-		addWriter(line, previousVoteDictionary, writers)
+	for writerName in writerNames:
+		addWriter(previousVoteDictionary, writerName, writers)
 	return writers
 
 def getWritersMinusNameSet(nameSet, writers):
@@ -192,8 +213,10 @@ def writeOutput(arguments):
 	maximumWriters = int(almoner.getParameter(arguments, '12', 'writers'))
 	outputRaterTo = 'rater_%s.txt' % round
 	seedString = almoner.getParameter(arguments, date.today().isoformat(), 'seed')
+	writerFileName = 'devtome_%s.csv' % (round - 1)
 	random.seed(seedString[: -1])
-	raterText = getRaterText(maximumWriters, round, seedString)
+	writerNames = getWriterNames(writerFileName)
+	raterText = getRaterText(maximumWriters, round, seedString, writerNames)
 	if almoner.sendOutputTo(outputRaterTo, raterText):
 		print('The rater file has been written to:\n%s\n' % outputRaterTo)
 
