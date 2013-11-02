@@ -170,7 +170,7 @@ def getIsLastEditByAuthor(author, linkString):
 		return False
 	return True
 
-def getLinkName(line):
+def getLinkName(line, name):
 	'Get the name of the article in the line.'
 	linkStartIndex = line.find('[[')
 	if linkStartIndex == -1:
@@ -189,12 +189,17 @@ def getLinkName(line):
 	if len(linkString) == 0:
 		return ''
 	linkString = linkString.strip()
-	if linkString[0] == ':':
-		linkString = linkString[1 :]
+	if linkString[0] != ':':
+		return ''
+	linkString = linkString[1 :]
+	if linkString.startswith('wiki:user:'):
+		return ''
 	questionMarkIndex = linkString.find('?')
 	if questionMarkIndex >= 0:
 		linkString = linkString[: questionMarkIndex]
 	linkString = linkString.replace('&amp;', ' ').replace('&quot;', ' ').replace('/', '_').replace('  ', ' ').replace('  ', ' ')
+	if linkString.lower() == name.lower():
+		return ''
 	return linkString.strip().replace(' ', '_')
 
 def getNewArticlesText(authors, round):
@@ -482,7 +487,7 @@ class Author:
 				isOriginal = False
 				isTip = False
 			if isCollated:
-				lowerLinkName = getLinkName(line).lower()
+				lowerLinkName = getLinkName(line, self.name).lower()
 				linkText = getSourceTextIfByAuthor(self, lowerLinkName)
 				if lowerLinkName != '' and linkText == '':
 					self.printWarning('Warning, could not invoice article link: %s' % lowerLinkName)
@@ -497,7 +502,7 @@ class Author:
 						print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						self.saveArticle(lowerLinkName, linkText)
 			if isOriginal:
-				lowerLinkName = getLinkName(line).lower()
+				lowerLinkName = getLinkName(line, self.name).lower()
 				linkText = getSourceTextIfByAuthor(self, lowerLinkName)
 				if lowerLinkName != '' and linkText == '':
 					self.printWarning('Warning, could not invoice article link: %s' % lowerLinkName)

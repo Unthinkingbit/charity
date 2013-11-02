@@ -77,9 +77,9 @@ def addToAuthorDictionary(authorDictionary, name, text):
 			if 'collated' in lineStrippedLower or 'original' in lineStrippedLower:
 				isArticle = True
 		if isArticle:
-			title = devtome.getLinkName(lineStrippedLower)
+			title = devtome.getLinkName(lineStrippedLower, name)
 			if title != '':
-				authorDictionary[title] = name[len('wiki:user:') :]
+				authorDictionary[title] = name
 	
 def getArticles():
 	'Get the articles.'
@@ -95,7 +95,7 @@ def getArticles():
 		filePath = os.path.join(fileNameRoot, name)
 		text = almoner.getFileText(filePath)
 		if name.startswith('wiki:user:'):
-			addToAuthorDictionary(authorDictionary, name, text)
+			addToAuthorDictionary(authorDictionary, name[len('wiki:user:') :], text)
 		else:
 			longWords = getLongWords(text)
 			if len(longWords) > 40:

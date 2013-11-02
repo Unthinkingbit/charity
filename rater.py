@@ -238,10 +238,10 @@ class Writer:
 				isCollated = False
 				isOriginal = False
 			if isCollated:
-				lowerLinkName = devtome.getLinkName(line).lower()
+				lowerLinkName = devtome.getLinkName(line, name).lower()
 				self.articles.append(lowerLinkName)
 			if isOriginal:
-				lowerLinkName = devtome.getLinkName(line).lower()
+				lowerLinkName = devtome.getLinkName(line, name).lower()
 				self.articles.append(lowerLinkName)
 			if '==' in lineStrippedLower:
 				if 'collated' in lineStrippedLower:
