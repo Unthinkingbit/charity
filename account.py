@@ -63,7 +63,7 @@ def addAdministratorBonus(accountLines):
 		administratorPay += administrator.pay
 		if administrator.isGeneralAdministrator:
 			generalAdministrators.append(administrator)
-	for bonusMultiplier in xrange(7, 1, -1):
+	for bonusMultiplier in xrange(7, 0, -1):
 		bonusPay = bonusMultiplier * float(len(generalAdministrators))
 		totalAdministratorPay = bonusPay + administratorPay
 		totalShares = originalNumberOfLinesFloat + bonusPay
