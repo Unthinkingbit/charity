@@ -12,7 +12,7 @@ http://creativecurrencies.cu.cc/wp-content/uploads/receiver_29.csv
 The account file is at:
 http://galaxies.mygamesonline.org/account_29.csv
 
-There were 369 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 369 = 487,805 dvc. Administrator pay is 45.0 shares, 12.2 percent of the total.
+There were 369 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 369 = 487,805 dvc. Administrator pay is 45.0 shares, 12.2 percent of the total. The value at vircurex is 0.195 mcbtc/dvc, which works out to 0.0951 btc. This times the bitstamp price of 805$ gives a share price of 77$.
 
 People on that list will start getting those coins in round 29, starting at block 116,000. The procedure for generating the receiver files is at:
 http://devtome.com/doku.php?id=devcoin#generating_the_files
