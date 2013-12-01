@@ -59,18 +59,20 @@ def addAdministratorBonus(accountLines):
 			administrators.append(Administrator(accountLine))
 	administratorPay = 0.0
 	generalAdministrators = []
+	factotumCount = 0
 	for administrator in administrators:
 		administratorPay += administrator.pay
 		if administrator.isGeneralAdministrator:
 			generalAdministrators.append(administrator)
+		if administrator.isFactotum:
+			factotumCount += 1
 	for bonusMultiplier in xrange(7, 0, -1):
-		bonusPay = bonusMultiplier * float(len(generalAdministrators))
+		bonusPay = bonusMultiplier * float(len(generalAdministrators)) + factotumCount
 		totalAdministratorPay = bonusPay + administratorPay
 		totalShares = originalNumberOfLinesFloat + bonusPay
 		percentPay = 0.1 * round(1000.0 * totalAdministratorPay / totalShares)
 		if percentPay < 15.0:
-			bonusShares = bonusMultiplier * len(generalAdministrators)
-			accountLines.append('Administrator Bonus' + ': %s Shares' % bonusShares)
+			accountLines.append('Administrator Bonus' + ': %s Shares' % int(round(bonusPay)))
 			for generalAdministrator in generalAdministrators:
 				accountLines.append(generalAdministrator.getAccountLine(bonusMultiplier))
 			accountLines.append('')
@@ -412,6 +414,7 @@ class Administrator:
 	'A class to handle an administrator.'
 	def __init__(self, line):
 		'Initialize.'
+		self.isFactotum = False
 		self.isFileAdministrator = False
 		self.isGeneralAdministrator = False
 		self.pay = 0.0
@@ -433,12 +436,17 @@ class Administrator:
 					self.pay += firstFloat / float(numberStrings[1])
 				else:
 					self.pay += firstFloat
-			elif 'Administrator' in wordUntilBracket:
+			elif wordUntilBracket.endswith(' Administrator'):
 				dashIndex = wordUntilBracket.find('-')
 				if dashIndex != -1:
 					self.pay += float(wordUntilBracket[: dashIndex])
 					self.isGeneralAdministrator = True
 					self.description = word[dashIndex + 1 :]
+			elif wordUntilBracket.endswith(' Factotum'):
+				dashIndex = wordUntilBracket.find('-')
+				if dashIndex != -1:
+					self.pay += float(wordUntilBracket[: dashIndex])
+					self.isFactotum = True
 
 	def getAccountLine(self, bonusMultiplier):
 		'Get account line.'
