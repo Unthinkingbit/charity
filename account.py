@@ -129,6 +129,7 @@ def getAccountLines(arguments, suffixNumberString):
 	linkFileName = almoner.getParameter(arguments, 'account_location.csv', 'location')
 	linkLines = almoner.getTextLines(almoner.getLocationText(linkFileName))[1 :]
 	accountLines = ['']
+	nameSet = set([])
 	for linkLine in linkLines:
 		linkLineSplit = linkLine.split(',')
 		name = linkLineSplit[0]
@@ -138,7 +139,7 @@ def getAccountLines(arguments, suffixNumberString):
 			location = location.replace('_xx', '_' + suffixNumberString)
 			extraLines = almoner.getTextLines(almoner.getLocationText(location))
 		else:
-			extraLines = almoner.getNameAddressLines(location)
+			extraLines = getNameAddressLines(location, nameSet)
 		numberOfShares = len(getReceiverLinesByAccountLines(extraLines))
 		accountLines.append(name + ': %s Shares' % numberOfShares)
 		accountLines += extraLines
@@ -206,6 +207,31 @@ def getGroupedReceiverLines(denominatorMultiplier, denominatorSequences):
 	for denominatorSequence in denominatorSequences:
 		denominatorSequence.denominator *= denominatorMultiplier
 	return getReceiverLinesByDenominatorSequences(denominatorSequences)
+
+def getNameAddressLines(fileName, nameSet):
+	'Get the name and address lines by the file name.'
+	if fileName == '':
+		return []
+	addressLines = []
+	for contributor in almoner.getContributors(fileName):
+		name = contributor.contributor
+		leftBracketIndex = name.find('[')
+		if leftBracketIndex >= 0:
+			name = name[leftBracketIndex + 1 :]
+			spaceIndex = name.find(' ')
+			if spaceIndex >= 0:
+				name = name[spaceIndex + 1 :]
+		rightBracketIndex = name.find(']')
+		if rightBracketIndex >= 0:
+			name = name[: rightBracketIndex]
+		dotIndex = name.find('.')
+		if dotIndex > 0:
+			name = name[: dotIndex]
+		lowerName = name.lower()
+		if lowerName not in nameSet:
+			addressLines.append(name.replace(' ', '_') + ',' + contributor.bitcoinAddress)
+			nameSet.add(lowerName)
+	return addressLines
 
 def getPackedReceiverLines(denominatorSequences, originalReceiverLines, suffixNumber):
 	"""

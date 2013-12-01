@@ -165,28 +165,6 @@ def getLocationText(address):
 		return getInternetText(address)
 	return getFileText(address)
 
-def getNameAddressLines(fileName):
-	'Get the name and address lines by the file name.'
-	if fileName == '':
-		return []
-	addressLines = []
-	for contributor in getContributors(fileName):
-		name = contributor.contributor
-		leftBracketIndex = name.find('[')
-		if leftBracketIndex >= 0:
-			name = name[leftBracketIndex + 1 :]
-			spaceIndex = name.find(' ')
-			if spaceIndex >= 0:
-				name = name[spaceIndex + 1 :]
-		rightBracketIndex = name.find(']')
-		if rightBracketIndex >= 0:
-			name = name[: rightBracketIndex]
-		dotIndex = name.find('.')
-		if dotIndex > 0:
-			name = name[: dotIndex]
-		addressLines.append(name.replace(' ', '_') + ',' + contributor.bitcoinAddress)
-	return addressLines
-
 def getOutput(arguments):
 	'Get the output according to the arguments.'
 	fileName = getParameter(arguments, '', 'input')
