@@ -100,9 +100,12 @@ def getAuthors(backupFolder, lines, ratingDictionary, titles, viewDictionary):
 	authorSet = set([])
 	ratingValues = ratingDictionary.values()
 	almoner.makeDirectory(backupFolder)
-	zipArchive = zipfile.ZipFile(backupFolder + '.zip', 'r', compression=zipfile.ZIP_DEFLATED)
-	backupFileSet = set(zipArchive.namelist())
-	zipArchive.close()
+	zipFileName = backupFolder + '.zip'
+	backupFileSet = set([])
+	if os.path.isfile(zipFileName):
+		zipArchive = zipfile.ZipFile(zipFileName, 'r', compression=zipfile.ZIP_DEFLATED)
+		backupFileSet = set(zipArchive.namelist())
+		zipArchive.close()
 	for ratingValue in ratingValues:
 		averageRating += ratingValue
 	if averageRating == 0.0:
