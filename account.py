@@ -214,7 +214,7 @@ def getNameAddressLines(fileName, nameSet):
 		return []
 	addressLines = []
 	for contributor in almoner.getContributors(fileName):
-		name = contributor.contributor
+		name = contributor.name
 		leftBracketIndex = name.find('[')
 		if leftBracketIndex >= 0:
 			name = name[leftBracketIndex + 1 :]

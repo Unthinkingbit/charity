@@ -105,7 +105,10 @@ def getAuthors(backupFolder, lines, ratingDictionary, titles, viewDictionary):
 	zipArchive.close()
 	for ratingValue in ratingValues:
 		averageRating += ratingValue
-	averageRating /= float(len(ratingDictionary.values()))
+	if averageRating == 0.0:
+		averageRating = 1.0
+	else:
+		averageRating /= float(len(ratingDictionary.values()))
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 0:
@@ -421,6 +424,8 @@ def normalizeValues(values):
 		if value > 0.0:
 			difference = value - 1.0
 			standardDeviation += difference * difference
+	if standardDeviation == 0.0:
+		return
 	standardDeviation = math.sqrt(standardDeviation / float(numberOfPositives))
 	halfOverDeviation = 0.5 / standardDeviation
 	for valueIndex, value in enumerate(values):

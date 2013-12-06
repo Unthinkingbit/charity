@@ -66,7 +66,7 @@ def getAlmonerText(contributors, hasName):
 	for contributor in contributors:
 		almonerText += 'Coin,%s' % contributor.bitcoinAddress
 		if hasName:
-			almonerText += '-%s' % getLinkText(contributor.contributor)
+			almonerText += '-%s' % getLinkText(contributor.name)
 		almonerText += ',%s\n' % contributor.share
 	return almonerText
 
@@ -114,6 +114,11 @@ def getContributorsByText(text):
 					contributors.append(contributor)
 				if contributor != None:
 					contributor.parseLine(line)
+	for contributorIndex in xrange(len(contributors) - 1, -1, -1):
+		contributor = contributors[contributorIndex]
+		if contributor.bitcoinAddress == '':
+			print('Warning, no bitcoin address for: %s' % contributor.name)
+			del contributors[contributorIndex]
 	return contributors
 
 def getFileText(fileName, printWarning=True, readMode='r'):
@@ -339,9 +344,9 @@ class Contributor:
 	def __init__(self):
 		'Make empty contributor.'
 		self.bitcoinAddress = ''
-		self.contributor = ''
 		self.description = ''
 		self.isOpenSource = False
+		self.name = ''
 		self.projectHomepage = ''
 		self.projectLicense = ''
 		self.projectType = ''
@@ -365,11 +370,11 @@ class Contributor:
 		firstLowerSpaceless = getWithoutLeadingStar(words[0].lower().replace(' ', ''))
 		if len(firstLowerSpaceless) < 1:
 			return
-		secondWord = words[1].lstrip()
+		secondWord = words[1].strip()
 		if 'coinaddress' in firstLowerSpaceless:
 			self.bitcoinAddress = secondWord
 		elif firstLowerSpaceless == 'contributor':
-			self.contributor = secondWord
+			self.name = secondWord
 		elif firstLowerSpaceless == 'description':
 			self.description = secondWord
 		elif firstLowerSpaceless == 'projecthomepage':
@@ -386,7 +391,7 @@ class Contributor:
 	def toString(self):
 		'Get contributor, bitcoin address, share and utility value as string.'
 		cString = cStringIO.StringIO()
-		cString.write('Contributor: %s\n' % self.contributor)
+		cString.write('Contributor: %s\n' % self.name)
 		cString.write('Bitcoin Address: %s\n' % self.bitcoinAddress)
 		writeTitleValue(cString, 'Description', self.description)
 		writeTitleValue(cString, 'Open Source', self.isOpenSource)
