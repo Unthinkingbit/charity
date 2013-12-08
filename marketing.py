@@ -271,6 +271,10 @@ class Publisher:
 			linkText = almoner.getInternetText(originalLink)
 		beginIndex = linkText.find('devtome.com')
 		if beginIndex == -1:
+			if '<title>Access denied' in linkText and 'used CloudFlare to restrict access</title>' in linkText:
+				warningText = 'Could not open %s because access was denied by CloudFlare,' % lineStrippedLower
+				warningText += ' so there will not be a payment for that link.'
+				print(warningText)
 			return
 		self.domainPayoutSet.add(lineStrippedLower)
 		self.payoutFifth += 2
