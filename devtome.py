@@ -155,7 +155,7 @@ def getIsLastEditByAuthor(author, linkString):
 	if nameLower in globalNames:
 		return True
 	revisionsText = almoner.getInternetText('http://devtome.com/doku.php?id=%s&do=revisions' % linkString)
-	time.sleep(1)
+	time.sleep(0.5)
 	lastModIndex = revisionsText.find('<li id="lastmod">')
 	if lastModIndex == -1:
 		author.printWarning('Warning, lastmod not found on revisions page.')
@@ -264,7 +264,7 @@ def getSourceTextIfByAuthor(author, lowerLinkName):
 	'Get the source text if the author wrote it.'
 	if lowerLinkName == '':
 		return ''
-	time.sleep(1)
+	time.sleep(0.5)
 	if getIsLastEditByAuthor(author, lowerLinkName):
 		return almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % lowerLinkName)
 	return ''
@@ -327,10 +327,11 @@ def getTotalTomecount(advertisingRevenue, authors):
 	normalizeValues(normalizedPopularities)
 	normalizeValues(normalizedRatingMedians)
 	for authorIndex, author in enumerate(authors):
-		author.tomecount.normalizedCategorization = normalizedCategorizations[authorIndex]
-		author.tomecount.normalizedPopularity = normalizedPopularities[authorIndex]
-		author.tomecount.normalizedRatingMedian = normalizedRatingMedians[authorIndex]
-		author.tomecount.normalizedWorth = 0.5 * (author.tomecount.normalizedPopularity + author.tomecount.normalizedRatingMedian)
+		tomecount = author.tomecount
+		tomecount.normalizedCategorization = normalizedCategorizations[authorIndex]
+		tomecount.normalizedPopularity = normalizedPopularities[authorIndex]
+		tomecount.normalizedRatingMedian = normalizedRatingMedians[authorIndex]
+		tomecount.normalizedWorth = .05 * tomecount.normalizedCategorization + .45 * tomecount.normalizedPopularity + .5 * tomecount.normalizedRatingMedian
 	for author in authors:
 		totalTomecount.articleCount += author.tomecount.articleCount
 		totalTomecount.categorizedArticleCount += author.tomecount.categorizedArticleCount
