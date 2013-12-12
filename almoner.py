@@ -194,11 +194,18 @@ def getParameter(arguments, defaultValue, name):
 def getSourceText(address):
 	'Get the devtome source text for the address.'
 	text = getInternetText(address)
+	if '<textarea' not in text:
+		error508AttemptCount = 0
+		while 'Error 508.' not in text and error508AttemptCount < 3:
+			error508AttemptCount += 1
+			time.sleep(30)
+			text = getInternetText(address)
 	textAreaTagIndex = text.find('<textarea')
 	if textAreaTagIndex == -1:
 		print('')
 		print('Warning, no textarea tag found for:')
 		print(address)
+		print(text)
 		print('')
 		return ''
 	tagEndIndex = text.find('>', textAreaTagIndex)
