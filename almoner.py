@@ -37,6 +37,7 @@ import math
 import os
 import shutil
 import sys
+import time
 import urllib
 import zipfile
 
@@ -196,9 +197,9 @@ def getSourceText(address):
 	text = getInternetText(address)
 	if '<textarea' not in text:
 		error508AttemptCount = 0
-		while 'Error 508.' in text and error508AttemptCount < 3:
+		while 'Error 508.' in text and error508AttemptCount < 5:
 			error508AttemptCount += 1
-			time.sleep(60)
+			time.sleep(180)
 			text = getInternetText(address)
 	textAreaTagIndex = text.find('<textarea')
 	if textAreaTagIndex == -1:
