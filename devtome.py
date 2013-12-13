@@ -608,7 +608,7 @@ class Author:
 			self.newArticles.append(lowerLinkName)
 		almoner.writeFileText(os.path.join(self.backupFolder, lowerLinkName), linkText)
 		self.tomecount.articleCount += 1
-		if '[[Category:' in linkText:
+		if '[[category:' in linkText.lower():
 			self.tomecount.categorizedArticleCount += 1
 
 
