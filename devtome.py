@@ -563,7 +563,7 @@ class Author:
 			self.tomecount.cumulativePayout = int(round(float(self.tomecount.weightedWordCount) * 0.001))
 		print('Weighted Word Count: %s' % almoner.getCommaNumberString(self.tomecount.weightedWordCount))
 		self.tomecount.payout = max(self.tomecount.cumulativePayout - self.tomecount.previousPayout, 0)
-		maximumPayout = 80
+		maximumPayout = 60
 		if tipAddress != self.parameterDictionary['Coin Address'] and self.name != 'Mosinnagant':
 			self.printWarning('Warning, the coin address is not the same as the tip address, so nothing will be paid.')
 			maximumPayout = 0
