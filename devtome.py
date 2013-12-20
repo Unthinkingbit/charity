@@ -331,7 +331,8 @@ def getTotalTomecount(advertisingRevenue, authors):
 		tomecount.normalizedCategorization = normalizedCategorizations[authorIndex]
 		tomecount.normalizedPopularity = normalizedPopularities[authorIndex]
 		tomecount.normalizedRatingMedian = normalizedRatingMedians[authorIndex]
-		tomecount.normalizedWorth = .05 * tomecount.normalizedCategorization + .45 * tomecount.normalizedPopularity + .5 * tomecount.normalizedRatingMedian
+		tomecount.normalizedWorth = 0.1 * tomecount.normalizedCategorization + 0.3 * tomecount.normalizedPopularity
+		tomecount.normalizedWorth += 0.6 * tomecount.normalizedRatingMedian
 	for author in authors:
 		totalTomecount.articleCount += author.tomecount.articleCount
 		totalTomecount.categorizedArticleCount += author.tomecount.categorizedArticleCount
