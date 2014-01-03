@@ -212,6 +212,10 @@ def getNameAddressLines(fileName, nameSet):
 	'Get the name and address lines by the file name.'
 	if fileName == '':
 		return []
+	listName = 'Share List'
+	shareIndex = fileName.find('share')
+	if shareIndex > -1:
+		listName = fileName[: shareIndex].capitalize() + ' ' + listName
 	addressLines = []
 	for contributor in almoner.getContributors(fileName):
 		name = contributor.name
@@ -229,7 +233,9 @@ def getNameAddressLines(fileName, nameSet):
 			name = name[: dotIndex]
 		lowerName = name.lower()
 		if lowerName not in nameSet:
-			addressLines.append(name.replace(' ', '_') + ',' + contributor.bitcoinAddress)
+			linkName = 'https://raw.github.com/Unthinkingbit/charity/master/' + fileName
+			addressLine = '%s,%s,1-%s(%s)' % (name.replace(' ', '_'), contributor.bitcoinAddress, listName, linkName)
+			addressLines.append(addressLine)
 			nameSet.add(lowerName)
 	return addressLines
 
