@@ -502,8 +502,10 @@ class DenominatorSequence:
 			for fraction in addressFraction.fractions:
 				if fraction.denominator == denominator:
 					for addressIndex in xrange(fraction.numerator):
-						print(  base58.get_bcaddress_version(addressFraction.coinAddress))
-						self.coinAddresses.append(addressFraction.coinAddress)
+						if base58.get_bcaddress_version(addressFraction.coinAddress) == 0:
+							self.coinAddresses.append(addressFraction.coinAddress)
+						else:
+							print('Warning, the address %s is invalid and will not get paid.' % addressFraction.coinAddress)
 		self.coinAddresses.sort()
 
 	def __repr__(self):
