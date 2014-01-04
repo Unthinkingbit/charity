@@ -37,6 +37,7 @@ http://www.python.org/download/
 """
 
 import almoner
+import base58
 import cStringIO
 import hashlib
 import math
@@ -501,6 +502,7 @@ class DenominatorSequence:
 			for fraction in addressFraction.fractions:
 				if fraction.denominator == denominator:
 					for addressIndex in xrange(fraction.numerator):
+						print(  base58.get_bcaddress_version(addressFraction.coinAddress))
 						self.coinAddresses.append(addressFraction.coinAddress)
 		self.coinAddresses.sort()
 
