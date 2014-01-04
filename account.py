@@ -67,7 +67,7 @@ def addAdministratorBonus(accountLines):
 		if administrator.isFactotum:
 			factotumCount += 1
 	for bonusMultiplier in xrange(7, 0, -1):
-		bonusPay = bonusMultiplier * float(len(generalAdministrators)) + factotumCount
+		bonusPay = bonusMultiplier * float(len(generalAdministrators) + factotumCount)
 		totalAdministratorPay = bonusPay + administratorPay
 		totalShares = originalNumberOfLinesFloat + bonusPay
 		percentPay = 0.1 * round(1000.0 * totalAdministratorPay / totalShares)
@@ -446,6 +446,8 @@ class Administrator:
 	'A class to handle an administrator.'
 	def __init__(self, line):
 		'Initialize.'
+		self.administratorDescription = ''
+		self.factotumDescription = ''
 		self.isFactotum = False
 		self.isFileAdministrator = False
 		self.isGeneralAdministrator = False
@@ -473,16 +475,20 @@ class Administrator:
 				if dashIndex != -1:
 					self.pay += float(wordUntilBracket[: dashIndex])
 					self.isGeneralAdministrator = True
-					self.description = word[dashIndex + 1 :]
+					self.administratorDescription = word[dashIndex + 1 :]
 			elif wordUntilBracket.endswith(' Factotum'):
 				dashIndex = wordUntilBracket.find('-')
 				if dashIndex != -1:
 					self.pay += float(wordUntilBracket[: dashIndex])
 					self.isFactotum = True
+					self.factotumDescription = word[dashIndex + 1 :]
 
 	def getAccountLine(self, bonusMultiplier):
 		'Get account line.'
-		return '%s,%s,%s-%s' % (self.name, self.coinAddress, bonusMultiplier, self.description)
+		accountLine = '%s,%s,%s-%s' % (self.name, self.coinAddress, bonusMultiplier, self.administratorDescription)
+		if self.isFactotum:
+			accountLine += ',%s-%s' % (bonusMultiplier, self.administratorDescription)
+		return accountLine
 
 
 class DenominatorSequence:
