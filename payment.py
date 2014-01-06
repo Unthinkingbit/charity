@@ -62,19 +62,20 @@ import sys
 __license__ = 'MIT'
 
 
-def getPaymentText(recipientDictionary, round):
+def getPaymentText(paymentDictionary, round):
 	'Get payment csv file.'
 	cString = cStringIO.StringIO()
-	recipientKeys = recipientDictionary.keys()
-	recipientKeys.sort()
-	for recipientKey in recipientKeys:
-		cString.write('%s,%s\n' % (recipientKey.capitalize(), almoner.getCommaNumberString(recipientDictionary[recipientKey])))
+	recipientDictionary = account.getRecipientDictionary(round)
+	paymentKeys = paymentDictionary.keys()
+	paymentKeys.sort()
+	for paymentKey in paymentKeys:
+		cString.write('%s,%s,%s\n' % (paymentKey.capitalize(), recipientDictionary[paymentKey], paymentDictionary[paymentKey]))
 	return cString.getvalue()
 
-def getRecipientDictionary(round):
-	'Get the recipient dictionary.'
+def getPaymentDictionary(round):
+	'Get the payment dictionary.'
 	addressDictionary = account.getAddressDictionary(round)
-	recipientDictionary = {}
+	paymentDictionary = {}
 	lines = almoner.getTextLines(almoner.getFileText('receiver_%s.csv' % round))
 	isAddressSection = False
 	addressLines = []
@@ -96,35 +97,39 @@ def getRecipientDictionary(round):
 		words = addressLine.split(',')
 		for word in words:
 			name = addressDictionary[word].lower()
-			if name in recipientDictionary:
-				recipientDictionary[name] += payment
+			if name in paymentDictionary:
+				paymentDictionary[name] += payment
 			else:
-				recipientDictionary[name] = payment
-	return recipientDictionary
+				paymentDictionary[name] = payment
+	return paymentDictionary
 
-def getTotalPayment(recipientDictionary):
+def getTotalPayment(paymentDictionary):
 	'Get total payment.'
 	totalPayment = 0.0
-	for payment in recipientDictionary.values():
+	for payment in paymentDictionary.values():
 		totalPayment += payment
 	return totalPayment
 
-def multiplyPayments(multiplier, recipientDictionary):
+def multiplyPayments(multiplier, paymentDictionary):
 	'Multiply each payment by the multiplier.'
-	for name in recipientDictionary.keys():
-		recipientDictionary[name] = round(multiplier * recipientDictionary[name])
+	for name in paymentDictionary.keys():
+		paymentDictionary[name] = round(multiplier * paymentDictionary[name])
 
 def writeOutput(arguments):
 	'Write output.'
 	if '-h' in arguments or '-help' in arguments:
 		print(__doc__)
 		return
-	round = int(almoner.getParameter(arguments, '23', 'round'))
 	outputPaymentTo = almoner.getParameter(arguments, 'payment.csv', 'output')
-	recipientDictionary = getRecipientDictionary(round)
-#	del recipientDictionary['fheenix']
-#	multiplyPayments(19000000.0 / getTotalPayment(recipientDictionary), recipientDictionary)
-	paymentText = getPaymentText(recipientDictionary, round)
+	remove = almoner.getParameter(arguments, '', 'remove')
+	round = int(almoner.getParameter(arguments, '23', 'round'))
+	total = float(almoner.getParameter(arguments, '0.0', 'total'))
+	paymentDictionary = getPaymentDictionary(round)
+	if remove != '':
+		del paymentDictionary[remove]
+	if total != '':
+		multiplyPayments(total / getTotalPayment(paymentDictionary), paymentDictionary)
+	paymentText = getPaymentText(paymentDictionary, round)
 	if almoner.sendOutputTo(outputPaymentTo, paymentText):
 		print('The payment file has been written to:\n%s\n' % outputPaymentTo)
 
