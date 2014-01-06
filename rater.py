@@ -123,6 +123,8 @@ def getRaters():
 		if len(words) > 0:
 			rater = words[0].strip().lower()
 			if rater != '':
+				if rater[0] == '*':
+					rater = rater[1 :]
 				raters.append(rater)
 	return raters
 
