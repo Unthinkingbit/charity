@@ -488,7 +488,7 @@ class Administrator:
 		'Get account line.'
 		accountLine = '%s,%s,%s-%s' % (self.name, self.coinAddress, bonusMultiplier, self.administratorDescription)
 		if self.isFactotum:
-			accountLine += ',%s-%s' % (bonusMultiplier, self.administratorDescription)
+			accountLine += ',%s-%s' % (bonusMultiplier, self.factotumDescription)
 		return accountLine
 
 
