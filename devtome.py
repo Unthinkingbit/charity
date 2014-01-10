@@ -51,7 +51,7 @@ import zipfile
 __license__ = 'MIT'
 
 
-globalEditors = 'athanasios_motok ba_al bigdaub deadsea33 eeharris finshaggy ftgcoin giftculturewriting ghostofdawn hunterbunter knotwork ibrennan infoporter maitotoxin master-p nsddev raptorak smeagol stealtheh thedischarger tom twobits unthinkingbit weisoq wekkel wiser xenophaux'.split()
+globalEditors = 'athanasios_motok ba_al bigdaub cyke64 deadsea33 eeharris finshaggy ftgcoin giftculturewriting ghostofdawn hunterbunter knotwork ibrennan infoporter maitotoxin master-p melodiem nsddev paul3 raptorak smeagol stealtheh thedischarger tom twobits unthinkingbit weisoq wekkel wiser xenophaux'.split()
 globalNames = 'knotwork kumala icoin xenophaux unthinkingbit'.split()
 
 
