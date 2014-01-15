@@ -1,21 +1,21 @@
-The round 31 receiver files have been uploaded to:
-http://galaxies.mygamesonline.org/receiver_31.csv
-http://devcoinpool.btc-music.com/receiver/receiver_31.csv
-http://devcoinblockexplorer.info/receiver/receiver_31.csv
-http://devtome.com/files/receiver_31.csv
-http://devcoin.darkgamex.ch/receiver_31.csv
-http://d.evco.in/receiver/receiver_31.csv
-http://show-me-the-devcoin.info/devtome/receiver_31.csv
-http://coinfaucets.tk/receiver_31.csv
-http://creativecurrencies.cu.cc/wp-content/uploads/receiver_31.csv
+The round 32 receiver files have been uploaded to:
+http://galaxies.mygamesonline.org/receiver_32.csv
+http://devcoinpool.btc-music.com/receiver/receiver_32.csv
+http://devcoinblockexplorer.info/receiver/receiver_32.csv
+http://devtome.com/files/receiver_32.csv
+http://devcoin.darkgamex.ch/receiver_32.csv
+http://d.evco.in/receiver/receiver_32.csv
+http://show-me-the-devcoin.info/devtome/receiver_32.csv
+http://coinfaucets.tk/receiver_32.csv
+http://creativecurrencies.cu.cc/wp-content/uploads/receiver_32.csv
 
 The account file is at:
-http://galaxies.mygamesonline.org/account_31.csv
+http://galaxies.mygamesonline.org/account_32.csv
 
-There were 1244 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 1244 = 144,695 dvc. Administrator pay is 166.0 shares, 13.3 percent of the total.
+There were 157 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 157 = 1,146,497 dvc. Administrator pay is 34.0 shares, 21.7 percent of the total.
 
-People on that list will start getting those coins in round 31, starting at block 124,000. The procedure for generating the receiver files is at:
+People on that list will start getting those coins in round 32, starting at block 128,000. The procedure for generating the receiver files is at:
 http://devtome.com/doku.php?id=devcoin#generating_the_files
 
-The next bounties will go into round 32:
-https://raw.github.com/Unthinkingbit/charity/master/bounty_32.csv
+The next bounties will go into round 33:
+https://raw.github.com/Unthinkingbit/charity/master/bounty_33.csv

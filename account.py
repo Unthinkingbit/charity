@@ -141,6 +141,18 @@ def getAccountLines(arguments, suffixNumberString):
 			extraLines = almoner.getTextLines(almoner.getLocationText(location))
 		else:
 			extraLines = getNameAddressLines(location, nameSet)
+		for extraLineIndex in xrange(len(extraLines) - 1, -1, -1):
+			extraWords = extraLines[extraLineIndex].split(',')
+			if len(extraWords) < 3:
+				print('Warning, less than 3 words in:')
+				print(extraWords)
+				del extraLines[extraLineIndex]
+			else:
+				secondWord = extraWords[1]
+				if '-' in secondWord or '(' in secondWord or ':' in secondWord:
+					print('Coin address is invalid in:')
+					print(extraWords)
+					del extraLines[extraLineIndex]
 		numberOfShares = len(getReceiverLinesByAccountLines(extraLines))
 		accountLines.append(name + ': %s Shares' % numberOfShares)
 		accountLines += extraLines
