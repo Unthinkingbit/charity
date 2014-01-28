@@ -491,6 +491,7 @@ class Author:
 		self.newArticles = []
 		self.tomecount = Tomecount()
 		self.parameterDictionary = {}
+		self.sentenceSet = set([])
 		self.warnings = []
 		for wordIndex, word in enumerate(words):
 			self.parameterDictionary[titles[wordIndex]] = word
@@ -527,6 +528,7 @@ class Author:
 					if wordCount > 0:
 						print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						self.saveArticle(lowerLinkName, linkText)
+						self.tomecount.collatedWordCount -= self.getIdenticalWordCount(linkText)
 			if isOriginal:
 				lowerLinkName = getLinkName(line, self.name).lower()
 				linkText = getSourceTextIfByAuthor(self, lowerLinkName)
@@ -542,6 +544,7 @@ class Author:
 					if wordCount > 0:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						self.saveArticle(lowerLinkName, linkText)
+						self.tomecount.originalWordCount -= self.getIdenticalWordCount(linkText)
 			if isTip:
 				tipLine = line.strip().replace("'", '')
 				colonIndex = tipLine.find(':')
@@ -597,6 +600,18 @@ class Author:
 			cString.write('%s\n' % ','.join(words))
 			return 
 		cString.write(self.tomecount.getJoinedWords(words))
+
+	def getIdenticalWordCount(self, linkText):
+		'Get the number of identical words.'
+		identicalCount = 0
+		sentences = linkText.lower().replace('\r', ' ').replace('\n', ' ').replace(',', ' ').replace('  ', ' ').split('. ')
+		for sentence in sentences:
+			if ':' not in sentence:
+				if sentence in self.sentenceSet:
+					identicalCount += len(sentence.split())
+				else:
+					self.sentenceSet.add(sentence)
+		return identicalCount
 
 	def printWarning(self, warning):
 		'Print warning and add it to the warnings.'
