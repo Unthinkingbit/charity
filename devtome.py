@@ -522,13 +522,12 @@ class Author:
 					linkTexts.add(linkText)
 					self.tomecount.imageCount += getImageCount(linkText)
 					wordCount = getWordCount(linkText)
-					self.tomecount.collatedWordCount += wordCount
 					if lowerLinkName in viewDictionary:
 						self.tomecount.pageViews += viewDictionary[lowerLinkName]
 					if wordCount > 0:
 						print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						self.saveArticle(lowerLinkName, linkText)
-						self.tomecount.collatedWordCount -= self.getIdenticalWordCount(linkText)
+						self.tomecount.collatedWordCount += wordCount - self.getIdenticalWordCount(linkText)
 			if isOriginal:
 				lowerLinkName = getLinkName(line, self.name).lower()
 				linkText = getSourceTextIfByAuthor(self, lowerLinkName)
@@ -538,13 +537,12 @@ class Author:
 					linkTexts.add(linkText)
 					self.tomecount.imageCount += getImageCount(linkText)
 					wordCount = getWordCount(linkText)
-					self.tomecount.originalWordCount += wordCount
 					if lowerLinkName in viewDictionary:
 						self.tomecount.pageViews += viewDictionary[lowerLinkName]
 					if wordCount > 0:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						self.saveArticle(lowerLinkName, linkText)
-						self.tomecount.originalWordCount -= self.getIdenticalWordCount(linkText)
+						self.tomecount.originalWordCount += wordCount - self.getIdenticalWordCount(linkText)
 			if isTip:
 				tipLine = line.strip().replace("'", '')
 				colonIndex = tipLine.find(':')
