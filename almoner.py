@@ -197,7 +197,7 @@ def getSourceText(address):
 	text = getInternetText(address)
 	if '<textarea' not in text:
 		error508AttemptCount = 0
-		while 'Error 508.' in text and error508AttemptCount < 5:
+		while ('Error 508.' in text or '>500 Internal Server Error<' in text) and error508AttemptCount < 5:
 			error508AttemptCount += 1
 			time.sleep(180)
 			text = getInternetText(address)

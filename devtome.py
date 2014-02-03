@@ -158,6 +158,10 @@ def getIsLastEditByAuthor(author, linkString):
 	time.sleep(0.5)
 	lastModIndex = revisionsText.find('<li id="lastmod">')
 	if lastModIndex == -1:
+		time.sleep(180)
+		revisionsText = almoner.getInternetText('http://devtome.com/doku.php?id=%s&do=revisions' % linkString)
+		lastModIndex = revisionsText.find('<li id="lastmod">')
+	if lastModIndex == -1:
 		author.printWarning('Warning, lastmod not found on revisions page.')
 		return False
 	revisionsText = revisionsText[lastModIndex :]
@@ -287,6 +291,21 @@ def getSummaryText(earningsText, round, totalTomecount):
 	cString.write('Total Word Count: %s\n' % almoner.getCommaNumberString(totalTomecount.wordCount))
 	cString.write('Total Weighted Word Count: %s\n' % almoner.getCommaNumberString(totalTomecount.weightedWordCount))
 	return cString.getvalue()
+
+def getThreeSignificantFigures(number):
+	'Get number rounded to three significant figures as a string.'
+	absoluteNumber = abs(number)
+	places = 1
+	if absoluteNumber < 10.0:
+		if absoluteNumber < 0.000000001:
+			places = 12
+		else:
+			places = max(1, int(round(2 - math.floor(math.log10(absoluteNumber)))))
+	threeSignificantFigures = round(number, places)
+	threeSignificantFiguresString = str(threeSignificantFigures)
+	if 'e' in threeSignificantFiguresString:
+		return ('%.15f' % threeSignificantFigures).rstrip('0')
+	return threeSignificantFiguresString
 
 def getTotalEarnings(authors, earningsMultiplier, totalTomecount):
 	'Get the total earnings.'
@@ -563,10 +582,10 @@ class Author:
 					isTip = True
 		if identicalCollatedCount > 0:
 			self.tomecount.collatedWeightedWordCount -= identicalCollatedCount
-			print('Identical Collated Word Count: %s' % identicalCollatedCount)
+			print('Identical Collated Word Count: %s' % almoner.getCommaNumberString(identicalCollatedCount))
 		if identicalOriginalCount > 0:
 			self.tomecount.originalWordCount -= identicalOriginalCount
-			print('Identical Original Word Count: %s' % identicalOriginalCount)
+			print('Identical Original Word Count: %s' % almoner.getCommaNumberString(identicalOriginalCount))
 		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
@@ -681,19 +700,19 @@ class Tomecount:
 		words.append(str(self.previousPayout))
 		words.append(str(self.payout))
 		words.append(str(self.pageViews))
-		words.append(str(self.popularityTimesRating))
-		words.append(str(self.advertisingPortion))
-		words.append(str(self.advertisingRevenue))
-		words.append(str(self.viewsPerThousandWords))
-		words.append(str(self.normalizedPopularity))
-		words.append(str(self.ratingMedian))
-		words.append(str(self.normalizedRatingMedian))
+		words.append(getThreeSignificantFigures(self.popularityTimesRating))
+		words.append(getThreeSignificantFigures(self.advertisingPortion))
+		words.append(getThreeSignificantFigures(self.advertisingRevenue))
+		words.append(getThreeSignificantFigures(self.viewsPerThousandWords))
+		words.append(getThreeSignificantFigures(self.normalizedPopularity))
+		words.append(getThreeSignificantFigures(self.ratingMedian))
+		words.append(getThreeSignificantFigures(self.normalizedRatingMedian))
 		words.append(str(self.categorizedArticleCount))
 		words.append(str(self.articleCount))
-		words.append(str(self.categorization))
-		words.append(str(self.normalizedCategorization))
-		words.append(str(self.normalizedWorth))
-		words.append(str(self.earningsMultiplier))
+		words.append(getThreeSignificantFigures(self.categorization))
+		words.append(getThreeSignificantFigures(self.normalizedCategorization))
+		words.append(getThreeSignificantFigures(self.normalizedWorth))
+		words.append(getThreeSignificantFigures(self.earningsMultiplier))
 		words.append(str(self.earnings))
 		return '%s\n' % ','.join(words)
 
