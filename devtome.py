@@ -488,6 +488,8 @@ class Author:
 		'Initialize.'
 		self.backupFolder = backupFolder
 		self.backupFileSet = backupFileSet
+		identicalCollatedCount = 0
+		identicalOriginalCount = 0
 		self.newArticles = []
 		self.tomecount = Tomecount()
 		self.parameterDictionary = {}
@@ -527,7 +529,8 @@ class Author:
 					if wordCount > 0:
 						print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						self.saveArticle(lowerLinkName, linkText)
-						self.tomecount.collatedWordCount += wordCount - self.getIdenticalWordCount(linkText)
+						identicalCollatedCount += self.getIdenticalWordCount(linkText)
+						self.tomecount.collatedWordCount += wordCount
 			if isOriginal:
 				lowerLinkName = getLinkName(line, self.name).lower()
 				linkText = getSourceTextIfByAuthor(self, lowerLinkName)
@@ -542,7 +545,8 @@ class Author:
 					if wordCount > 0:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
 						self.saveArticle(lowerLinkName, linkText)
-						self.tomecount.originalWordCount += wordCount - self.getIdenticalWordCount(linkText)
+						identicalOriginalCount += self.getIdenticalWordCount(linkText)
+						self.tomecount.originalWordCount += wordCount
 			if isTip:
 				tipLine = line.strip().replace("'", '')
 				colonIndex = tipLine.find(':')
@@ -557,6 +561,12 @@ class Author:
 					isOriginal = True
 				elif 'tip' in lineStrippedLower:
 					isTip = True
+		if identicalCollatedCount > 0:
+			self.tomecount.collatedWeightedWordCount -= identicalCollatedCount
+			print('Identical Collated Word Count: %s' % identicalCollatedCount)
+		if identicalOriginalCount > 0:
+			self.tomecount.originalWordCount -= identicalOriginalCount
+			print('Identical Original Word Count: %s' % identicalOriginalCount)
 		self.tomecount.collatedWeightedWordCount = self.tomecount.collatedWordCount * 3 / 10
 		self.tomecount.wordCount = self.tomecount.collatedWordCount + self.tomecount.originalWordCount
 		self.tomecount.weightedWordCount = self.tomecount.collatedWeightedWordCount + self.tomecount.originalWordCount
