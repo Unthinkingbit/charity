@@ -425,7 +425,7 @@ def getWarningsText(authors):
 
 def getWordCount(linkText):
 	'Get the word count of the page linked to in the line.'
-	linkText = linkText.replace(',', ' ').replace(';', ' ').replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+	linkText = linkText.replace('.', ' ').replace(',', ' ').replace(';', ' ').replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
 	return len(linkText.split())
 
 def normalizeValues(values):
