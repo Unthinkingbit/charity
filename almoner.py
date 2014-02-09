@@ -206,7 +206,6 @@ def getSourceText(address):
 		print('')
 		print('Warning, no textarea tag found for:')
 		print(address)
-		print(text)
 		print('')
 		return ''
 	tagEndIndex = text.find('>', textAreaTagIndex)

@@ -133,7 +133,6 @@ def getRaterText(maximumWriters, round, seedString, writerNames):
 	previousRaterDictionary = rating.getPreviousRaterDictionary(round)
 	previousNameDictionary = {}
 	writers = getWriters(round, writerNames)
-	random.shuffle(writers)
 	cString = cStringIO.StringIO()
 	otherWriters = []
 	raterWriters = []
@@ -182,6 +181,14 @@ def getWriterNames(writerFileName):
 	'Get the writer names.'
 	writerNames = []
 	lines = almoner.getTextLines(almoner.getFileText(writerFileName))
+	if lines[0].startswith('Create:'):
+		isWriterName = False
+		for line in lines[1 :]:
+			if isWriterName:
+				writerNames.append(line.strip().lower())
+			if line.startswith('Writer names:'):
+				isWriterName = True
+		return writerNames
 	for line in lines[1 :]:
 		words = line.split(',')
 		if len(words) > 0:
@@ -212,10 +219,10 @@ def writeOutput(arguments):
 		print(__doc__)
 		return
 	round = int(almoner.getParameter(arguments, '27', 'round'))
+	writerFileName = almoner.getParameter(arguments, 'devtome_%s.csv' % (round - 1), 'names')
 	maximumWriters = int(almoner.getParameter(arguments, '12', 'writers'))
 	outputRaterTo = 'rater_%s.txt' % round
 	seedString = almoner.getParameter(arguments, date.today().isoformat(), 'seed')
-	writerFileName = 'devtome_%s.csv' % (round - 1)
 	random.seed(seedString[: -1])
 	writerNames = getWriterNames(writerFileName)
 	raterText = getRaterText(maximumWriters, round, seedString, writerNames)
@@ -232,24 +239,18 @@ class Writer:
 		sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
 		print('Loading user page from %s' % self.name)
 		sourceText = almoner.getSourceText(sourceAddress)
-		isCollated = False
-		isOriginal = False
+		isArticle = False
 		for line in almoner.getTextLines(sourceText):
 			lineStrippedLower = line.strip().lower()
 			if '==' in lineStrippedLower:
-				isCollated = False
-				isOriginal = False
-			if isCollated:
+				isArticle = False
+			if isArticle:
 				lowerLinkName = devtome.getLinkName(line, name).lower()
-				self.articles.append(lowerLinkName)
-			if isOriginal:
-				lowerLinkName = devtome.getLinkName(line, name).lower()
-				self.articles.append(lowerLinkName)
+				if lowerLinkName != '':
+					self.articles.append(lowerLinkName)
 			if '==' in lineStrippedLower:
-				if 'collated' in lineStrippedLower:
-					isCollated = True
-				elif 'original' in lineStrippedLower:
-					isOriginal = True
+				if 'collated' in lineStrippedLower or 'original' in lineStrippedLower:
+					isArticle = True
 
 	def __repr__(self):
 		'Get the string representation of this class.'
@@ -268,6 +269,7 @@ class WriterRange:
 
 	def getRatedWriters(self, name):
 		'Get the rated writers.'
+		print('Getting writers for %s' % name)
 		belowRaterWriters = getBelowRaterWriters(name, self.raterWriters)
 		previousNameSet = set()
 		if name in self.previousNameDictionary:
@@ -279,19 +281,9 @@ class WriterRange:
 		if random.random() < numberOfRatersFloat - numberOfRaters:
 			numberOfRaters += 1
 		ratedWriters = belowRaterWriters[: numberOfRaters]
-		if len(ratedWriters) >= self.maximumWriters:
-			return ratedWriters[: self.maximumWriters]
-		writersRemaining = self.maximumWriters - len(ratedWriters)
 		otherWriters = getWritersMinusNameSet(previousNameSet, self.otherWriters)
-		if writersRemaining >= len(otherWriters):
-			return ratedWriters + otherWriters
-		nextWriterIndex = (self.writerIndex + writersRemaining) % len(otherWriters)
-		if nextWriterIndex > self.writerIndex:
-			ratedWriters += otherWriters[self.writerIndex : nextWriterIndex]
-		else:
-			ratedWriters += otherWriters[self.writerIndex :] + otherWriters[: nextWriterIndex]
-		self.writerIndex = nextWriterIndex
-		return ratedWriters
+		random.shuffle(otherWriters)
+		return (ratedWriters + otherWriters)[: self.maximumWriters]
 
 
 def main():
