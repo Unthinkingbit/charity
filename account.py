@@ -138,7 +138,11 @@ def getAccountLines(arguments, suffixNumberString):
 		extraLines = []
 		if '_xx' in location:
 			location = location.replace('_xx', '_' + suffixNumberString)
-			extraLines = almoner.getTextLines(almoner.getLocationText(location))
+			locationText = almoner.getLocationText(location)
+			if '<title>404 Not Found</title>' in locationText:
+				print('Warning, could not download page: %s' % location)
+			else:
+				extraLines = almoner.getTextLines(locationText)
 		else:
 			extraLines = getNameAddressLines(location, nameSet)
 		for extraLineIndex in xrange(len(extraLines) - 1, -1, -1):
