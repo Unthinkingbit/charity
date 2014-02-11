@@ -175,7 +175,7 @@ The sending code in CreateBlock looks like the following:
 	}
 ..
 //	pblock->vtx[0].vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
-	txNew.vout[0].nValue = minerValue + nFees;
+	pblock->vtx[0].vout[0].nValue = minerValue + nFees;
 </code>
 
 The generated block gives 5,000 devcoins to the miner and 45,000 devcoins divided among the receivers. An example of a devcoin block is [[Devcoin Block 1|devcoin block 1]].
