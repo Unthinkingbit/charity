@@ -127,7 +127,7 @@ def writeOutput(arguments):
 	paymentDictionary = getPaymentDictionary(round)
 	if remove != '':
 		del paymentDictionary[remove]
-	if total != '':
+	if total != 0.0:
 		multiplyPayments(total / getTotalPayment(paymentDictionary), paymentDictionary)
 	paymentText = getPaymentText(paymentDictionary, round)
 	if almoner.sendOutputTo(outputPaymentTo, paymentText):
