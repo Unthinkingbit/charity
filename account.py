@@ -142,7 +142,7 @@ def getAccountLines(arguments, suffixNumberString):
 			if '<title>404 Not Found</title>' in locationText:
 				print('Warning, could not download page: %s' % location)
 			else:
-				extraLines = almoner.getTextLines(locationText)
+				extraLines = almoner.getTextLines(locationText.replace('coinzen.org/index.php/topic,', 'coinzen.org/index.php/topic='))
 		else:
 			extraLines = getNameAddressLines(location, nameSet)
 		for extraLineIndex in xrange(len(extraLines) - 1, -1, -1):
