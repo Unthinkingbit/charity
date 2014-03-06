@@ -202,7 +202,8 @@ def getWriters(round, writerNames):
 	writers = []
 	previousVoteDictionary = rating.getPreviousVoteDictionary(round)
 	for writerName in writerNames:
-		addWriter(previousVoteDictionary, writerName, writers)
+		if writerName.lower() != 'icoin': # because Icoin is not writing anymore
+			addWriter(previousVoteDictionary, writerName, writers)
 	return writers
 
 def getWritersMinusNameSet(nameSet, writers):
