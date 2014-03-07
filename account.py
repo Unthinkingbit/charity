@@ -479,7 +479,7 @@ class Administrator:
 			bracketIndex = word.find('(')
 			if bracketIndex > -1:
 				wordUntilBracket = word[: bracketIndex]
-			if wordUntilBracket.endswith('-File Administrator'):
+			if wordUntilBracket.endswith('-File Custodian'):
 				self.isFileAdministrator = True
 				numberStrings = wordUntilBracket[: wordUntilBracket.find('-')].split('/')
 				firstFloat = float(numberStrings[0])
