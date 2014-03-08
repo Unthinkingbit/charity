@@ -93,7 +93,7 @@ def getAdvertisingRevenueText(authors):
 			cString.write('%s,%s\n' % (coinAddress, advertisingRevenueString))
 	return cString.getvalue()
 
-def getAuthors(backupFolder, lines, ratingDictionary, titles, viewDictionary):
+def getAuthors(backupFolder, categoryDictionary, lines, ratingDictionary, titles, viewDictionary):
 	'Get the authors.'
 	averageRating = 0.0
 	authors = []
@@ -116,7 +116,7 @@ def getAuthors(backupFolder, lines, ratingDictionary, titles, viewDictionary):
 		words = line.split(',')
 		if len(words) > 0:
 			if len(words[0]) > 0:
-				author = Author(averageRating, backupFolder, backupFileSet, ratingDictionary, titles, viewDictionary, words)
+				author = Author(averageRating, backupFolder, backupFileSet, categoryDictionary, ratingDictionary, titles, viewDictionary, words)
 				if author.name not in authorSet:
 					authorSet.add(author.name)
 					authors.append(author)
@@ -456,6 +456,20 @@ def normalizeValues(values):
 		if value > 0.0:
 			values[valueIndex] **= halfOverDeviation
 
+def writeCategoryFiles(categoryDictionary, rootFileName):
+	'Write category files to a folder.'
+	categoryFolder = rootFileName + '_categories'
+	almoner.makeDirectory(categoryFolder)
+	print(  categoryDictionary)
+	categoryKeys = categoryDictionary.keys()
+	for categoryKey in categoryDictionary.keys():
+		categorySuffix = 'category:' + categoryKey
+		categoryFileName = os.path.join(categoryFolder, categorySuffix)
+		sourceText = almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % categorySuffix)
+		if '{{script}}' in sourceText:
+			print(  categoryFileName)
+#			almoner.writeFileText(os.path.join(backupFolder, 'wiki:user:' + self.name), sourceText)
+
 def writeOutput(arguments):
 	'Write output.'
 	if '-h' in arguments or '-help' in arguments:
@@ -469,13 +483,14 @@ def writeOutput(arguments):
 	previousFileName = almoner.getParameter(arguments, rootFileName + '_%s.csv' % (round - 1), 'previous')
 	ratingFileName = almoner.getParameter(arguments, 'rating_%s.csv' % round, 'rating')
 	viewFileName = almoner.getParameter(arguments, 'devtome_analytics_%s.csv' % round, 'view')
+	categoryDictionary = {}
 	lines = almoner.getTextLines(almoner.getFileText(previousFileName))
 	titleLine = lines[0]
 	titles = titleLine.split(',')
 	backupFolder = rootFileName + '_articles'
 	ratingDictionary = getRatingDictionary(ratingFileName)
 	viewDictionary = getViewDictionary(viewFileName)
-	authors = getAuthors(backupFolder, lines, ratingDictionary, titles, viewDictionary)
+	authors = getAuthors(backupFolder, categoryDictionary, lines, ratingDictionary, titles, viewDictionary)
 	totalTomecount = getTotalTomecount(advertisingRevenue, authors)
 	tomecountText = getTomecountText(authors, totalTomecount)
 	advertisingRevenueText = getAdvertisingRevenueText(authors)
@@ -488,6 +503,7 @@ def writeOutput(arguments):
 	outputEarningsTo = almoner.getParameter(arguments, 'devtome_earnings_%s.csv' % round, 'earnings')
 	outputNewArticlesTo = almoner.getParameter(arguments, 'devtome_new_articles.txt', 'articles')
 	outputWarningsTo = almoner.getParameter(arguments, 'devtome_warnings.txt', 'warnings')
+#	writeCategoryFiles(categoryDictionary, rootFileName)
 	if advertisingRevenue > 0:
 		if almoner.sendOutputTo(outputAdvertisingRevenueTo, advertisingRevenueText):
 			print('The devtome advertising revenue file has been written to:\n%s\n' % outputAdvertisingRevenueTo)
@@ -503,7 +519,7 @@ def writeOutput(arguments):
 
 class Author:
 	'A class to handle an author.'
-	def __init__(self, averageRating, backupFolder, backupFileSet, ratingDictionary, titles, viewDictionary, words):
+	def __init__(self, averageRating, backupFolder, backupFileSet, categoryDictionary, ratingDictionary, titles, viewDictionary, words):
 		'Initialize.'
 		self.backupFolder = backupFolder
 		self.backupFileSet = backupFileSet
@@ -547,7 +563,7 @@ class Author:
 						self.tomecount.pageViews += viewDictionary[lowerLinkName]
 					if wordCount > 0:
 						print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
-						self.saveArticle(lowerLinkName, linkText)
+						self.saveArticle(categoryDictionary, lowerLinkName, linkText)
 						identicalCollatedCount += self.getIdenticalWordCount(linkText)
 						self.tomecount.collatedWordCount += wordCount
 			if isOriginal:
@@ -563,7 +579,7 @@ class Author:
 						self.tomecount.pageViews += viewDictionary[lowerLinkName]
 					if wordCount > 0:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
-						self.saveArticle(lowerLinkName, linkText)
+						self.saveArticle(categoryDictionary, lowerLinkName, linkText)
 						identicalOriginalCount += self.getIdenticalWordCount(linkText)
 						self.tomecount.originalWordCount += wordCount
 			if isTip:
@@ -645,14 +661,29 @@ class Author:
 		self.warnings.append(warning)
 		print(warning)
 
-	def saveArticle(self, lowerLinkName, linkText):
+	def saveArticle(self, categoryDictionary, lowerLinkName, linkText):
 		'Save article and if new add to new articles list.'
 		if lowerLinkName not in self.backupFileSet:
 			self.newArticles.append(lowerLinkName)
 		almoner.writeFileText(os.path.join(self.backupFolder, lowerLinkName), linkText)
 		self.tomecount.articleCount += 1
-		if '[[category:' in linkText.lower():
+		linkTextLower = linkText.lower()
+		categoryIndex = linkTextLower.find('[[category:')
+		if categoryIndex != -1:
+			categoryPrefixLength = len('[[category:')
 			self.tomecount.categorizedArticleCount += 1
+			while categoryIndex != -1:
+				startIndex = categoryIndex + categoryPrefixLength
+				endBracketIndex = linkTextLower.find(']]', startIndex)
+				if endBracketIndex == -1:
+					return
+				categoryName = linkTextLower[startIndex : endBracketIndex]
+				if categoryName in categoryDictionary:
+					categoryDictionary[categoryName].append(lowerLinkName)
+				else:
+					categoryDictionary[categoryName] = [lowerLinkName]
+				categoryIndex = linkTextLower.find('[[category:', endBracketIndex)
+				
 
 
 class Tomecount:
