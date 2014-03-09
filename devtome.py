@@ -214,7 +214,7 @@ def getLinkName(line, name):
 	linkString = linkString.replace('&amp;', ' ').replace('&quot;', ' ').replace('/', '_').replace('  ', ' ').replace('  ', ' ')
 	if linkString.lower() == name.lower():
 		return ''
-	return linkString.strip().replace(' ', '_')
+	return linkString.strip()
 
 def getNewArticlesText(authors, round):
 	'Get the new articles text in wiki format.'
@@ -264,13 +264,13 @@ def getRevenueNeutralEarnings(authors, totalTomecount):
 			earningsMultiplier += extraMultiplier
 	return revenueNeutralEarnings
 
-def getSourceTextIfByAuthor(author, lowerLinkName):
+def getSourceTextIfByAuthor(author, linkName):
 	'Get the source text if the author wrote it.'
-	if lowerLinkName == '':
+	if linkName == '':
 		return ''
 	time.sleep(0.5)
-	if getIsLastEditByAuthor(author, lowerLinkName):
-		return almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % lowerLinkName)
+	if getIsLastEditByAuthor(author, linkName):
+		return almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % linkName)
 	return ''
 
 def getSummaryText(earningsText, round, totalTomecount):
@@ -460,7 +460,7 @@ def writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileN
 	'Write category file to a folder.'
 	categorySuffix = 'category:' + categoryKey
 	categoryFileName = os.path.join(categoryFolder, categorySuffix)
-	sourceText = almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % categorySuffix)
+	sourceText = almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % categorySuffix).replace('&quot;', '"')
 	scriptToken = '{{script}}'
 	scriptIndex = sourceText.find(scriptToken)
 	if scriptIndex == -1:
@@ -468,7 +468,6 @@ def writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileN
 	scriptIndex += len(scriptToken)
 	categoryText = sourceText[: scriptIndex] + '\n'
 	afterScriptText = sourceText[scriptIndex :]
-	print(  categoryFileName)
 	lines = almoner.getTextLines(afterScriptText)
 	scriptEndToken = None
 	titleDictionary = {}
@@ -487,28 +486,30 @@ def writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileN
 						lineStripped = lineStripped[1 :]
 					if lineStripped.endswith(']]'):
 						lineStripped = lineStripped[: -2]
-					titleKey = lineStripped.lower()
+					titleKey = lineStripped.lower().replace('_', ' ')
 					barIndex = titleKey.find('|')
 					if barIndex != -1:
 						titleKey = titleKey[: barIndex]
-					titleDictionary[titleKey] = '[[' + lineStripped + ']]'
+					titleDictionary[titleKey] = lineStripped
 	fromTokenText = ''
 	if scriptEndToken != None:
-		fromTokenText = afterScriptText[afterScriptText.find(scriptEndToken) : ]
-	print(  categoryText)
-	print(  titleDictionary)
-	print(  fromTokenText)
-	categoryText += '\n\n'.join(titleDictionary.values())
-	categoryText += '\n\n' + fromTokenText
-	print(  categoryText)
-	return
+		fromTokenText = afterScriptText[afterScriptText.find(scriptEndToken) :]
+	articleTitles = categoryDictionary[categoryKey]
+	for articleTitle in articleTitles:
+		articleTitleLower = articleTitle.lower().replace('_', ' ')
+		if articleTitleLower not in titleDictionary:
+			titleDictionary[articleTitleLower] = articleTitle
+	titleKeys = titleDictionary.keys()
+	titleKeys.sort()
+	for titleKey in titleKeys:
+		categoryText += '[[' + titleDictionary[titleKey] + ']]\n\n'
+	categoryText += fromTokenText
 	almoner.writeFileText(os.path.join(categoryFolder, categorySuffix), categoryText)
 
 def writeCategoryFiles(categoryDictionary, rootFileName):
 	'Write category files to a folder.'
 	categoryFolder = rootFileName + '_categories'
 	almoner.makeDirectory(categoryFolder)
-	print(  categoryDictionary)
 	categoryKeys = categoryDictionary.keys()
 	for categoryKey in categoryDictionary.keys():
 		writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileName)
@@ -546,7 +547,7 @@ def writeOutput(arguments):
 	outputEarningsTo = almoner.getParameter(arguments, 'devtome_earnings_%s.csv' % round, 'earnings')
 	outputNewArticlesTo = almoner.getParameter(arguments, 'devtome_new_articles.txt', 'articles')
 	outputWarningsTo = almoner.getParameter(arguments, 'devtome_warnings.txt', 'warnings')
-#	writeCategoryFiles(categoryDictionary, rootFileName)
+	writeCategoryFiles(categoryDictionary, rootFileName)
 	if advertisingRevenue > 0:
 		if almoner.sendOutputTo(outputAdvertisingRevenueTo, advertisingRevenueText):
 			print('The devtome advertising revenue file has been written to:\n%s\n' % outputAdvertisingRevenueTo)
@@ -594,35 +595,37 @@ class Author:
 				isOriginal = False
 				isTip = False
 			if isCollated:
-				lowerLinkName = getLinkName(line, self.name).lower()
-				linkText = getSourceTextIfByAuthor(self, lowerLinkName)
-				if lowerLinkName != '' and linkText == '':
-					self.printWarning('Warning, could not invoice article link: %s' % lowerLinkName)
+				linkName = getLinkName(line, self.name)
+				underscoredLinkName = linkName.lower().replace(' ', '_')
+				linkText = getSourceTextIfByAuthor(self, linkName)
+				if linkName != '' and linkText == '':
+					self.printWarning('Warning, could not invoice article link: %s' % linkName)
 				if linkText not in linkTexts:
 					linkTexts.add(linkText)
 					self.tomecount.imageCount += getImageCount(linkText)
 					wordCount = getWordCount(linkText)
-					if lowerLinkName in viewDictionary:
-						self.tomecount.pageViews += viewDictionary[lowerLinkName]
+					if underscoredLinkName in viewDictionary:
+						self.tomecount.pageViews += viewDictionary[underscoredLinkName]
 					if wordCount > 0:
 						print('Collated article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
-						self.saveArticle(categoryDictionary, lowerLinkName, linkText)
+						self.saveArticle(categoryDictionary, linkName, linkText, underscoredLinkName)
 						identicalCollatedCount += self.getIdenticalWordCount(linkText)
 						self.tomecount.collatedWordCount += wordCount
 			if isOriginal:
-				lowerLinkName = getLinkName(line, self.name).lower()
-				linkText = getSourceTextIfByAuthor(self, lowerLinkName)
-				if lowerLinkName != '' and linkText == '':
-					self.printWarning('Warning, could not invoice article link: %s' % lowerLinkName)
+				linkName = getLinkName(line, self.name)
+				underscoredLinkName = linkName.lower().replace(' ', '_')
+				linkText = getSourceTextIfByAuthor(self, linkName)
+				if linkName != '' and linkText == '':
+					self.printWarning('Warning, could not invoice article link: %s' % linkName)
 				if linkText not in linkTexts:
 					linkTexts.add(linkText)
 					self.tomecount.imageCount += getImageCount(linkText)
 					wordCount = getWordCount(linkText)
-					if lowerLinkName in viewDictionary:
-						self.tomecount.pageViews += viewDictionary[lowerLinkName]
+					if underscoredLinkName in viewDictionary:
+						self.tomecount.pageViews += viewDictionary[underscoredLinkName]
 					if wordCount > 0:
 						print('Original article: %s, Word Count: %s' % (lineStrippedLower, almoner.getCommaNumberString(wordCount)))
-						self.saveArticle(categoryDictionary, lowerLinkName, linkText)
+						self.saveArticle(categoryDictionary, linkName, linkText, underscoredLinkName)
 						identicalOriginalCount += self.getIdenticalWordCount(linkText)
 						self.tomecount.originalWordCount += wordCount
 			if isTip:
@@ -704,11 +707,11 @@ class Author:
 		self.warnings.append(warning)
 		print(warning)
 
-	def saveArticle(self, categoryDictionary, lowerLinkName, linkText):
+	def saveArticle(self, categoryDictionary, linkName, linkText, underscoredLinkName):
 		'Save article and if new add to new articles list.'
-		if lowerLinkName not in self.backupFileSet:
-			self.newArticles.append(lowerLinkName)
-		almoner.writeFileText(os.path.join(self.backupFolder, lowerLinkName), linkText)
+		if underscoredLinkName not in self.backupFileSet:
+			self.newArticles.append(underscoredLinkName)
+		almoner.writeFileText(os.path.join(self.backupFolder, underscoredLinkName), linkText)
 		self.tomecount.articleCount += 1
 		linkTextLower = linkText.lower()
 		categoryIndex = linkTextLower.find('[[category:')
@@ -722,9 +725,9 @@ class Author:
 					return
 				categoryName = linkTextLower[startIndex : endBracketIndex]
 				if categoryName in categoryDictionary:
-					categoryDictionary[categoryName].append(lowerLinkName)
+					categoryDictionary[categoryName].append(linkName)
 				else:
-					categoryDictionary[categoryName] = [lowerLinkName]
+					categoryDictionary[categoryName] = [linkName]
 				categoryIndex = linkTextLower.find('[[category:', endBracketIndex)
 				
 
