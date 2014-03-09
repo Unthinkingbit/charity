@@ -456,6 +456,54 @@ def normalizeValues(values):
 		if value > 0.0:
 			values[valueIndex] **= halfOverDeviation
 
+def writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileName):
+	'Write category file to a folder.'
+	categorySuffix = 'category:' + categoryKey
+	categoryFileName = os.path.join(categoryFolder, categorySuffix)
+	sourceText = almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % categorySuffix)
+	scriptToken = '{{script}}'
+	scriptIndex = sourceText.find(scriptToken)
+	if scriptIndex == -1:
+		return
+	scriptIndex += len(scriptToken)
+	categoryText = sourceText[: scriptIndex] + '\n'
+	afterScriptText = sourceText[scriptIndex :]
+	print(  categoryFileName)
+	lines = almoner.getTextLines(afterScriptText)
+	scriptEndToken = None
+	titleDictionary = {}
+	for line in lines:
+		if scriptEndToken == None:
+			lineStripped = line.strip()
+			if lineStripped != '':
+				if lineStripped.startswith('=') and lineStripped.endswith('='):
+					scriptEndToken = lineStripped
+				else:
+					if lineStripped.startswith('*'):
+						lineStripped = lineStripped[1 :]
+					if lineStripped.startswith('[['):
+						lineStripped = lineStripped[2 :]
+					if lineStripped.startswith(':'):
+						lineStripped = lineStripped[1 :]
+					if lineStripped.endswith(']]'):
+						lineStripped = lineStripped[: -2]
+					titleKey = lineStripped.lower()
+					barIndex = titleKey.find('|')
+					if barIndex != -1:
+						titleKey = titleKey[: barIndex]
+					titleDictionary[titleKey] = '[[' + lineStripped + ']]'
+	fromTokenText = ''
+	if scriptEndToken != None:
+		fromTokenText = afterScriptText[afterScriptText.find(scriptEndToken) : ]
+	print(  categoryText)
+	print(  titleDictionary)
+	print(  fromTokenText)
+	categoryText += '\n\n'.join(titleDictionary.values())
+	categoryText += '\n\n' + fromTokenText
+	print(  categoryText)
+	return
+	almoner.writeFileText(os.path.join(categoryFolder, categorySuffix), categoryText)
+
 def writeCategoryFiles(categoryDictionary, rootFileName):
 	'Write category files to a folder.'
 	categoryFolder = rootFileName + '_categories'
@@ -463,12 +511,7 @@ def writeCategoryFiles(categoryDictionary, rootFileName):
 	print(  categoryDictionary)
 	categoryKeys = categoryDictionary.keys()
 	for categoryKey in categoryDictionary.keys():
-		categorySuffix = 'category:' + categoryKey
-		categoryFileName = os.path.join(categoryFolder, categorySuffix)
-		sourceText = almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % categorySuffix)
-		if '{{script}}' in sourceText:
-			print(  categoryFileName)
-#			almoner.writeFileText(os.path.join(backupFolder, 'wiki:user:' + self.name), sourceText)
+		writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileName)
 
 def writeOutput(arguments):
 	'Write output.'
