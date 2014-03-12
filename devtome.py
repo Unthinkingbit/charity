@@ -51,7 +51,7 @@ import zipfile
 __license__ = 'MIT'
 
 
-globalEditors = 'athanasios_motok ba_al bigdaub caprigon cyke64 deadsea33 dinkleberg eeharris finshaggy ftgcoin giftculturewriting ghostofdawn hunterbunter kirktaylor1 knotwork ibrennan infoporter maitotoxin master-p melodiem nsddev paul3 raptorak smeagol stealtheh thedischarger tom twobits unthinkingbit weisoq wekkel wiser xenophaux'.split()
+globalEditors = 'athanasios_motok ba_al bigdaub bitcoindarling bittzy78 caprigon cyke64 deadsea33 deadwood develcuy dinkleberg eeharris finshaggy flam ftgcoin giftculturewriting ghostofdawn hunterbunter kirktaylor1 knotwork ibrennan infoporter maitotoxin master-p melodiem nafindix nsddev nutterboy paul3 raptorak smeagol stealtheh testigodehumanidad thedischarger tom twobits unthinkingbit weisoq wekkel wiser xenophaux'.split()
 globalNames = 'knotwork kumala icoin xenophaux unthinkingbit'.split()
 
 
@@ -120,7 +120,7 @@ def getAuthors(backupFolder, categoryDictionary, lines, ratingDictionary, titles
 				if author.name not in authorSet:
 					authorSet.add(author.name)
 					authors.append(author)
-	if len(authors) > 50:
+	if len(authors) > 100:
 		almoner.writeZipFileByFolder(backupFolder)
 	return authors
 
