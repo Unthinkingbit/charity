@@ -284,9 +284,13 @@ class Rating:
 		spaceIndex = ratingLine.find(' ')
 		voteString = ratingLine
 		if spaceIndex != -1:
-			voteString = ratingLine[: spaceIndex].strip().replace(',', '').replace("'", '').replace(".", '')
+			voteString = ratingLine[: spaceIndex].strip().replace(',', '').replace("'", '').replace('"', '').replace(".", '').replace(";", '')
 			self.comment = ratingLine[spaceIndex :].strip()
 		if not voteString.isdigit():
+			if voteString != '':
+				print('Warning, not a pure number in:')
+				print(address)
+				print(line)
 			return
 		self.vote = int(voteString)
 		raterLine = words[0].strip()
