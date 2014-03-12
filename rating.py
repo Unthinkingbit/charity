@@ -284,7 +284,7 @@ class Rating:
 		spaceIndex = ratingLine.find(' ')
 		voteString = ratingLine
 		if spaceIndex != -1:
-			voteString = ratingLine[: spaceIndex]
+			voteString = ratingLine[: spaceIndex].strip().replace(',', '').replace("'", '').replace(".", '')
 			self.comment = ratingLine[spaceIndex :].strip()
 		if not voteString.isdigit():
 			return
