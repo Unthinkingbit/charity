@@ -220,9 +220,12 @@ def getNewArticlesText(authors, round):
 	'Get the new articles text in wiki format.'
 	cString = cStringIO.StringIO()
 	cString.write('New articles in round %s. \n' % round)
+	newArticles = []
 	for author in authors:
-		for newArticle in author.newArticles:
-			cString.write('*[[%s]] \n' % newArticle)
+		newArticles += author.newArticles
+	newArticles.sort()
+	for newArticle in newArticles:
+		cString.write('*[[%s]] \n' % newArticle)
 	return cString.getvalue()
 
 def getRatingMedianIndex(line):

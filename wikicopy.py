@@ -192,7 +192,6 @@ def writeZipFile(archiveType, fileNameRoot, shouldMakeSnapshot, wikiAddress):
 		print('The snapshot zip file has been written to:\n%s\n' % destination)
 
 
-
 def main():
 	'Write output.'
 	writeOutput(sys.argv)
