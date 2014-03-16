@@ -83,6 +83,15 @@ def addJoinedTitles(cString, words):
 	words.append('Earnings')
 	cString.write('%s\n' % ','.join(words))
 
+def getActiveWritersText(authors, round):
+	'Get the active writers text in wiki format.'
+	cString = cStringIO.StringIO()
+	cString.write('Active writers in round %s. There is a also a [[devtome new articles %s]] page.\n' % (round, round))
+	for author in authors:
+		if len(author.newArticles) > 0:
+			cString.write('\n*[[wiki:user:%s]]' % author.name)
+	return cString.getvalue()
+
 def getAdvertisingRevenueText(authors):
 	'Get the devtome advertising revenue text.'
 	cString = cStringIO.StringIO()
@@ -200,9 +209,9 @@ def getLinkName(line, name):
 	linkDividerIndex = linkString.find('|')
 	if linkDividerIndex != -1:
 		linkString = linkString[: linkDividerIndex]
+	linkString = linkString.strip()
 	if len(linkString) == 0:
 		return ''
-	linkString = linkString.strip()
 	if linkString[0] != ':':
 		return ''
 	linkString = linkString[1 :]
@@ -219,13 +228,13 @@ def getLinkName(line, name):
 def getNewArticlesText(authors, round):
 	'Get the new articles text in wiki format.'
 	cString = cStringIO.StringIO()
-	cString.write('New articles in round %s. \n' % round)
+	cString.write('New articles in round %s. There is also a [[devtome active writers %s]] page.\n' % (round, round))
 	newArticles = []
 	for author in authors:
 		newArticles += author.newArticles
 	newArticles.sort()
 	for newArticle in newArticles:
-		cString.write('*[[%s]] \n' % newArticle)
+		cString.write('\n*[[%s]]' % newArticle)
 	return cString.getvalue()
 
 def getRatingMedianIndex(line):
@@ -542,10 +551,12 @@ def writeOutput(arguments):
 	tomecountText = getTomecountText(authors, totalTomecount)
 	advertisingRevenueText = getAdvertisingRevenueText(authors)
 	earningsText = getEarningsText(authors)
+	activeWritersText = getActiveWritersText(authors, round)
 	newArticlesText = getNewArticlesText(authors, round)
 	warningsText = getWarningsText(authors)
 	outputSummaryTo = almoner.getParameter(arguments, 'devtome_summary.txt', 'summary')
 	almoner.writeFileText(currentFileName, tomecountText)
+	outputActiveWritersTo = almoner.getParameter(arguments, 'devtome_active_writers.txt', 'writers')
 	outputAdvertisingRevenueTo = almoner.getParameter(arguments, 'devtome_advertising_revenue.csv', 'advertising')
 	outputEarningsTo = almoner.getParameter(arguments, 'devtome_earnings_%s.csv' % round, 'earnings')
 	outputNewArticlesTo = almoner.getParameter(arguments, 'devtome_new_articles.txt', 'articles')
@@ -558,6 +569,8 @@ def writeOutput(arguments):
 		print('The devtome earnings file has been written to:\n%s\n' % outputEarningsTo)
 	if almoner.sendOutputTo(outputNewArticlesTo, newArticlesText):
 		print('The devtome new articles file has been written to:\n%s\n' % outputNewArticlesTo)
+	if almoner.sendOutputTo(outputActiveWritersTo, activeWritersText):
+		print('The devtome active writers file has been written to:\n%s\n' % outputActiveWritersTo)
 	if almoner.sendOutputTo(outputSummaryTo, getSummaryText(earningsText, round, totalTomecount)):
 		print('The summary file has been written to:\n%s\n' % outputSummaryTo)
 	if almoner.sendOutputTo(outputWarningsTo, warningsText):
@@ -594,9 +607,10 @@ class Author:
 		for line in almoner.getTextLines(sourceText):
 			lineStrippedLower = line.strip().lower()
 			if '==' in lineStrippedLower:
-				isCollated = False
-				isOriginal = False
-				isTip = False
+				if '===' not in lineStrippedLower:
+					isCollated = False
+					isOriginal = False
+					isTip = False
 			if isCollated:
 				linkName = getLinkName(line, self.name)
 				underscoredLinkName = linkName.lower().replace(' ', '_')
