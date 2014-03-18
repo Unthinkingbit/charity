@@ -95,6 +95,27 @@ def getArticleLinkString(articles):
 			longestArticleLinkString = articleLinkString
 	return longestArticleLinkString
 
+def getArticles(name):
+	'Get invoiced articles by name.'
+	articles = []
+	sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % name
+	print('Loading user page from %s' % name)
+	sourceText = almoner.getSourceText(sourceAddress)
+	isArticle = False
+	for line in almoner.getTextLines(sourceText):
+		lineStrippedLower = line.strip().lower()
+		if '==' in lineStrippedLower:
+			if '===' not in lineStrippedLower:
+				isArticle = False
+		if isArticle:
+			lowerLinkName = devtome.getLinkName(line, name).lower()
+			if lowerLinkName != '':
+				articles.append(lowerLinkName)
+		if '==' in lineStrippedLower:
+			if 'collated' in lineStrippedLower or 'original' in lineStrippedLower:
+				isArticle = True
+	return articles
+
 def getBelowRaterWriters(name, raterWriters):
 	'Get the rater writers whose name is 1 to 12 ordinals below, wrapped around.'
 	nameOrdinal = getFirstLetterIndex(name)
@@ -235,23 +256,8 @@ class Writer:
 	'A class to handle a writer.'
 	def __init__(self, name):
 		'Initialize.'
-		self.articles = []
+		self.articles = getArticles(name)
 		self.name = name
-		sourceAddress = 'http://devtome.com/doku.php?id=wiki:user:%s&do=edit' % self.name
-		print('Loading user page from %s' % self.name)
-		sourceText = almoner.getSourceText(sourceAddress)
-		isArticle = False
-		for line in almoner.getTextLines(sourceText):
-			lineStrippedLower = line.strip().lower()
-			if '==' in lineStrippedLower:
-				isArticle = False
-			if isArticle:
-				lowerLinkName = devtome.getLinkName(line, name).lower()
-				if lowerLinkName != '':
-					self.articles.append(lowerLinkName)
-			if '==' in lineStrippedLower:
-				if 'collated' in lineStrippedLower or 'original' in lineStrippedLower:
-					isArticle = True
 
 	def __repr__(self):
 		'Get the string representation of this class.'
