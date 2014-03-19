@@ -12,10 +12,13 @@ http://creativecurrencies.cu.cc/wp-content/uploads/receiver_33.csv
 The account file is at:
 http://galaxies.mygamesonline.org/account_33.csv
 
-There were 1938 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 1938 = 92,879 dvc. Administrator pay is 268.0 shares, 13.8 percent of the total.
+There were 1,938 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 1,938 = 92,879 dvc. Administrator pay is 268.0 shares, 13.8 percent of the total.
 
 People on that list will start getting those coins in round 33, starting at block 132,000. The procedure for generating the receiver files is at:
 http://devtome.com/doku.php?id=devcoin#generating_the_files
 
 The next bounties will go into round 34:
-https://raw.github.com/Unthinkingbit/charity/master/bounty_34.csv
+http://devticker.pw/business_bounty/business_bounty_34.csv
+
+The next ongoing payments will go into round 34:
+http://dvccountdown.blisteringdevelopers.com/ongoing_34.csv
