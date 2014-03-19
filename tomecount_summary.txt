@@ -1,2 +1,0 @@
-Tomecount_summary.txt has moved to:
-https://raw.github.com/Unthinkingbit/charity/master/devtome_summary.txt
