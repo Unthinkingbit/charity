@@ -284,8 +284,9 @@ class Rating:
 		spaceIndex = ratingLine.find(' ')
 		voteString = ratingLine
 		if spaceIndex != -1:
-			voteString = ratingLine[: spaceIndex].strip().replace(',', '').replace("'", '').replace('"', '').replace(".", '').replace(";", '')
+			voteString = ratingLine[: spaceIndex].strip()
 			self.comment = ratingLine[spaceIndex :].strip()
+		voteString = voteString.replace(',', '').replace("'", '').replace('"', '').replace(".", '').replace(";", '')
 		if not voteString.isdigit():
 			if voteString != '':
 				print('Warning, not a pure number in:')
