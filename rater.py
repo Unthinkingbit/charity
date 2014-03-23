@@ -65,14 +65,14 @@ import sys
 __license__ = 'MIT'
 
 
-def addWriter(previousVoteDictionary, writerName, writers):
+def addWriter(previousAddressVoteDictionary, writerName, writers):
 	'Get the writers.'
 	writer = Writer(writerName)
 	if len(writer.articles) <= 0:
 		return
 	numberOfRatings = 0
-	if writerName in previousVoteDictionary:
-		numberOfRatings = len(previousVoteDictionary[writerName])
+	if writerName in previousAddressVoteDictionary:
+		numberOfRatings = len(previousAddressVoteDictionary[writerName])
 	if numberOfRatings > 8:
 		return
 	if numberOfRatings > 4:
@@ -221,10 +221,10 @@ def getWriterNames(writerFileName):
 def getWriters(round, writerNames):
 	'Get the writers.'
 	writers = []
-	previousVoteDictionary = rating.getPreviousVoteDictionary(round)
+	previousAddressVoteDictionary = rating.getPreviousAddressVoteDictionary(round)
 	for writerName in writerNames:
 		if writerName.lower() != 'icoin': # because Icoin is not writing anymore
-			addWriter(previousVoteDictionary, writerName, writers)
+			addWriter(previousAddressVoteDictionary, writerName, writers)
 	return writers
 
 def getWritersMinusNameSet(nameSet, writers):

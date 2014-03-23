@@ -62,6 +62,10 @@ import sys
 __license__ = 'MIT'
 
 
+def getAddress(addressName):
+	'Get the address for sorting.'
+	return addressName.address
+
 def getEarningsText(ratings, recipientDictionary):
 	'Get the ratings earnings text.'
 	cString = cStringIO.StringIO()
@@ -94,98 +98,34 @@ def getMedian(values):
 		return median
 	return 0.5 * (median + float(values[halfLength - 1]))
 
-def getPreviousRaterDictionary(round):
-	'Get the rater dictionary from the previous round.'
-	lines = almoner.getTextLines(almoner.getFileText('rating_%s.csv' % (round - 1)))
-	if len(lines) < 2:
+def getPreviousAddressVoteDictionary(previousLines):
+	'Get the address vote dictionary from the previous round.'
+	if len(previousLines) < 2:
 		return {}
-	previousRaterIndex = getPreviousRaterIndex(lines[0])
-	previousRaterDictionary = {}
-	for line in lines[1 :]:
+	titles = previousLines[0].lower().split(',')
+	previousAddressVoteDictionary = {}
+	for line in previousLines[1 :]:
 		words = line.split(',')
-		if len(words) > previousRaterIndex:
-			name = words[0].strip().lower()
-			if len(name) > 0:
-				previousRaterDictionary[name] = words[previousRaterIndex].strip().lower().split('-')
-	return previousRaterDictionary
+		for wordIndex, word in enumerate(words):
+			nextIndex = wordIndex + 1
+			if len(words) > nextIndex and len(titles) > nextIndex:
+				if titles[wordIndex].strip() == 'address' and titles[nextIndex].strip() == 'vote':
+					name = words[0].strip().lower()
+					if len(name) > 0:
+						address = words[wordIndex].strip().lower()
+						vote = words[nextIndex].strip().lower()
+						addressVote = AddressVote(address, vote)
+						if name in previousAddressVoteDictionary:
+							previousAddressVoteDictionary[name].append(addressVote)
+						else:
+							previousAddressVoteDictionary[name] = [addressVote]
+	return previousAddressVoteDictionary
 
-def getPreviousRaterIndex(line):
-	'Get the rater index from the previous round.'
-	words = line.split(',')
-	for wordIndex, word in enumerate(words):
-		if word.strip().lower() == 'raters':
-			return wordIndex
-	return 3
-
-def getPreviousRaters(name, previousRaterDictionary):
-	'Get the previous raters.'
-	if name in previousRaterDictionary:
-		return previousRaterDictionary[name]
+def getPreviousAddressVotes(name, previousAddressVoteDictionary):
+	'Get the previous address votes.'
+	if name in previousAddressVoteDictionary:
+		return previousAddressVoteDictionary[name]
 	return []
-
-def getPreviousVoteDictionary(round):
-	'Get the vote dictionary from the previous round.'
-	lines = almoner.getTextLines(almoner.getFileText('rating_%s.csv' % (round - 1)))
-	if len(lines) < 2:
-		return {}
-	previousVoteIndex = getPreviousVoteIndex(lines[0])
-	previousVoteDictionary = {}
-	for line in lines[1 :]:
-		words = line.split(',')
-		if len(words) > previousVoteIndex:
-			name = words[0].strip().lower()
-			if len(name) > 0:
-				voteStrings = words[previousVoteIndex].strip().lower().split('-')
-				votes = []
-				for voteString in voteStrings:
-					votes.append(int(voteString))
-				previousVoteDictionary[name] = votes
-	return previousVoteDictionary
-
-def getPreviousVoteIndex(line):
-	'Get the vote index from the previous round.'
-	words = line.split(',')
-	for wordIndex, word in enumerate(words):
-		if word.strip().lower() == 'votes':
-			return wordIndex
-	return 1
-
-def getPreviousVotes(name, previousVoteDictionary):
-	'Get the previous votes.'
-	if name in previousVoteDictionary:
-		return previousVoteDictionary[name]
-	return []
-
-def getRatingText(ratings, round):
-	'Get the rating text.'
-	cString = cStringIO.StringIO()
-	maxLength = 0
-	authorDictionary = {}
-	previousVoteDictionary = getPreviousVoteDictionary(round)
-	previousRaterDictionary = getPreviousRaterDictionary(round)
-	for rating in ratings:
-		if rating.author in authorDictionary:
-			authorDictionary[rating.author].addRating(rating)
-		else:
-			previousRaters = getPreviousRaters(rating.author, previousRaterDictionary)
-			author = Author(rating.author, previousRaters, getPreviousVotes(rating.author, previousVoteDictionary))
-			author.addRating(rating)
-			authorDictionary[rating.author] = author
-	for name in previousVoteDictionary:
-		if name not in authorDictionary:
-			authorDictionary[name] = Author(name, getPreviousRaters(name, previousRaterDictionary), getPreviousVotes(name, previousVoteDictionary))
-	authorKeys = authorDictionary.keys()
-	authorKeys.sort()
-	for authorKey in authorKeys:
-		maxLength = max(maxLength, len(authorDictionary[authorKey].ratings))
-	titles = ['Author', 'All Votes', 'Median', 'Raters']
-	for voteIndex in xrange(maxLength):
-		titles.append('Address')
-		titles.append('Vote')
-	cString.write('%s\n' % ','.join(titles))
-	for authorKey in authorKeys:
-		authorDictionary[authorKey].addLine(cString)
-	return cString.getvalue()
 
 def getRatings(round):
 	'Get the ratings by the round.'
@@ -215,6 +155,38 @@ def getRatingsByAddress(address):
 			ratings.append(rating)
 	return ratings
 
+def getRatingText(ratings, round):
+	'Get the rating text.'
+	cString = cStringIO.StringIO()
+	maxLength = 0
+	authorDictionary = {}
+	previousLines = almoner.getTextLines(almoner.getFileText('rating_%s.csv' % (round - 1)))
+	previousAddressVoteDictionary = getPreviousAddressVoteDictionary(previousLines)
+	for rating in ratings:
+		if rating.author in authorDictionary:
+			authorDictionary[rating.author].addRating(rating)
+		else:
+			previousAddressVotes = getPreviousAddressVotes(rating.author, previousAddressVoteDictionary)
+			author = Author(previousAddressVotes, rating.author)
+			author.addRating(rating)
+			authorDictionary[rating.author] = author
+	for name in previousAddressVoteDictionary:
+		if name not in authorDictionary:
+			previousAddressVotes = getPreviousAddressVotes(name, previousAddressVoteDictionary)
+			authorDictionary[name] = Author(previousAddressVotes, name)
+	authorKeys = authorDictionary.keys()
+	authorKeys.sort()
+	for authorKey in authorKeys:
+		maxLength = max(maxLength, len(authorDictionary[authorKey].addressVotes))
+	titles = ['Author', 'All Votes', 'Median', 'Raters']
+	for voteIndex in xrange(maxLength):
+		titles.append('Address')
+		titles.append('Vote')
+	cString.write('%s\n' % ','.join(titles))
+	for authorKey in authorKeys:
+		authorDictionary[authorKey].addLine(cString)
+	return cString.getvalue()
+
 def writeOutput(arguments):
 	'Write output.'
 	if '-h' in arguments or '-help' in arguments:
@@ -233,36 +205,54 @@ def writeOutput(arguments):
 		print('The rating file has been written to:\n%s\n' % outputRatingTo)
 
 
+class AddressVote:
+	'A class to hold an address and vote.'
+	def __init__(self, address, vote):
+		'Initialize.'
+		self.address = address
+		self.vote = vote
+
+
 class Author:
 	'A class to handle an author.'
-	def __init__(self, name, previousRaters, previousVotes):
+	def __init__(self, addressVotes, name):
 		'Initialize.'
+		self.addressVotes = addressVotes
 		self.name = name
-		self.previousRaters = previousRaters
-		self.previousVotes = previousVotes
 		self.ratings = []
 
 	def addLine(self, cString):
 		'Add the author to the rating csv cString.'
-		raters = self.previousRaters[:]
-		votes = self.previousVotes[:]
-		for rating in self.ratings:
-			raters.append(rating.rater)
-			votes.append(rating.vote)
+		self.addressVotes.sort(key=getAddress)
+		raters = []
+		votes = []
+		for addressVote in self.addressVotes:
+			rater = addressVote.address
+			ratingIndex = rater.find('rating_')
+			if ratingIndex != -1:
+				rater = rater[ratingIndex + len('rating_') :]
+			underscoreIndex = rater.rfind('_')
+			if underscoreIndex != -1:
+				rater = rater[: underscoreIndex]
+			if rater not in raters:
+				raters.append(rater)
+			votes.append(addressVote.vote)
 		raters.sort()
 		votes.sort()
 		voteStrings = []
 		for vote in votes:
 			voteStrings.append(str(vote))
 		fields = [self.name, '-'.join(voteStrings), str(getMedian(votes)), '-'.join(raters)]
-		for rating in self.ratings:
-			fields.append(rating.address.replace('&do=edit', ''))
-			fields.append(str(rating.vote))
+		for addressVote in self.addressVotes:
+			fields.append(addressVote.address)
+			fields.append(str(addressVote.vote))
 		cString.write('%s\n' % ','.join(fields))
 
 	def addRating(self, rating):
 		'Add rating vote.'
 		self.ratings.append(rating)
+		addressVote = AddressVote(rating.address.replace('&do=edit', ''), rating.vote)
+		self.addressVotes.append(addressVote)
 
 
 class Rating:
