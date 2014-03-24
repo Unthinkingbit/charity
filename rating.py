@@ -127,6 +127,26 @@ def getPreviousAddressVotes(name, previousAddressVoteDictionary):
 		return previousAddressVoteDictionary[name]
 	return []
 
+def getPreviousLines(round):
+	'Get the lines from the rating text of the previous round.'
+	return almoner.getTextLines(almoner.getFileText('rating_%s.csv' % (round - 1)))
+
+def getRaters(addressVotes):
+	'Get the raters from the address votes.'
+	raters = []
+	for addressVote in addressVotes:
+		rater = addressVote.address
+		ratingIndex = rater.find('rating_')
+		if ratingIndex != -1:
+			rater = rater[ratingIndex + len('rating_') :]
+		underscoreIndex = rater.rfind('_')
+		if underscoreIndex != -1:
+			rater = rater[: underscoreIndex]
+		if rater not in raters:
+			raters.append(rater)
+	raters.sort()
+	return raters
+
 def getRatings(round):
 	'Get the ratings by the round.'
 	lines = almoner.getTextLines(almoner.getFileText('rater_%s.txt' % round))
@@ -160,7 +180,7 @@ def getRatingText(ratings, round):
 	cString = cStringIO.StringIO()
 	maxLength = 0
 	authorDictionary = {}
-	previousLines = almoner.getTextLines(almoner.getFileText('rating_%s.csv' % (round - 1)))
+	previousLines = getPreviousLines(round)
 	previousAddressVoteDictionary = getPreviousAddressVoteDictionary(previousLines)
 	for rating in ratings:
 		if rating.author in authorDictionary:
@@ -224,20 +244,10 @@ class Author:
 	def addLine(self, cString):
 		'Add the author to the rating csv cString.'
 		self.addressVotes.sort(key=getAddress)
-		raters = []
+		raters = getRaters(self.addressVotes)
 		votes = []
 		for addressVote in self.addressVotes:
-			rater = addressVote.address
-			ratingIndex = rater.find('rating_')
-			if ratingIndex != -1:
-				rater = rater[ratingIndex + len('rating_') :]
-			underscoreIndex = rater.rfind('_')
-			if underscoreIndex != -1:
-				rater = rater[: underscoreIndex]
-			if rater not in raters:
-				raters.append(rater)
 			votes.append(addressVote.vote)
-		raters.sort()
 		votes.sort()
 		voteStrings = []
 		for vote in votes:

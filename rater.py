@@ -151,7 +151,8 @@ def getRaters():
 
 def getRaterText(maximumWriters, round, seedString, writerNames):
 	'Get the rater text.'
-	previousRaterDictionary = rating.getPreviousRaterDictionary(round)
+	previousLines = rating.getPreviousLines(round)
+	previousAddressVoteDictionary = rating.getPreviousAddressVoteDictionary(previousLines)
 	previousNameDictionary = {}
 	writers = getWriters(round, writerNames)
 	cString = cStringIO.StringIO()
@@ -160,13 +161,13 @@ def getRaterText(maximumWriters, round, seedString, writerNames):
 	raters = getRaters()
 	raters.sort()
 	raterSet = set(raters)
-	for previousRaterKey in previousRaterDictionary.keys():
-		previousRaters = previousRaterDictionary[previousRaterKey]
+	for previousAddressVoteKey in previousAddressVoteDictionary.keys():
+		previousRaters = rating.getRaters(previousAddressVoteDictionary[previousAddressVoteKey])
 		for previousRater in previousRaters:
 			if previousRater in previousNameDictionary:
-				previousNameDictionary[previousRater].append(previousRaterKey)
+				previousNameDictionary[previousRater].append(previousAddressVoteKey)
 			else:
-				previousNameDictionary[previousRater] = [previousRaterKey]
+				previousNameDictionary[previousRater] = [previousAddressVoteKey]
 	for writer in writers:
 		if writer.name in raterSet:
 			raterWriters.append(writer)
@@ -221,7 +222,8 @@ def getWriterNames(writerFileName):
 def getWriters(round, writerNames):
 	'Get the writers.'
 	writers = []
-	previousAddressVoteDictionary = rating.getPreviousAddressVoteDictionary(round)
+	previousLines = rating.getPreviousLines(round)
+	previousAddressVoteDictionary = rating.getPreviousAddressVoteDictionary(previousLines)
 	for writerName in writerNames:
 		if writerName.lower() != 'icoin': # because Icoin is not writing anymore
 			addWriter(previousAddressVoteDictionary, writerName, writers)
