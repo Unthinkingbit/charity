@@ -198,7 +198,7 @@ def getRatingText(ratings, round):
 	authorKeys.sort()
 	for authorKey in authorKeys:
 		maxLength = max(maxLength, len(authorDictionary[authorKey].addressVotes))
-	titles = ['Author', 'All Votes', 'Median', 'Raters']
+	titles = ['Author', 'Median']
 	for voteIndex in xrange(maxLength):
 		titles.append('Address')
 		titles.append('Vote')
@@ -244,17 +244,15 @@ class Author:
 	def addLine(self, cString):
 		'Add the author to the rating csv cString.'
 		self.addressVotes.sort(key=getAddress)
-		raters = getRaters(self.addressVotes)
 		votes = []
 		for addressVote in self.addressVotes:
 			votes.append(addressVote.vote)
-		votes.sort()
-		voteStrings = []
-		for vote in votes:
-			voteStrings.append(str(vote))
-		fields = [self.name, '-'.join(voteStrings), str(getMedian(votes)), '-'.join(raters)]
+		fields = [self.name, str(getMedian(votes))]
 		for addressVote in self.addressVotes:
-			fields.append(addressVote.address)
+			address = addressVote.address
+			if address.startswith('http://devtome.com/doku.php?id=rating_'):
+				address = address[len('http://devtome.com/doku.php?id=rating_') :]
+			fields.append(address)
 			fields.append(str(addressVote.vote))
 		cString.write('%s\n' % ','.join(fields))
 
