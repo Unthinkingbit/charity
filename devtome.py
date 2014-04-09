@@ -480,7 +480,9 @@ def writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileN
 	scriptIndex += len(scriptToken)
 	categoryText = sourceText[: scriptIndex] + '\n'
 	afterScriptText = sourceText[scriptIndex :]
+	lastLetter = None
 	lines = almoner.getTextLines(afterScriptText)
+	isAlphabeticallyGrouped = False
 	scriptEndToken = None
 	titleDictionary = {}
 	for line in lines:
@@ -488,7 +490,11 @@ def writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileN
 			lineStripped = line.strip()
 			if lineStripped != '':
 				if lineStripped.startswith('=') and lineStripped.endswith('='):
-					scriptEndToken = lineStripped
+					heading = lineStripped.replace('=', '').strip()
+					if len(heading) > 1:
+						scriptEndToken = lineStripped
+					elif len(heading) == 1:
+						isAlphabeticallyGrouped = True
 				else:
 					if lineStripped.startswith('*'):
 						lineStripped = lineStripped[1 :]
@@ -503,6 +509,9 @@ def writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileN
 					if barIndex != -1:
 						titleKey = titleKey[: barIndex]
 					titleDictionary[titleKey] = lineStripped
+	print(  categoryKey)
+	print(  isAlphabeticallyGrouped)
+	print(  scriptEndToken)
 	fromTokenText = ''
 	if scriptEndToken != None:
 		fromTokenText = afterScriptText[afterScriptText.find(scriptEndToken) :]
@@ -514,7 +523,17 @@ def writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileN
 	titleKeys = titleDictionary.keys()
 	titleKeys.sort()
 	for titleKey in titleKeys:
-		categoryText += '[[' + titleDictionary[titleKey] + ']]\n\n'
+		print(  titleKey)
+		print(  titleDictionary[titleKey])
+		if isAlphabeticallyGrouped:
+			firstLetter = titleKey[0]
+			if firstLetter != lastLetter:
+				categoryText += '===%s===\n' % firstLetter.capitalize()
+				lastLetter = firstLetter
+		title = titleDictionary[titleKey]
+		if not ']]' in title:
+			title += ']]'
+		categoryText += '[[:%s\n\n' % title
 	categoryText += fromTokenText
 	almoner.writeFileText(os.path.join(categoryFolder, categorySuffix), categoryText)
 
@@ -740,7 +759,7 @@ class Author:
 				endBracketIndex = linkTextLower.find(']]', startIndex)
 				if endBracketIndex == -1:
 					return
-				categoryName = linkTextLower[startIndex : endBracketIndex]
+				categoryName = linkTextLower[startIndex : endBracketIndex].strip()
 				if categoryName in categoryDictionary:
 					categoryDictionary[categoryName].append(linkName)
 				else:
