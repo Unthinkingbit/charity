@@ -51,7 +51,7 @@ import zipfile
 __license__ = 'MIT'
 
 
-globalEditors = 'athanasios_motok ba_al bigdaub bitcoindarling bittzy78 caprigon cyke64 deadsea33 deadwood develcuy dinkleberg eeharris finshaggy flam ftgcoin giftculturewriting ghostofdawn hunterbunter kirktaylor1 knotwork ibrennan infoporter maitotoxin master-p melodiem nafindix nsddev nutterboy paul3 raptorak smeagol stealtheh testigodehumanidad thedischarger tom twobits unthinkingbit weisoq wekkel wiser xenophaux xeriandros'.split()
+globalEditors = 'athanasios_motok ba_al bigdaub bitcoindarling bittzy78 caprigon cyke64 deadsea33 deadwood develcuy dinkleberg eeharris finshaggy flam ftgcoin giftculturewriting ghostofdawn hunterbunter kickaha4 kirktaylor1 knotwork ibrennan infoporter maitotoxin master-p melodiem melodiemuse nafindix nsddev nutterboy paul3 raptorak smeagol stealtheh testigodehumanidad thedischarger tom twobits unthinkingbit weisoq wekkel wiser xenophaux xeriandros'.split()
 globalNames = 'knotwork kumala icoin xenophaux unthinkingbit'.split()
 
 
@@ -509,9 +509,6 @@ def writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileN
 					if barIndex != -1:
 						titleKey = titleKey[: barIndex]
 					titleDictionary[titleKey] = lineStripped
-	print(  categoryKey)
-	print(  isAlphabeticallyGrouped)
-	print(  scriptEndToken)
 	fromTokenText = ''
 	if scriptEndToken != None:
 		fromTokenText = afterScriptText[afterScriptText.find(scriptEndToken) :]
@@ -523,8 +520,6 @@ def writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileN
 	titleKeys = titleDictionary.keys()
 	titleKeys.sort()
 	for titleKey in titleKeys:
-		print(  titleKey)
-		print(  titleDictionary[titleKey])
 		if isAlphabeticallyGrouped:
 			firstLetter = titleKey[0]
 			if firstLetter != lastLetter:
@@ -544,6 +539,7 @@ def writeCategoryFiles(categoryDictionary, rootFileName):
 	categoryKeys = categoryDictionary.keys()
 	for categoryKey in categoryDictionary.keys():
 		writeCategoryFile(categoryDictionary, categoryFolder, categoryKey, rootFileName)
+	almoner.writeZipFileByFolder(categoryFolder)
 
 def writeOutput(arguments):
 	'Write output.'
@@ -759,7 +755,7 @@ class Author:
 				endBracketIndex = linkTextLower.find(']]', startIndex)
 				if endBracketIndex == -1:
 					return
-				categoryName = linkTextLower[startIndex : endBracketIndex].strip()
+				categoryName = linkTextLower[startIndex : endBracketIndex].strip().replace('_', ' ')
 				if categoryName in categoryDictionary:
 					categoryDictionary[categoryName].append(linkName)
 				else:
