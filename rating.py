@@ -92,6 +92,7 @@ def getEarningsText(ratings, recipientDictionary):
 
 def getMedian(values):
 	'Get the median.'
+	values.sort()
 	halfLength = len(values) / 2
 	median = float(values[halfLength])
 	if len(values) % 2 == 1:
