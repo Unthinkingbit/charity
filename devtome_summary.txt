@@ -1,11 +1,11 @@
 The round 34 devtome word earnings are pasted below and at:
 https://raw.github.com/Unthinkingbit/charity/master/devtome_earnings_34.csv
 
-Antdix,1NNnUkWk29x6PBMyUpRDXv4dEMNrw5qjWY,14-Word Count(http://devtome.com/doku.php?id=wiki:user:Antdix)
-Ashleysly,1Mdu9MbAEsUm81NzEPQR7GCkUxbG39pWMy,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Ashleysly)
-Backa18,1A7mEa8zufBg2ajkQU8uezFKVvaxEqXr3g,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Backa18)
-Bomac,18sqY71VonaH81y4mWyrFirLf9ZMq238wY,39-Word Count(http://devtome.com/doku.php?id=wiki:user:Bomac)
-Caprigon,1Q4siL9KD2W8cy5eguRr5z5R1iCca27Qqv,15-Word Count(http://devtome.com/doku.php?id=wiki:user:Caprigon)
+Antdix,1NNnUkWk29x6PBMyUpRDXv4dEMNrw5qjWY,18-Word Count(http://devtome.com/doku.php?id=wiki:user:Antdix)
+Ashleysly,1Mdu9MbAEsUm81NzEPQR7GCkUxbG39pWMy,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Ashleysly)
+Backa18,1A7mEa8zufBg2ajkQU8uezFKVvaxEqXr3g,3-Word Count(http://devtome.com/doku.php?id=wiki:user:Backa18)
+Bomac,18sqY71VonaH81y4mWyrFirLf9ZMq238wY,45-Word Count(http://devtome.com/doku.php?id=wiki:user:Bomac)
+Caprigon,1Q4siL9KD2W8cy5eguRr5z5R1iCca27Qqv,17-Word Count(http://devtome.com/doku.php?id=wiki:user:Caprigon)
 Cdelatorref,13TRk2LRQuPH926Dq4u1uL63gUvfX5wRN3,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Cdelatorref)
 Cybernet,1La3GDDFvm2fVSjDh7Wy6YvbZ4MiP7Mt1q,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Cybernet)
 Darebruges,1EkixVazBUdNarHfB5eUWsxQ6JJnQuQx3K,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Darebruges)
@@ -14,7 +14,7 @@ Deadwood,1MRCQrNWiXg8LA4vq6PfYvpdWfyZketSw6,3-Word Count(http://devtome.com/doku
 Develcuy,1DogCa5wiVZJWFnFDezuw5XssoWWabijnE,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Develcuy)
 Dhouses,192hXH4dh4zASr1212X6GJFXsypavW2uMW,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Dhouses)
 Diedicar,1NXSmDdfVdL548RzbzVx6CkUmXFoRZ5yH3,6-Word Count(http://devtome.com/doku.php?id=wiki:user:Diedicar)
-Ecafe,17tRggPGbLBVWFBoySALZXTABD2zSe3kEW,10-Word Count(http://devtome.com/doku.php?id=wiki:user:Ecafe)
+Ecafe,17tRggPGbLBVWFBoySALZXTABD2zSe3kEW,11-Word Count(http://devtome.com/doku.php?id=wiki:user:Ecafe)
 Fheenix,1JvdsgxiJQYAJSE4Tjs3BWbXZk6Kw9mxnB,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Fheenix)
 Foreroz,1ArfuTn3o1NgVCMwnoyxZx6jPKPTmSP9o6,6-Word Count(http://devtome.com/doku.php?id=wiki:user:Foreroz)
 Funkyphantom,1E24V6K3S6tKQksaKCrVCr2sBKicAfs3mr,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Funkyphantom)
@@ -22,41 +22,41 @@ Gorgorom,1EgZsQ6zxrA5bCtMMR1uWAcjfqt7n8GNRJ,2-Word Count(http://devtome.com/doku
 Grasssusan,17uJkuoL5ub3ZjXmqTmmQLjkG8sN9bNqir,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Grasssusan)
 Hellscabane,1G3FNG9ogDBxygJJxst5mH1oUeCS7UF12e,10-Word Count(http://devtome.com/doku.php?id=wiki:user:Hellscabane)
 Jeffusher,127t5jPqpiowffJyKKFg9MBLwG17V5fdL2,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Jeffusher)
-Jimfoxy,1JV7QdytMkA3crx9L1FM2dTBqaQ5itXy5u,10-Word Count(http://devtome.com/doku.php?id=wiki:user:Jimfoxy)
+Jimfoxy,1JV7QdytMkA3crx9L1FM2dTBqaQ5itXy5u,11-Word Count(http://devtome.com/doku.php?id=wiki:user:Jimfoxy)
 Jonnylitecoin,1DjLPFai2gtHmwWJSsFYGaLAmyLLGqyDWt,7-Word Count(http://devtome.com/doku.php?id=wiki:user:Jonnylitecoin)
 Kermett,1PArJ2bvbUdexQj9ubBgtnNWyRNz3BkvGs,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Kermett)
 Kimlle,1BoXo1RmQ6NKfZ7RHKscpWLKu8vcXXpjBD,5-Word Count(http://devtome.com/doku.php?id=wiki:user:Kimlle)
-Lowjo,1JMPa89dd5ZWVTKC7Hh9mvm98RpVcLvLRk,54-Word Count(http://devtome.com/doku.php?id=wiki:user:Lowjo)
+Lowjo,1JMPa89dd5ZWVTKC7Hh9mvm98RpVcLvLRk,57-Word Count(http://devtome.com/doku.php?id=wiki:user:Lowjo)
 Masscash,1MKs5SjcfA7a58vn9kjfcDkHkPoJFdUcz5,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Masscash)
-Melodiemuse,1GJt2nDUrVinYyDFJuWMkkK1Urod5nH72F,3-Word Count(http://devtome.com/doku.php?id=wiki:user:Melodiemuse)
+Melodiemuse,1GJt2nDUrVinYyDFJuWMkkK1Urod5nH72F,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Melodiemuse)
 Millipede,15PCkrTqyHKaq96gLNqegYPXauXxNJj5ht,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Millipede)
 Mmenninger,1HU3X37P9rzEY8txjYfdFgQDDWbrVFW9fv,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Mmenninger)
-Moviemaven,18PEknMdtM4WzZkva21yHGBKdhaDcAjPWN,18-Word Count(http://devtome.com/doku.php?id=wiki:user:Moviemaven)
-Nafindix,18PwsnRDTp9RnMrHDrkU4hfW5qpz7YBNYk,3-Word Count(http://devtome.com/doku.php?id=wiki:user:Nafindix)
+Moviemaven,18PEknMdtM4WzZkva21yHGBKdhaDcAjPWN,11-Word Count(http://devtome.com/doku.php?id=wiki:user:Moviemaven)
+Nafindix,18PwsnRDTp9RnMrHDrkU4hfW5qpz7YBNYk,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Nafindix)
 Novacadian,1MJ21NMydr9dNu65tga6oBDa6coiq3bRXz,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Novacadian)
 Papacrusher,13mtCyZTnMJRJw9nt7xqbiGU7tXrvkeAJB,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Papacrusher)
-Pb321go,1F5uDaCF8ZP6kiLHvDhWsSNPHP6kwt7udi,41-Word Count(http://devtome.com/doku.php?id=wiki:user:Pb321go)
+Pb321go,1F5uDaCF8ZP6kiLHvDhWsSNPHP6kwt7udi,43-Word Count(http://devtome.com/doku.php?id=wiki:user:Pb321go)
 Profitofthegods,12MGa1zUdSorJXC4wDFScDmNifye1euKkA,34-Word Count(http://devtome.com/doku.php?id=wiki:user:Profitofthegods)
 Pythonideus,1JZoUrpX6Dc9fEXagFgsvFL63bhTdJpkn6,1-Word Count(http://devtome.com/doku.php?id=wiki:user:Pythonideus)
-Raptorak,1ASdsZ1JUwtVXDfYBx7MRNMeHQ8J51pSRw,67-Word Count(http://devtome.com/doku.php?id=wiki:user:Raptorak)
+Raptorak,1ASdsZ1JUwtVXDfYBx7MRNMeHQ8J51pSRw,60-Word Count(http://devtome.com/doku.php?id=wiki:user:Raptorak)
 Rich2014,147A5To5oW9ucmeC1gUi3twpdGnz8oP5en,21-Word Count(http://devtome.com/doku.php?id=wiki:user:Rich2014)
 Sharkness,1CR3yFBpsmxHweATvSJDsearBV1XVEWYsa,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Sharkness)
-Sifuphil,19vKdk8KxdLNQ3SXrsx8vWELv96pagKoJd,51-Word Count(http://devtome.com/doku.php?id=wiki:user:Sifuphil)
+Sifuphil,19vKdk8KxdLNQ3SXrsx8vWELv96pagKoJd,62-Word Count(http://devtome.com/doku.php?id=wiki:user:Sifuphil)
 Silentwriter,14BL4enKz7LVbgVPQPQ3PUvETm58SA3Q8g,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Silentwriter)
-Tayfun73,1CSAWGJvnr1sC2ZCMjoLzJcvm8emx5Tprm,47-Word Count(http://devtome.com/doku.php?id=wiki:user:Tayfun73)
+Tayfun73,1CSAWGJvnr1sC2ZCMjoLzJcvm8emx5Tprm,46-Word Count(http://devtome.com/doku.php?id=wiki:user:Tayfun73)
 Teknomen,19V8v8PAc3788Z1tSFvcrsLdQu7RpYu5bK,13-Word Count(http://devtome.com/doku.php?id=wiki:user:Teknomen)
 Thedischarger,1KZKMYixw4PDtu5ZbKqrahRWeAgputuVoc,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Thedischarger)
-Theuntitled,1LH2DVjCpp9FD62puC9x5ZujonPSmnbkGd,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Theuntitled)
+Theuntitled,1LH2DVjCpp9FD62puC9x5ZujonPSmnbkGd,7-Word Count(http://devtome.com/doku.php?id=wiki:user:Theuntitled)
 Thirdrenaissance,1PT6X8xhyxQC1zGTuWzcHwB7iTEZHZGV71,12-Word Count(http://devtome.com/doku.php?id=wiki:user:Thirdrenaissance)
-Tibbers,16efV75hHY4Z8x1zLxHPjBU4sAucpDK4Vs,14-Word Count(http://devtome.com/doku.php?id=wiki:user:Tibbers)
+Tibbers,16efV75hHY4Z8x1zLxHPjBU4sAucpDK4Vs,13-Word Count(http://devtome.com/doku.php?id=wiki:user:Tibbers)
 Trinitypage,1DWsh2UcdVNmFhyJ4iaW9J52zkGJDTGJ7o,4-Word Count(http://devtome.com/doku.php?id=wiki:user:Trinitypage)
 User932326,18VxknkRnvGULt3o76yoXSEpEFYKP7YY4J,1-Word Count(http://devtome.com/doku.php?id=wiki:user:User932326)
-Weisoq,1Cy9e1Yuwboj63XRkMkT6W6YsGDtYDrsUp,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Weisoq)
-Whoisthelorax,1JPR1KXGEcUYRReho3KSMMLvmtYpgC5xJc,51-Word Count(http://devtome.com/doku.php?id=wiki:user:Whoisthelorax)
-WildElf,1EyqcWNcJXVYhRX1C9Bbm9aa6rYiKEzcNp,14-Word Count(http://devtome.com/doku.php?id=wiki:user:WildElf)
+Weisoq,1Cy9e1Yuwboj63XRkMkT6W6YsGDtYDrsUp,3-Word Count(http://devtome.com/doku.php?id=wiki:user:Weisoq)
+Whoisthelorax,1JPR1KXGEcUYRReho3KSMMLvmtYpgC5xJc,53-Word Count(http://devtome.com/doku.php?id=wiki:user:Whoisthelorax)
+WildElf,1EyqcWNcJXVYhRX1C9Bbm9aa6rYiKEzcNp,18-Word Count(http://devtome.com/doku.php?id=wiki:user:WildElf)
 Wiser,1LpoMowMPEVWk2LaJUdAUNaK7gBDRA1r7F,21-Word Count(http://devtome.com/doku.php?id=wiki:user:Wiser)
 Wolfmedia,1DaB4y5We1cbc95q8hr1Uv4qWhwoSksvym,2-Word Count(http://devtome.com/doku.php?id=wiki:user:Wolfmedia)
-Xeriandros,1AYNWHyhakgigfVaEYx1h87o1mjksWcnkH,68-Word Count(http://devtome.com/doku.php?id=wiki:user:Xeriandros)
+Xeriandros,1AYNWHyhakgigfVaEYx1h87o1mjksWcnkH,46-Word Count(http://devtome.com/doku.php?id=wiki:user:Xeriandros)
 
 They are generated by devtome.py:
 https://raw.github.com/Unthinkingbit/charity/master/devtome.py
@@ -64,11 +64,11 @@ https://raw.github.com/Unthinkingbit/charity/master/devtome.py
 The word counts for each writer are at:
 https://raw.github.com/Unthinkingbit/charity/master/devtome_34.csv
 
-The word earnings were generated on 2014-04-11, and the total word counts follow below.
+The word earnings were generated on 2014-04-12, and the total word counts follow below.
 
-Collated Word Count: 583,971
-Collated Weighted Word Count: 175,180
+Collated Word Count: 583,979
+Collated Weighted Word Count: 175,182
 Images: 3,053
-Original Word Count: 6,324,182
-Total Word Count: 6,908,153
-Total Weighted Word Count: 6,529,892
+Original Word Count: 6,329,864
+Total Word Count: 6,913,843
+Total Weighted Word Count: 6,535,576
