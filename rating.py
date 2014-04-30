@@ -170,7 +170,7 @@ def getRatingsByAddress(address):
 		return []
 	rater = address[firstUnderscore + 1 : lastUnderscore].lower()
 	lines = almoner.getTextLines(almoner.getSourceText(address))
-	for line in lines[1 :]:
+	for line in lines:
 		rating = Rating(address, line, rater)
 		if rating.article != '':
 			ratings.append(rating)
