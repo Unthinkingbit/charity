@@ -68,6 +68,7 @@ def getAddress(addressName):
 
 def getEarningsText(ratings, recipientDictionary):
 	'Get the ratings earnings text.'
+	recipientDictionary['eeharris'] = '1CfWWyDNUeioJc7TBnqDBDyQKJUYwT7S2Z'
 	cString = cStringIO.StringIO()
 	raterDictionary = {}
 	for rating in ratings:
@@ -286,6 +287,7 @@ class Rating:
 			voteString = ratingLine[: spaceIndex].strip()
 			self.comment = ratingLine[spaceIndex :].strip()
 		voteString = voteString.replace(',', '').replace("'", '').replace('"', '').replace(".", '').replace(";", '').replace("-", '')
+		voteString = voteString.replace('(', '').replace(")", '')
 		if not voteString.isdigit():
 			if voteString != '':
 				print('Warning, not a pure number in:')
