@@ -135,20 +135,6 @@ def getFirstLetterIndex(name):
 		return 25
 	return firstLetterIndex
 
-def getRaters():
-	'Get the rater names.'
-	raters = []
-	lines = almoner.getTextLines(almoner.getFileText('rater.csv'))
-	for line in lines[1 :]:
-		words = line.split(',')
-		if len(words) > 0:
-			rater = words[0].strip().lower()
-			if rater != '':
-				if rater[0] == '*':
-					rater = rater[1 :]
-				raters.append(rater)
-	return raters
-
 def getRaterText(maximumWriters, round, seedString, writerNames):
 	'Get the rater text.'
 	previousLines = rating.getPreviousLines(round)
@@ -158,7 +144,7 @@ def getRaterText(maximumWriters, round, seedString, writerNames):
 	cString = cStringIO.StringIO()
 	otherWriters = []
 	raterWriters = []
-	raters = getRaters()
+	raters = rating.getRaterNames()
 	raters.sort()
 	raterSet = set(raters)
 	for previousAddressVoteKey in previousAddressVoteDictionary.keys():

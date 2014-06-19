@@ -133,6 +133,20 @@ def getPreviousLines(round):
 	'Get the lines from the rating text of the previous round.'
 	return almoner.getTextLines(almoner.getFileText('rating_%s.csv' % (round - 1)))
 
+def getRaterNames():
+	'Get the rater names.'
+	raterNames = []
+	lines = almoner.getTextLines(almoner.getFileText('rater.csv'))
+	for line in lines[1 :]:
+		words = line.split(',')
+		if len(words) > 0:
+			raterName = words[0].strip().lower()
+			if raterName != '':
+				if raterName[0] == '*':
+					raterName = raterName[1 :]
+				raterNames.append(raterName)
+	return raterNames
+
 def getRaters(addressVotes):
 	'Get the raters from the address votes.'
 	raters = []
@@ -151,11 +165,9 @@ def getRaters(addressVotes):
 
 def getRatings(round):
 	'Get the ratings by the round.'
-	lines = almoner.getTextLines(almoner.getFileText('rater_%s.txt' % round))
 	ratings = []
-	for line in lines:
-		if line.startswith('http://devtome.com/doku.php?id=rating_'):
-			ratings += getRatingsByAddress('%s&do=edit' % line.strip())
+	for raterName in getRaterNames():
+		ratings += getRatingsByAddress('http://devtome.com/doku.php?id=rating_%s_%s&do=edit' % (raterName, round))
 	return ratings
 
 def getRatingsByAddress(address):
