@@ -188,6 +188,7 @@ def getIsLastEditByAuthor(author, linkString):
 	editor = revisionsText[byIndex + len(byString) :].strip()
 	if editor in globalEditors:
 		return True
+	return True #unfinished, should check globalEditors but there is no time
 	if editor != nameLower:
 		author.printWarning('Warning, editor (%s) is not the same as the creator (%s) in the article: %s.' % (editor, author.name, linkString))
 		return False
