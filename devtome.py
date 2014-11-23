@@ -167,7 +167,7 @@ def getIsLastEditByAuthor(author, linkString):
 	time.sleep(0.5)
 	lastModIndex = revisionsText.find('<li id="lastmod">')
 	if lastModIndex == -1:
-		time.sleep(180)
+		time.sleep(10)
 		revisionsText = almoner.getInternetText('http://devtome.com/doku.php?id=%s&do=revisions' % linkString)
 		lastModIndex = revisionsText.find('<li id="lastmod">')
 	if lastModIndex == -1:
@@ -282,8 +282,9 @@ def getSourceTextIfByAuthor(author, linkName):
 	if linkName == '':
 		return ''
 	time.sleep(0.5)
-	if getIsLastEditByAuthor(author, linkName):
-		return almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % linkName)
+#	if getIsLastEditByAuthor(author, linkName): #unfinished, check removed because it's taking too long
+#		return almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % linkName)
+	return almoner.getSourceText('http://devtome.com/doku.php?id=%s&do=edit' % linkName)
 	return ''
 
 def getSummaryText(earningsText, round, totalTomecount):
