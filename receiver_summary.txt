@@ -1,24 +1,24 @@
-The round 48 receiver files have been uploaded to:
-http://galaxies.mygamesonline.org/receiver_48.csv
-http://devcoinpool.btc-music.com/receiver/receiver_48.csv
-http://devcoinblockexplorer.info/receiver/receiver_48.csv
-http://devtome.com/files/receiver_48.csv
-http://devcoin.darkgamex.ch/receiver_48.csv
-http://d.evco.in/receiver/receiver_48.csv
-http://show-me-the-devcoin.info/devtome/receiver_48.csv
-http://faucets.cryptoplace.net/receivers/receiver_48.csv
-http://creativecurrencies.cu.cc/wp-content/uploads/receiver_48.csv
+The round 49 receiver files have been uploaded to:
+http://galaxies.mygamesonline.org/receiver_49.csv
+http://devcoinpool.btc-music.com/receiver/receiver_49.csv
+http://devcoinblockexplorer.info/receiver/receiver_49.csv
+http://devtome.com/files/receiver_49.csv
+http://devcoin.darkgamex.ch/receiver_49.csv
+http://d.evco.in/receiver/receiver_49.csv
+http://show-me-the-devcoin.info/devtome/receiver_49.csv
+http://faucets.cryptoplace.net/receivers/receiver_49.csv
+http://creativecurrencies.cu.cc/wp-content/uploads/receiver_49.csv
 
 The account file is at:
-http://galaxies.mygamesonline.org/account_48.csv
+http://galaxies.mygamesonline.org/account_49.csv
 
-There were 354 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 354 = 508,475 dvc. Administrator pay is 36.0 shares, 10.2 percent of the total.
+There were 350 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 350 = 514,286 dvc. Administrator pay is 43.0 shares, 12.3 percent of the total.
 
-People on that list will start getting those coins in round 48, starting at block 192,000. The procedure for generating the receiver files is at:
+People on that list will start getting those coins in round 49, starting at block 196,000. The procedure for generating the receiver files is at:
 http://devtome.com/doku.php?id=devcoin#generating_the_files
 
-The next bounties will go into round 49:
-http://devticker.pw/business_bounty/business_bounty_49.csv
+The next bounties will go into round 50:
+http://devticker.pw/business_bounty/business_bounty_50.csv
 
-The next ongoing payments will go into round 49:
-http://dvccountdown.blisteringdevelopers.com/ongoing_49.csv
+The next ongoing payments will go into round 50:
+http://dvccountdown.blisteringdevelopers.com/ongoing_50.csv
