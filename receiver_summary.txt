@@ -12,7 +12,7 @@ http://creativecurrencies.cu.cc/wp-content/uploads/receiver_57.csv
 The account file is at:
 http://galaxies.mygamesonline.org/account_57.csv
 
-There were 131 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 131 = 1,374,046 dvc. Administrator pay is 52.0 shares, 39.7 percent of the total.
+There were 136 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 136 = 1,323,529 dvc. Administrator pay is 52.0 shares, 38.2 percent of the total.
 
 People on that list will start getting those coins in round 57, starting at block 228,000. The procedure for generating the receiver files is at:
 http://devtome.com/doku.php?id=devcoin#generating_the_files
