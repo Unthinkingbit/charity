@@ -167,7 +167,7 @@ def getIsLastEditByAuthor(author, linkString):
 	time.sleep(0.5)
 	lastModIndex = revisionsText.find('<li id="lastmod">')
 	if lastModIndex == -1:
-		time.sleep(10)
+		time.sleep(5)
 		revisionsText = almoner.getInternetText('http://devtome.com/doku.php?id=%s&do=revisions' % linkString)
 		lastModIndex = revisionsText.find('<li id="lastmod">')
 	if lastModIndex == -1:
