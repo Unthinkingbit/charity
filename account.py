@@ -149,7 +149,9 @@ def getAccountLines(arguments, suffixNumberString):
 			extraWords = extraLines[extraLineIndex].split(',')
 			if len(extraWords) < 3:
 				print('Warning, less than 3 words in:')
+				print(linkLine)
 				print(extraWords)
+				print('')
 				del extraLines[extraLineIndex]
 			else:
 				secondWord = extraWords[1]
