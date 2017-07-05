@@ -1,22 +1,22 @@
-The round 71 receiver files have been uploaded to:
-http://galaxies.mygamesonline.org/receiver_71.csv
-http://devcoinpool.btc-music.com/receiver/receiver_71.csv
-http://devcoin.darkgamex.ch/receiver_71.csv
-http://d.evco.in/receiver/receiver_71.csv
-http://show-me-the-devcoin.info/devtome/receiver_71.csv
-http://faucets.cryptoplace.net/receivers/receiver_71.csv
-https://raw.githubusercontent.com/wiser-/Devtome/master/receiver_71.csv
+The round 72 receiver files have been uploaded to:
+http://galaxies.mygamesonline.org/receiver_72.csv
+http://devcoinpool.btc-music.com/receiver/receiver_72.csv
+http://devcoin.darkgamex.ch/receiver_72.csv
+http://d.evco.in/receiver/receiver_72.csv
+http://show-me-the-devcoin.info/devtome/receiver_72.csv
+http://faucets.cryptoplace.net/receivers/receiver_72.csv
+https://raw.githubusercontent.com/wiser-/Devtome/master/receiver_72.csv
 
 The account file is at:
-http://galaxies.mygamesonline.org/account_71.csv
+http://galaxies.mygamesonline.org/account_72.csv
 
-There were 109 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 109 = 1,651,376 dvc. Administrator pay is 52.0 shares, 47.7 percent of the total.
+There were 194 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 194 = 927,835 dvc. Administrator pay is 52.0 shares, 26.8 percent of the total.
 
-People on that list will start getting those coins in round 71, starting at block 284,000. The procedure for generating the receiver files is at:
+People on that list will start getting those coins in round 72, starting at block 288,000. The procedure for generating the receiver files is at:
 http://devtome.com/doku.php?id=devcoin#generating_the_files
 
-The next bounties will go into round 72:
-http://devticker.pw/business_bounty/business_bounty_72.csv
+The next bounties will go into round 73:
+http://devticker.pw/business_bounty/business_bounty_73.csv
 
-The next ongoing payments will go into round 72:
-http://dvccountdown.blisteringdevelopers.com/ongoing_72.csv
+The next ongoing payments will go into round 73:
+http://dvccountdown.blisteringdevelopers.com/ongoing_73.csv
