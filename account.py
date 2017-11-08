@@ -256,6 +256,10 @@ def getNameAddressLines(fileName, nameSet):
 			addressLine = '%s,%s,1-%s(%s)' % (name.replace(' ', '_'), contributor.bitcoinAddress, listName, linkName)
 			addressLines.append(addressLine)
 			nameSet.add(lowerName)
+		else:
+			print('Duplicate contributor, which will not be added a second time.')
+			print(name)
+			print('')
 	return addressLines
 
 def getPackedReceiverLines(denominatorSequences, originalReceiverLines, suffixNumber):
