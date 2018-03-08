@@ -17,7 +17,7 @@ __license__ = 'MIT'
 
 def getReceiverFileName(index):
 	'Get receiver file name.'
-	return 'receiver_%s (copy).csv' % index
+	return 'receiver_%s.csv' % index
 
 def main():
 	'Replace peers.'
