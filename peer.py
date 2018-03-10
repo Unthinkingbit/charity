@@ -1,5 +1,5 @@
 """
-Peer replaces the old peers in the reciever files with the current peers in peer.csv.
+Peer replaces the old peers in the receiver files with the current peers in peer.csv.
 
 ==Install==
 For peer to run, you need Python 2.x, peer will probably not run with python 3.x.  To check if it is on your machine, in a terminal type:
