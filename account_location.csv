@@ -1,6 +1,6 @@
 Name,Location
 Bitcoin Share List,bitcoinshare.html
-Business Bounty,http://devticker.pw/business_bounty/business_bounty_xx.csv
+Business Bounty,https://raw.githubusercontent.com/devcoin/devcoin_bounty_files/master/bounty_xx.csv
 Devcoin Share List,devcoinshare.html
 Devtome Earnings,devtome_earnings_xx.csv
 Marketing Earnings,marketing_earnings_xx.csv
