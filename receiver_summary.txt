@@ -1,22 +1,22 @@
-The round 86 receiver files have been uploaded to:
-http://galaxies.mygamesonline.org/receiver_86.csv
-http://devcoinpool.btc-music.com/receiver/receiver_86.csv
-http://devcoin.darkgamex.ch/receiver_86.csv
-http://d.evco.in/receiver/receiver_86.csv
-http://show-me-the-devcoin.info/devtome/receiver_86.csv
-http://node1.devcoin.cloud/receiver_files/receiver_86.csv
-http://jerpat.us/dcr/uploads/receiver_86.csv
+The round 87 receiver files have been uploaded to:
+http://galaxies.mygamesonline.org/receiver_87.csv
+http://devcoinpool.btc-music.com/receiver/receiver_87.csv
+http://devcoin.darkgamex.ch/receiver_87.csv
+http://d.evco.in/receiver/receiver_87.csv
+http://show-me-the-devcoin.info/devtome/receiver_87.csv
+http://node1.devcoin.cloud/receiver_files/receiver_87.csv
+http://jerpat.us/dcr/uploads/receiver_87.csv
 
 The account file is at:
-http://galaxies.mygamesonline.org/account_86.csv
+http://galaxies.mygamesonline.org/account_87.csv
 
-There were 190 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 190 = 947,368 dvc. Administrator pay is 46.0 shares, 24.2 percent of the total.
+There were 279 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 279 = 645,161 dvc. Administrator pay is 39.0 shares, 14.0 percent of the total.
 
-People on that list will start getting those coins in round 86, starting at block 344,000. The procedure for generating the receiver files is at:
+People on that list will start getting those coins in round 87, starting at block 348,000. The procedure for generating the receiver files is at:
 http://devtome.com/doku.php?id=devcoin#generating_the_files
 
-The next bounties will go into round 87:
-http://devticker.pw/business_bounty/business_bounty_87.csv
+The next bounties will go into round 88:
+http://devticker.pw/business_bounty/business_bounty_88.csv
 
-The next ongoing payments will go into round 87:
-http://dvccountdown.blisteringdevelopers.com/ongoing_87.csv
+The next ongoing payments will go into round 88:
+http://dvccountdown.blisteringdevelopers.com/ongoing_88.csv
