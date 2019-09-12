@@ -1,22 +1,22 @@
-The round 97 receiver files have been uploaded to:
-http://galaxies.mygamesonline.org/receiver_97.csv
-http://devcoinpool.btc-music.com/receiver/receiver_97.csv
-http://devcoin.darkgamex.ch/receiver_97.csv
-http://d.evco.in/receiver/receiver_97.csv
-http://show-me-the-devcoin.info/devtome/receiver_97.csv
-http://node1.devcoin.cloud/receiver_files/receiver_97.csv
-http://jerpat.us/dcr/uploads/receiver_97.csv
+The round 98 receiver files have been uploaded to:
+http://galaxies.mygamesonline.org/receiver_98.csv
+http://devcoinpool.btc-music.com/receiver/receiver_98.csv
+http://devcoin.darkgamex.ch/receiver_98.csv
+http://d.evco.in/receiver/receiver_98.csv
+http://show-me-the-devcoin.info/devtome/receiver_98.csv
+http://node1.devcoin.cloud/receiver_files/receiver_98.csv
+http://jerpat.us/dcr/uploads/receiver_98.csv
 
 The account file is at:
-http://galaxies.mygamesonline.org/account_97.csv
+http://galaxies.mygamesonline.org/account_98.csv
 
-There were 152 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 152 = 1,184,211 dvc. Administrator pay is 0.0 shares, 0.0 percent of the total.
+There were 249 original receiver lines, so the average number of devcoins per share is 180,000,000 dvc / 249 = 722,892 dvc. Administrator pay is 37.0 shares, 14.9 percent of the total.
 
-People on that list will start getting those coins in round 97, starting at block 388,000. The procedure for generating the receiver files is at:
+People on that list will start getting those coins in round 98, starting at block 392,000. The procedure for generating the receiver files is at:
 http://devtome.com/doku.php?id=devcoin#generating_the_files
 
-The next bounties will go into round 98:
-http://devticker.pw/business_bounty/business_bounty_98.csv
+The next bounties will go into round 99:
+http://devticker.pw/business_bounty/business_bounty_99.csv
 
-The next ongoing payments will go into round 98:
-http://dvccountdown.blisteringdevelopers.com/ongoing_98.csv
+The next ongoing payments will go into round 99:
+http://dvccountdown.blisteringdevelopers.com/ongoing_99.csv
